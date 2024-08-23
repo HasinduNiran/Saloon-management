@@ -7,8 +7,9 @@ import cors from 'cors';
 // Importing custom configurations
 import { PORT, mongoDBURL } from './config.js';
 
-// Importing routes - example
+// Importing routes
 //import Inventory_Route from './Routes/Inventory_Route.js';
+import Employee_Route from './Routes/Employee_Route.js';
 
 
 
@@ -23,11 +24,10 @@ app.use(express.json());
 app.use(cors());
 
 
-
-// Using routes for endpoints - example
+// Using routes for endpoints
 
 //app.use('/inventory', Inventory_Route);
-
+app.use('/employees', Employee_Route);
 
 
 
