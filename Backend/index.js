@@ -10,10 +10,10 @@ import { PORT, mongoDBURL } from './config.js';
 // Importing routes
 import UserAccount_Route from './Routes/UserAccount_Route.js';
 import Employee_Route from './Routes/Employee_Route.js';
-import Inventory_Route from './Routes/Inventory_Route.js';
+//import Inventory_Route from './Routes/Inventory_Route.js';
 
-import Booking_Route from './Routes/Booking_Route.js';
-import Package_Route from './Routes/Package_Route.js';
+//import Booking_Route from './Routes/Booking_Route.js';
+//import Package_Route from './Routes/Package_Route.js';
 import Service_Route from './Routes/Service_Route.js';
 
 import Manager_Route from './Routes/Manager_Route.js';
@@ -35,9 +35,9 @@ app.use(cors());
 app.use('/customer', UserAccount_Route);
 app.use('/employees', Employee_Route);
 
-app.use('/inventory', Inventory_Route);
+//app.use('/inventory', Inventory_Route);
 
-app.use('/Package', Package_Route);
+//app.use('/Package', Package_Route);
 app.use('/Service', Service_Route);
 
 app.use('/Manager', Manager_Route);
