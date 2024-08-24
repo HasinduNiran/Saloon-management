@@ -10,6 +10,9 @@ import { PORT, mongoDBURL } from './config.js';
 // Importing routes
 //import Inventory_Route from './Routes/Inventory_Route.js';
 import Employee_Route from './Routes/Employee_Route.js';
+import Appointment_Route from './Routes/Appointment_Route.js';
+import Package_Route from './Routes/Package_Route.js';
+import Service_Route from './Routes/Service_Route.js';
 
 
 
@@ -28,7 +31,9 @@ app.use(cors());
 
 //app.use('/inventory', Inventory_Route);
 app.use('/employees', Employee_Route);
-
+app.use('/packages', Package_Route);
+app.use('/services', Service_Route);
+app.use('/appointments', Appointment_Route);
 
 
 // Connecting to the MongoDB database
