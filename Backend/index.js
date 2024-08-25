@@ -11,7 +11,7 @@ import { PORT, mongoDBURL } from './config.js';
 //import Inventory_Route from './Routes/Inventory_Route.js';
 import Employee_Route from './Routes/Employee_Route.js';
 import Customer_Route from './Routes/Customer_Route.js';
-
+import Payment_Route from './Routes/Payment_Route.js';
 import Supplier_Route from './Routes/Supplier_Route.js';
 import Inventory_Route from './Routes/Inventory_Route.js';
 
@@ -36,6 +36,8 @@ app.use(cors());
 app.use('/employees', Employee_Route);
 app.use('/suppliers', Supplier_Route);
 app.use('/inventories', Inventory_Route);
+app.use('/customers', Customer_Route);
+app.use('/payments', Payment_Route);
 
 
 
