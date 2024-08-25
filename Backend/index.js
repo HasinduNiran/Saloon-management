@@ -18,6 +18,8 @@ import Inventory_Route from './Routes/Inventory_Route.js';
 
 
 
+
+
 // Creating an instance of the Express application
 const app = express();
 
@@ -32,13 +34,10 @@ app.use(cors());
 
 //app.use('/inventory', Inventory_Route);
 app.use('/employees', Employee_Route);
-
-
-//app.use('/customers', Customer_Route);
-
-
 app.use('/suppliers', Supplier_Route);
 app.use('/inventories', Inventory_Route);
+
+
 
 
 
