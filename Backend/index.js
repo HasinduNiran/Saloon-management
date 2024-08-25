@@ -10,6 +10,7 @@ import { PORT, mongoDBURL } from './config.js';
 // Importing routes
 //import Inventory_Route from './Routes/Inventory_Route.js';
 import Employee_Route from './Routes/Employee_Route.js';
+//import Customer_Route from './Routes/Customer_Route.js';
 
 
 
@@ -28,6 +29,8 @@ app.use(cors());
 
 //app.use('/inventory', Inventory_Route);
 app.use('/employees', Employee_Route);
+
+//app.use('/customers', Customer_Route);
 
 
 
