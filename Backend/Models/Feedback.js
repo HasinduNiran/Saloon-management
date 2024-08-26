@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const feedbackSchema = schema({
+const feedbackSchema = mongoose.Schema(
+    {
     cusID: {
         type: String,
     },
@@ -11,7 +12,7 @@ const feedbackSchema = schema({
     phone_number:{
         type:String,
         required: true,
-    }
+    },
     email: {
         type: String,
         required: true,
@@ -35,3 +36,4 @@ const feedbackSchema = schema({
 }
     
 );
+export const Feedback = mongoose.model('Feedback' ,feedbackSchema);
