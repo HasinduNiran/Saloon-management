@@ -43,19 +43,10 @@ router.post('/', async (request, response) => {
 router.get('/', async (request, response) => {
   try {
     const inventories = await Inventory.find({});
-    const formattedInventory = inventories.map(inventory => ({
-      ItemNo: inventory.ItemNo,
-      ItemName: inventory.ItemName,
-      Category: inventory.Category,
-      Quantity: inventory.Quantity,
-      Price: inventory.Price,
-      SupplierName: inventory.SupplierName,
-      SupplierEmail: inventory.SupplierEmail,
-    }));
     
     return response.status(200).json({
-      count: formattedInventory.length,
-      data: formattedInventory,
+      count: inventories.length,
+      data: inventories,
     });
   } catch (error) {
     console.log(error.message);

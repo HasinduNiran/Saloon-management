@@ -25,7 +25,7 @@ const ShowEmployees = () => {
 
   return (
     <div className="show-employees-container p-4">
-      <BackButton />
+      <BackButton destination='/employees/allEmployee'/>
       <h1 className="show-employees-title text-3xl my-4">Show Employee</h1>
       {loading ? (
         <Spinner />

@@ -7,17 +7,16 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-// Functional component for EditEmployee
-const EditEmployee = () => {
+// Functional component for EditSupplier
+const EditSupplier = () => {
   // State variables for managing form data and loading state
-  const [EmpID, setEmpID] = useState('');
-  const [FirstName, setFirstName] = useState('');
-  const [LastName, setLastName] = useState('');
-  const [Age, setAge] = useState('');
-  const [Gender, setGender] = useState('');
-  //const [BasicSalary, setBasicSalary] = useState('');
+  const [SupplierID, setSupplierID] = useState('');
+  const [SupplierName, setSupplierName] = useState('');
+  const [ItemNo, setItemNo] = useState('');
+  const [ItemName, setItemName] = useState('');
   const [ContactNo, setContactNo] = useState('');
   const [Email, setEmail] = useState('');
+  const [Address, setAddress] = useState('');
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,15 +24,15 @@ const EditEmployee = () => {
 
   useEffect(()=>{
     setLoading(true);
-    axios.get(`http://localhost:8076/employees/${id}`)
+    axios.get(`http://localhost:8076/suppliers/${id}`)
     .then((Response) => {
-      setEmpID(Response.data.EmpID);
-      setFirstName(Response.data.FirstName);
-      setLastName(Response.data.LastName);
-      setAge(Response.data.Age);
-      setGender(Response.data.Gender);
+      setSupplierID(Response.data.SupplierID);
+      setSupplierName(Response.data.SupplierName);
+      setItemNo(Response.data.ItemNo);
+      setItemName(Response.data.ItemName);
       setContactNo(Response.data.ContactNo);
       setEmail(Response.data.Email);
+      setAddress(Response.data.Address);
 
       setLoading(false);
     }).catch((error) =>{
@@ -43,26 +42,26 @@ const EditEmployee = () => {
     });
   }, [])
 
-  // Event handler for edit the Employee
-  const handleEditEmployee = () => {
+  // Event handler for edit the Supplier
+  const handleEditSupplier = () => {
     // Creating data object from form inputs
     const data = {
-      FirstName,
-      LastName,
-      Age,
-      Gender,
+      SupplierName,
+      ItemNo,
+      ItemName,
       ContactNo,
       Email,
+      Address,
     };
     setLoading(true);
 
-    // Making a PUT request to Edit the Employee data
+    // Making a PUT request to Edit the Supplier data
     axios
-      .put(`http://localhost:8076/employees/${id}`, data)
+      .put(`http://localhost:8076/suppliers/${id}`, data)
       .then(() => {
-        // Resetting loading state and navigating to the home page
+        // Resetting loading state and navigating to the home pItemName
         setLoading(false);
-        navigate('/employees/allEmployee');
+        navigate('/suppliers/allSupplier');
       })
       .catch((error) => {
         // Handling errors by resetting loading state, showing an alert, and logging the error
@@ -72,57 +71,48 @@ const EditEmployee = () => {
       });
   };
 
-  // JSX for rendering the create Employee form
+  // JSX for rendering the create Supplier form
   return (
     <div className="p-4">
-      <BackButton destination='/employees/allEmployee'/>
-      <h1 className="text-3xl my-4">Edit Employee</h1>
+      <BackButton destination='/suppliers/allSupplier'/>
+      <h1 className="text-3xl my-4">Edit Supplier</h1>
       {loading ? <Spinner /> : ''}
       <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
       <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>EmpID</label>
+          <label className='text-xl mr-4 text-gray-500'>SupplierID</label>
           <input
             type="text"
-            value={EmpID}
-            onChange={(e) => setEmpID(e.target.value)}
+            value={SupplierID}
+            onChange={(e) => setSupplierID(e.target.value)}
             readOnly
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>FirstName</label>
+          <label className='text-xl mr-4 text-gray-500'>SupplierName</label>
           <input
             type="text"
-            value={FirstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={SupplierName}
+            onChange={(e) => setSupplierName(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>LastName</label>
+          <label className='text-xl mr-4 text-gray-500'>ItemNo</label>
           <input
             type="text"
-            value={LastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={ItemNo}
+            onChange={(e) => setItemNo(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Age</label>
+          <label className='text-xl mr-4 text-gray-500'>ItemName</label>
           <input
-            type='number'
-            value={Age}
-            onChange={(e) => setAge(e.target.value)}
+            type='text'
+            value={ItemName}
+            onChange={(e) => setItemName(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2  w-full '
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Gender</label>
-          <input
-            type="text"
-            value={Gender}
-            onChange={(e) => setGender(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className="my-4">
@@ -143,7 +133,16 @@ const EditEmployee = () => {
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
-        <button className='p-2 bg-sky-300 m-8' onClick={handleEditEmployee}>
+        <div className="my-4">
+          <label className='text-xl mr-4 text-gray-500'>Address</label>
+          <input
+            type="text"
+            value={Address}
+            onChange={(e) => setAddress(e.target.value)}
+            className='border-2 border-gray-500 px-4 py-2 w-full'
+          />
+        </div>
+        <button className='p-2 bg-sky-300 m-8' onClick={handleEditSupplier}>
           Save
         </button>
       </div>
@@ -151,5 +150,5 @@ const EditEmployee = () => {
   );
 };
 
-// Exporting the EditEmployee component
-export default EditEmployee;
+// Exporting the EditSupplier component
+export default EditSupplier;

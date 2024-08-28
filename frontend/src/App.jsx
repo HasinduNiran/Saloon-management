@@ -8,6 +8,12 @@ import DeleteEmployee from './pages/Employee/DeleteEmployee';
 import EditEmployee from './pages/Employee/EditEmployee';
 import ReadOneEmployee from './pages/Employee/ReadOneEmployee';
 
+import ShowSupplier from './pages/Supplier/ShowSupplier';
+import CreateSupplier from './pages/Supplier/CreateSupplier';
+import DeleteSupplier from './pages/Supplier/DeleteSupplier';
+import EditSupplier from './pages/Supplier/EditSupplier';
+import ReadOneSupplier from './pages/Supplier/ReadOneSupplier';
+
 const App = () => {
   return (
     <Routes>
@@ -20,6 +26,11 @@ const App = () => {
       <Route path='/employees/edit/:id' element={<EditEmployee />}></Route>
       <Route path='/employees/details/:id' element={<ReadOneEmployee />}></Route>
         
+      <Route path='/suppliers/allSupplier' element={<ShowSupplier />}></Route>
+      <Route path='/suppliers/create' element={<CreateSupplier />}></Route>
+      <Route path='/suppliers/delete/:id' element={<DeleteSupplier />}></Route>
+      <Route path='/suppliers/edit/:id' element={<EditSupplier />}></Route>
+      <Route path='/suppliers/details/:id' element={<ReadOneSupplier />}></Route>  
 
     </Routes>
   )
