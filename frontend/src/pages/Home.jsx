@@ -19,7 +19,7 @@ const Home = () => {
         <li style={styles.navItem}><Link to="/">Payment</Link></li>
         <li style={styles.navItem}><Link to="/">ReadOneHome</Link></li>
         <li style={styles.navItem}><Link to="/">Service</Link></li>
-        <li style={styles.navItem}><Link to="/">Supplier</Link></li>
+        <li style={styles.navItem}><Link to="/suppliers/allSupplier">Supplier</Link></li>
       </ul>
     </div>
   );
