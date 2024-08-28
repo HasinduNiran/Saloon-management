@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
@@ -7,7 +8,19 @@ const Home = () => {
       <p style={styles.description}>
         This is a simple home page built with React. Explore more by navigating through the links!
       </p>
-      <button style={styles.button}>Get Started</button>
+      <ul style={styles.navList}>
+        <li style={styles.navItem}><Link to="/">Appointment</Link></li>
+        <li style={styles.navItem}><Link to="/">Customer</Link></li>
+        <li style={styles.navItem}><Link to="/employees/allEmployee">Employee</Link></li>
+        <li style={styles.navItem}><Link to="/">Feedback</Link></li>
+        <li style={styles.navItem}><Link to="/">Inventory</Link></li>
+        <li style={styles.navItem}><Link to="/">Manager</Link></li>
+        <li style={styles.navItem}><Link to="/">Package</Link></li>
+        <li style={styles.navItem}><Link to="/">Payment</Link></li>
+        <li style={styles.navItem}><Link to="/">ReadOneHome</Link></li>
+        <li style={styles.navItem}><Link to="/">Service</Link></li>
+        <li style={styles.navItem}><Link to="/">Supplier</Link></li>
+      </ul>
     </div>
   );
 }
@@ -32,6 +45,15 @@ const styles = {
     marginBottom: '30px',
     maxWidth: '600px',
   },
+  navList: {
+    listStyle: 'none',
+    padding: 0,
+    textAlign: 'left', // Aligns the list items to the left
+  },
+  navItem: {
+    color: 'blue', // Sets the color to blue
+    marginBottom: '10px',
+  },
   button: {
     padding: '10px 20px',
     fontSize: '1rem',
@@ -43,5 +65,4 @@ const styles = {
   },
 };
 
-
-export default Home
+export default Home;
