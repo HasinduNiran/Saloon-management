@@ -14,6 +14,12 @@ import DeleteSupplier from './pages/Supplier/DeleteSupplier';
 import EditSupplier from './pages/Supplier/EditSupplier';
 import ReadOneSupplier from './pages/Supplier/ReadOneSupplier';
 
+import ShowInventory from './pages/Inventory/ShowInventory';
+import CreateInventory from './pages/Inventory/CreateInventory';
+import DeleteInventory from './pages/Inventory/DeleteInventory';
+import EditInventory from './pages/Inventory/EditInventory';
+import ReadOneInventory from './pages/Inventory/ReadOneInventory';
+
 const App = () => {
   return (
     <Routes>
@@ -32,6 +38,12 @@ const App = () => {
       <Route path='/suppliers/edit/:id' element={<EditSupplier />}></Route>
       <Route path='/suppliers/details/:id' element={<ReadOneSupplier />}></Route>  
 
+      <Route path='/inventories/allInventory' element={<ShowInventory />}></Route>
+      <Route path='/inventories/create' element={<CreateInventory />}></Route>
+      <Route path='/inventories/delete/:id' element={<DeleteInventory />}></Route>
+      <Route path='/inventories/edit/:id' element={<EditInventory />}></Route>
+      <Route path='/inventories/details/:id' element={<ReadOneInventory />}></Route>
+      
     </Routes>
   )
 }
