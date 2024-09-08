@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid';
 const packageSchema = mongoose.Schema(
     {
         p_ID: {
             type: String,
-            unique: true
+            unique: true,
+            default: uuidv4
         },
         description: {
             type: String,
@@ -39,7 +41,6 @@ const packageSchema = mongoose.Schema(
         },
         package_type: {
             type: String,
-            enum: ['Standard', 'Promotional'],
             required: true
         },
         service_ID: {

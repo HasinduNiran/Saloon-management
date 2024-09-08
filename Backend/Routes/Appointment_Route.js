@@ -1,6 +1,7 @@
 import express from 'express';
 import { Appointment } from '../Models/Appointment.js';
 import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid'; 
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ const validateFields = (req, res, next) => {
 router.post('/', validateFields, async (req, res) => {
     try {
         const newAppointment = {
+            appoi_ID: uuidv4(),  // Generate a unique ID
             client_name: req.body.client_name,
             client_email: req.body.client_email,
             client_phone: req.body.client_phone,
@@ -40,7 +42,6 @@ router.post('/', validateFields, async (req, res) => {
         };
 
         const createdAppointment = await Appointment.create(newAppointment);
-
         return res.status(201).send(createdAppointment);
     } catch (error) {
         console.log(error.message);
@@ -60,68 +61,41 @@ router.get('/', async (req, res) => {
 });
 
 // Route to get a specific appointment by ID
-router.get('/:appoi_ID', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
-        const { appoi_ID } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(appoi_ID)) {
-            return res.status(400).json({ message: 'Invalid appointment ID format' });
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) {
+          return res.status(404).json({ message: 'Appointment not found' });
         }
-
-        const foundAppointment = await Appointment.findById(appoi_ID);
-
-        if (!foundAppointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-
-        return res.status(200).json(foundAppointment);
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
-    }
+        res.json(appointment);
+      } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+      }
 });
 
 // Route to update an appointment by ID
-router.put('/:appoi_ID', validateFields, async (req, res) => {
+router.put('/:id', validateFields, async (req, res) => {
     try {
-        const { appoi_ID } = req.params;
+        const appointment = await Appointment.findByIdAndUpdate(request.params.id, request.body, {new: true});
 
-        if (!mongoose.Types.ObjectId.isValid(appoi_ID)) {
-            return res.status(400).json({ message: 'Invalid appointment ID format' });
-        }
+        if (!appointment) return response.status(404).send('Appointment not found');
 
-        const updatedAppointment = await Appointment.findByIdAndUpdate(appoi_ID, req.body, { new: true });
-
-        if (!updatedAppointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-
-        return res.status(200).send({ message: 'Appointment updated successfully', updatedAppointment });
+        response.send(appointment);
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
+        response.status(400).send(error);
     }
 });
 
 // Route to delete an appointment by ID
-router.delete('/:appoi_ID', async (req, res) => {
+router.delete('/:id', async (request, response) => {
     try {
-        const { appoi_ID } = req.params;
+        const appointment = await Appointment.findByIdAndDelete(request.params.id);
 
-        if (!mongoose.Types.ObjectId.isValid(appoi_ID)) {
-            return res.status(400).json({ message: 'Invalid appointment ID format' });
-        }
+        if (!appointment) return response.status(404).send('Appointment not found');
 
-        const deletedAppointment = await Appointment.findByIdAndDelete(appoi_ID);
-
-        if (!deletedAppointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-
-        return res.status(200).send({ message: 'Appointment deleted successfully' });
+        response.send(appointment);
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
+        response.status(500).send(error);
     }
 });
 

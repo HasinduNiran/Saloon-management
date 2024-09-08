@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid';
 const serviceSchema = mongoose.Schema(
     {
         service_ID: {
             type: String,
-            unique: true
+            unique: true,
+            default: uuidv4
         },
         category : {
             type: String,
-            enum: ['Hair', 'Nails','Skincare'],
             required: true
         },
         description : {
@@ -24,7 +25,6 @@ const serviceSchema = mongoose.Schema(
         },
         available: {
             type: String,
-            enum: ['Yes', 'N0'],
             required: true
         },
        
