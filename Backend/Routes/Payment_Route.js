@@ -10,9 +10,11 @@ router.post('/', async (request, response) => {
     try {
         const newPayment = new Payment({
             Amount: request.body.Amount,
+            cardHolderName: request.body.cardHolderName,
             Cardno: request.body.Cardno,
-            Exp: request.body.Exp,
-            cvc: request.body.cvc
+            expMonth: request.body.expMonth,
+            expYear: request.body.expYear,
+            cvv: request.body.cvv
             
         });
 

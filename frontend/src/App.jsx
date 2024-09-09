@@ -47,6 +47,8 @@ import EditCustomer from './pages/Customer/EditCustomer';
 import ShowAllCustomers from './pages/Customer/ShowAllCustomers';
 import ReadOneCustomer from './pages/Customer/ReadOneCustomer';
 
+import CreatePayment from './pages/Payment/CreatePayment';
+
 const App = () => {
   return (
     <Routes>
@@ -99,7 +101,7 @@ const App = () => {
       <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
       <Route path='/customers/' element={<ShowAllCustomers />}></Route>
 
- 
+      <Route path='/payments/create' element={<CreatePayment />}></Route>
 
     </Routes>
   )

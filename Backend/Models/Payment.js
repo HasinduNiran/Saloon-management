@@ -3,13 +3,21 @@ import mongoose from 'mongoose';
 const paymentSchema = mongoose.Schema({
     Amount: {
         type: String,
-        unique: true
+        required: true
+    },
+    cardHolderName: {
+        type: String,
+        required: true,
     },
     Cardno: {
         type: String,
         unique: true
     },
-    Exp: {
+    expMonth: {
+        type: String,
+        required: true,
+    },
+    expYear: {
         type: String,
         required: true,
     },
