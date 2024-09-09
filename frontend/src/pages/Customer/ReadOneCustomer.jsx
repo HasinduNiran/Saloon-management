@@ -37,6 +37,9 @@ const ReadOneCustomer = () => {
             <span className='text-xl mr-4 text-gray-500'>Username:</span>
             <span>{customers.CusID}</span>
           </div>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px' }}>
+                <img src={customers.image} alt="Vehicle" style={{maxWidth: '300px', height: '300px', borderRadius: '50%', border: '4px solid red',  padding: '10px' }} />
+              </div>
           <div className='my-4'>
             <span className='text-xl mr-4 text-gray-500'>First Name:</span>
             <span>{customers.FirstName}</span>
