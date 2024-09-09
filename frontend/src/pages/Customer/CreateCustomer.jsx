@@ -9,6 +9,8 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+
+// Importing Firebase configuration
 import { app } from "../../config/firebase";
 
 const CreateCustomer = () => {

@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import Spinner from "../../components/Spinner";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+// Importing Firebase configuration
+import { app } from "../../config/firebase";
 
 const EditCustomer = () => {
-  const [FirstName, setFirstName] = useState('');
-  const [CusID, setCusID] = useState('');
-  const [LastName, setLastName] = useState('');
-  const [Age, setAge] = useState('');
-  const [Gender, setGender] = useState('');
-  const [ContactNo, setContactNo] = useState('');
-  const [Email, setEmail] = useState('');
-  const [Password, setPassword] = useState('');
-  const [reEnteredPassword, setReEnteredPassword] = useState('');
+  const [customer, setCustomer] = useState({
+    CusID: '',
+    FirstName: '',
+    LastName: '',
+    Age: '',
+    Gender: '',
+    ContactNo: '',
+    Email: '',
+    Password: '',
+    image: null,
+  });
   const [loading, setLoading] = useState(false);
 
-  const [error, setError] = useState("");
+  const storage = getStorage(app);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -23,50 +31,80 @@ const EditCustomer = () => {
     axios
       .get(`http://localhost:8076/customers/${id}`)
       .then((response) => {
-        const Customer = response.data;
-        setCusID(Customer.CusID);
-        setAge(Customer.Age);
-        setGender(Customer.Gender);
-        setFirstName(Customer.FirstName);
-        setLastName(Customer.LastName);
-        setContactNo(Customer.ContactNo);
-        setEmail(Customer.Email);
-        setPassword(Customer.Password);
-        setReEnteredPassword(Customer.Password);
+        const data = response.data;
+        setCustomer(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error:", error);
         setLoading(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'An error occurred. Please try again later.',
+        });
+        console.log(error);
       });
   }, [id]);
 
-  const labelStyle = {
-    display: "block",
-    marginBottom: "5px",
-    fontWeight: "bold",
+  const handleImageChange = async (e) => {
+    if (e.target.files[0]) {
+      const imageFile = e.target.files[0];
+      setCustomer((prevState) => ({
+        ...prevState,
+        image: imageFile,
+      }));
+    }
   };
 
-  const handleEditCustomer = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
-      CusID,
-      FirstName,
-      LastName,
-      Age,
-      Gender,
-      ContactNo,
-      Email,  // Assuming UserName is set as CusID
-      Password
-    };
     setLoading(true);
+    
     try {
-      await axios.patch(`http://localhost:8076/customers/${id}`, data);
-      setLoading(false);
-      navigate("/customers");
+      let imageUrl = customer.image; // Default to the current image URL
+      if (customer.image && customer.image instanceof File) {
+        const storageRef = ref(storage, `customer_images/${id}`);
+        const uploadTask = uploadBytesResumable(storageRef, customer.image);
+
+        await uploadTask;
+
+        imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+      }
+
+      // Update customer data with image URL
+      const updatedCustomer = { ...customer, image: imageUrl };
+      axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer)
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            navigate(`/customers/`);
+          } else {
+            console.error('Unexpected response status:', response.status);
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Unexpected response status. Please try again later.',
+            });
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error('Error updating customer:', error);
+          console.log('Response data:', error.response?.data);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'An error occurred while updating the customer. Please try again later.',
+          });
+        });
     } catch (error) {
       setLoading(false);
-      console.error("Error:", error);
+      console.error('Error updating customer:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'An error occurred while updating the customer. Please try again later.',
+      });
     }
   };
 
@@ -152,94 +190,93 @@ const EditCustomer = () => {
             }
           }
         `}</style>
-       <h1>Edit</h1>
-            {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
-            <form onSubmit={handleEditCustomer}>
+       <h1>Edit Customer</h1>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username</label>
                     <input
                         type="text"
-                        value={CusID}
-                        onChange={(e) => setCusID(e.target.value)}
+                        value={customer.CusID}
+                        onChange={(e) => setCustomer({...customer, CusID: e.target.value})}
                         maxLength={10}
                         required
                         readOnly
                     />
                 </div>
                 <div>
+                    <label>Image</label>
+                    <input
+                        type="file"
+                        onChange={handleImageChange}
+                    />
+                    {customer.image && <img src={customer.image instanceof File ? URL.createObjectURL(customer.image) : customer.image} alt="Customer" style={{ maxWidth: '100%', maxHeight: '200px' }} />}
+                </div>
+                <div>
                     <label>First Name</label>
                     <input
                         type="text"
-                        value={FirstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        
+                        value={customer.FirstName}
+                        onChange={(e) => setCustomer({...customer, FirstName: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Last Name</label>
                     <input
                         type="text"
-                        value={LastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        
+                        value={customer.LastName}
+                        onChange={(e) => setCustomer({...customer, LastName: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Phone</label>
                     <input
                         type="text"
-                        value={ContactNo}
-                        onChange={(e) => setContactNo(e.target.value)}
+                        value={customer.ContactNo}
+                        onChange={(e) => setCustomer({...customer, ContactNo: e.target.value})}
                         maxLength={10}
-                        
                     />
                 </div>
                 <div>
                     <label>Age</label>
                     <input
                         type="text"
-                        value={Age}
-                        onChange={(e) => setAge(e.target.value)}
-                        
+                        value={customer.Age}
+                        onChange={(e) => setCustomer({...customer, Age: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Gender</label>
                     <input
                         type="text"
-                        value={Gender}
-                        onChange={(e) => setGender(e.target.value)}
-                        
+                        value={customer.Gender}
+                        onChange={(e) => setCustomer({...customer, Gender: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Email</label>
                     <input
                         type="email"
-                        value={Email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        
+                        value={customer.Email}
+                        onChange={(e) => setCustomer({...customer, Email: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Password</label>
                     <input
                         type="password"
-                        value={Password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        
+                        value={customer.Password}
+                        onChange={(e) => setCustomer({...customer, Password: e.target.value})}
                     />
                 </div>
                 <div>
                     <label>Re-enter Password</label>
                     <input
                         type="password"
-                        value={reEnteredPassword}
-                        onChange={(e) => setReEnteredPassword(e.target.value)}
-                        
+                        value={customer.reEnteredPassword}
+                        onChange={(e) => setCustomer({...customer, reEnteredPassword: e.target.value})}
                     />
                 </div>
-                <button type="submit">Save</button>{" "}
+                <button type="submit">Save</button>
             </form>
         </div>
     );
