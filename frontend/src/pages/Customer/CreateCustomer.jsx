@@ -37,12 +37,60 @@ const CreateCustomer = () => {
     if (!/^[A-Z][a-z]{0,19}$/.test(FirstName)) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
         text: "First name should start with a capital letter, contain only letters, and have a maximum length of 20 characters.",
       });
       return false;
     }
+    // Last name validation
+    if (!/^[A-Z][a-z]{0,19}$/.test(LastName)) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Last name should start with a capital letter, contain only letters, and have a maximum length of 20 characters.',
+        });
+        return false;
+      }
+      if (!/[a-z]/.test(Password) || !/[A-Z]/.test(Password)) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Password must contain both lowercase and uppercase letters',
+        });
+        return false;
+      }
+      
+      if (!/[^a-zA-Z0-9]/.test(Password)) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Password must contain at least one special character',
+        });
+        return false;
+      }
+      
+      if (!/^(07\d{8})$/.test(ContactNo)) {
+        Swal.fire({
+          icon: "error",
 
+          text: "Phone number must start with '07' and be exactly 10 digits long.",
+        });
+        return false;
+      } 
+      const ageValue = Number(Age);
+  if (isNaN(ageValue) || ageValue < 0 || ageValue > 120) {
+    Swal.fire({
+      icon: "error",
+      
+      text: "Age must be a number between 0 and 120.",
+    });
+    return;
+  }
+
+      if (!isValidEmail(Email)) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Please enter a valid email address',
+        });
+        return false;
+      }
+    
     // Validate Passwords Match
     if (Password !== reEnteredPassword) {
       setError("Passwords do not match.");
@@ -115,7 +163,6 @@ const CreateCustomer = () => {
               } else {
                 Swal.fire({
                   icon: "error",
-                  title: "Oops...",
                   text: "An error occurred. Please try again later.",
                 });
               }
@@ -125,7 +172,11 @@ const CreateCustomer = () => {
       }
     );
   };
-
+  const isValidEmail = (Email) => {
+    // Basic email validation using regular expression
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(Email);
+  };
   return (
     <div className="container">
         <style>{`
@@ -268,21 +319,25 @@ const CreateCustomer = () => {
         <div>
           <label>Age</label>
           <input
-            type="text"
+            type="number"
             value={Age}
             onChange={(e) => setAge(e.target.value)}
             required
           />
         </div>
         <div>
-          <label>Gender</label>
-          <input
-            type="text"
-            value={Gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-          />
-        </div>
+  <label>Gender</label>
+  <select
+    value={Gender}
+    onChange={(e) => setGender(e.target.value)}
+    required
+  >
+    <option value="" disabled>Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+</div>
+
         <div>
           <label>Email</label>
           <input

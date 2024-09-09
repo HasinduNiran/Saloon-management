@@ -143,7 +143,7 @@ const ShowAllCustomers = () => {
                         <th className='border px-4 py-2 text-left'>Gender</th>
                         <th className='border px-4 py-2 text-left'>ContactNo</th>
                         <th className='border px-4 py-2 text-left'>Email</th>
-                        <th className='border px-4 py-2 text-left'>Password</th>
+                        {/* <th className='border px-4 py-2 text-left'>Password</th> */}
                         <th className='border px-4 py-2 text-left'>Actions</th>
                     </tr>
                 </thead>
@@ -164,7 +164,7 @@ const ShowAllCustomers = () => {
                                     <td className='border px-4 py-2'>{customer.Gender}</td>
                                     <td className='border px-4 py-2'>{customer.ContactNo}</td>
                                     <td className='border px-4 py-2'>{customer.Email}</td>
-                                    <td className='border px-4 py-2'>{customer.Password}</td>
+                                    {/* <td className='border px-4 py-2'>{customer.Password}</td> */}
                                     <td className='border px-4 py-2'>
                                         <div className='flex justify-center gap-x-4'>
                                             <Link to={`/customers/${customer._id}`}>
