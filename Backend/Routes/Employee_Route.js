@@ -45,19 +45,10 @@ router.post('/', async (request, response) => {
 router.get('/', async (request, response) => {
   try {
     const employees = await Employee.find({});
-    const formattedEmployees = employees.map(employee => ({
-      EmpID: employee.EmpID,
-      FirstName: employee.FirstName,
-      LastName: employee.LastName,
-      Age: employee.Age,
-      Gender: employee.Gender,
-      ContactNo: employee.ContactNo,
-      Email: employee.Email,
-    }));
-    
+
     return response.status(200).json({
-      count: formattedEmployees.length,
-      data: formattedEmployees,
+      count: employees.length,
+      data: employees,
     });
   } catch (error) {
     console.log(error.message);
