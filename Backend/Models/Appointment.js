@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid'; // Import uuid
 const appointmentSchema = mongoose.Schema(
     {
         appoi_ID: {
             type: String,
-            unique: true
+            unique: true,
+            default: uuidv4 // Automatically generate a unique appoi_ID
         },
         client_name: {
             type: String,
@@ -23,7 +25,6 @@ const appointmentSchema = mongoose.Schema(
         },
         service: {
             type: String,
-            enum: ['Hair', 'Nail','Skincare'],
             required: true
         },
         customize_package: {
