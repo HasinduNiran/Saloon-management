@@ -258,6 +258,7 @@ const EditCustomer = () => {
                         type="email"
                         value={customer.Email}
                         onChange={(e) => setCustomer({...customer, Email: e.target.value})}
+                        readOnly
                     />
                 </div>
                 <div>
