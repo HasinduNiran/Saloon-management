@@ -20,7 +20,7 @@ import Payment_Route from './Routes/Payment_Route.js';
 import Supplier_Route from './Routes/Supplier_Route.js';
 import Inventory_Route from './Routes/Inventory_Route.js';
 import Feedback_Route from './Routes/Feedback_Route.js';
-import Store_Route from './Routes/Store_Route.js';
+
 
 
 
@@ -49,8 +49,6 @@ app.use('/suppliers', Supplier_Route);
 app.use('/inventories', Inventory_Route);
 app.use('/customers', Customer_Route);
 app.use('/payments', Payment_Route);
-app.use('/store',Store_Route);
-
 
 app.use('/feedback', Feedback_Route);
 

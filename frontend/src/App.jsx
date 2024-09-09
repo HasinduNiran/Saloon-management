@@ -41,12 +41,6 @@ import EditInventory from './pages/Inventory/EditInventory';
 import ReadOneInventory from './pages/Inventory/ReadOneInventory';
  
 
-import CreateCustomer from './pages/Customer/CreateCustomer';
-import DeleteCustomer from './pages/Customer/DeleteCustomer';
-import EditCustomer from './pages/Customer/EditCustomer';
-import ShowAllCustomers from './pages/Customer/ShowAllCustomers';
-import ReadOneCustomer from './pages/Customer/ReadOneCustomer';
-
 const App = () => {
   return (
     <Routes>
@@ -91,16 +85,7 @@ const App = () => {
       <Route path='/inventories/delete/:id' element={<DeleteInventory />}></Route>
       <Route path='/inventories/edit/:id' element={<EditInventory />}></Route>
       <Route path='/inventories/details/:id' element={<ReadOneInventory />}></Route>
-
-      
-      <Route path='/customers/create' element={<CreateCustomer />}></Route>
-      <Route path='/customers/delete/:id' element={<DeleteCustomer />}></Route>
-      <Route path='/customers/edit/:id' element={<EditCustomer />}></Route>
-      <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
-      <Route path='/customers/' element={<ShowAllCustomers />}></Route>
-
  
-
     </Routes>
   )
 }
