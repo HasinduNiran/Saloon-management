@@ -169,7 +169,6 @@ const EditCustomer = () => {
             padding: 0;
             background-color: #f4f4f4;
           }
-
           .container {
             max-width: 600px;
             margin: 0 auto;
@@ -178,24 +177,20 @@ const EditCustomer = () => {
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           }
-
           h2 {
             color: #333;
             text-align: center;
             margin-bottom: 20px;
           }
-
           form {
             display: flex;
             flex-direction: column;
           }
-
           label {
             margin-bottom: 5px;
             color: #555;
             font-weight: bold;
           }
-
           input[type="text"],
           input[type="number"],
           input[type="date"],
@@ -207,7 +202,6 @@ const EditCustomer = () => {
             font-size: 16px;
             width: 100%;
           }
-
           button {
             background-color: #4CAF50;
             color: white;
@@ -228,14 +222,12 @@ const EditCustomer = () => {
             .container {
               padding: 10px;
             }
-
             input[type="text"],
             input[type="date"],
             input[type="email"] {
               padding: 8px;
               font-size: 14px;
             }
-
             button {
               padding: 8px 16px;
               font-size: 14px;

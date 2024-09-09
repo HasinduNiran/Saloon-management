@@ -136,14 +136,21 @@ const ShowAllCustomers = () => {
                 <thead>
                     <tr>
                         <th className='border px-4 py-2 text-left'>Customer ID</th>
+
+
                         <th className='border px-4 py-2 text-left'>Profile Picture</th>
+
                         <th className='border px-4 py-2 text-left'>First Name</th>
                         <th className='border px-4 py-2 text-left'>Last Name</th>
                         <th className='border px-4 py-2 text-left'>Age</th>
                         <th className='border px-4 py-2 text-left'>Gender</th>
                         <th className='border px-4 py-2 text-left'>ContactNo</th>
                         <th className='border px-4 py-2 text-left'>Email</th>
+
+                        <th className='border px-4 py-2 text-left'>Password</th>
+
                         {/* <th className='border px-4 py-2 text-left'>Password</th> */}
+
                         <th className='border px-4 py-2 text-left'>Actions</th>
                     </tr>
                 </thead>
@@ -155,16 +162,22 @@ const ShowAllCustomers = () => {
                             customers.map((customer, index) => (
                                 <tr key={customer._id} className={index % 2 === 0 ? 'even' : 'odd'}>
                                     <td className='border px-4 py-2'>{customer.CusID}</td>
+
                                     <td className='border px-4 py-2'>
                                         <img src= {customer.image} alt="Profile Pic" width={'100'} />
                                     </td>
+
                                     <td className='border px-4 py-2'>{customer.FirstName}</td>
                                     <td className='border px-4 py-2'>{customer.LastName}</td>
                                     <td className='border px-4 py-2'>{customer.Age}</td>
                                     <td className='border px-4 py-2'>{customer.Gender}</td>
                                     <td className='border px-4 py-2'>{customer.ContactNo}</td>
                                     <td className='border px-4 py-2'>{customer.Email}</td>
+
+                                    <td className='border px-4 py-2'>{customer.Password}</td>
+
                                     {/* <td className='border px-4 py-2'>{customer.Password}</td> */}
+
                                     <td className='border px-4 py-2'>
                                         <div className='flex justify-center gap-x-4'>
                                             <Link to={`/customers/${customer._id}`}>
