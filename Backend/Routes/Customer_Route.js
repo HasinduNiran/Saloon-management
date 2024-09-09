@@ -1,6 +1,7 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import {Customer} from '../Models/Customer.js';
-import { v4 as uuidv4 } from 'uuid'; 
+
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ const router = express.Router();
 router.post('/', async (request, response) => {
     try {
         const newCustomer = new Customer({
-            CusID: uuidv4(),  // Generate a unique ID
+            CusID:request.body.CusID,  // Generate a unique ID
             FirstName: request.body.FirstName,
             LastName: request.body.LastName,
             Age: request.body.Age,

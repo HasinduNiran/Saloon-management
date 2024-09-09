@@ -6,6 +6,10 @@ const customerSchema = mongoose.Schema(
         type: String,
         unique: true
     },
+    // image: { type: String,
+           
+    
+    // },
     FirstName: {
         type: String,
         required: true,
