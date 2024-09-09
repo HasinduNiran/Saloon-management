@@ -10,7 +10,7 @@ const Home = () => {
       </p>
       <ul style={styles.navList}>
         <li style={styles.navItem}><Link to="/">Appointment</Link></li>
-        <li style={styles.navItem}><Link to="/customers">Customer</Link></li>
+        <li style={styles.navItem}><Link to="/">Customer</Link></li>
         <li style={styles.navItem}><Link to="/employees/allEmployee">Employee</Link></li>
         <li style={styles.navItem}><Link to="/">Feedback</Link></li>
         <li style={styles.navItem}><Link to="/inventories/allInventory">Inventory</Link></li>
