@@ -136,6 +136,7 @@ const ShowAllCustomers = () => {
                 <thead>
                     <tr>
                         <th className='border px-4 py-2 text-left'>Customer ID</th>
+                        <th className='border px-4 py-2 text-left'>Profile Picture</th>
                         <th className='border px-4 py-2 text-left'>First Name</th>
                         <th className='border px-4 py-2 text-left'>Last Name</th>
                         <th className='border px-4 py-2 text-left'>Age</th>
@@ -154,6 +155,9 @@ const ShowAllCustomers = () => {
                             customers.map((customer, index) => (
                                 <tr key={customer._id} className={index % 2 === 0 ? 'even' : 'odd'}>
                                     <td className='border px-4 py-2'>{customer.CusID}</td>
+                                    <td className='border px-4 py-2'>
+                                        <img src= {customer.image} alt="Profile Pic" width={'100'} />
+                                    </td>
                                     <td className='border px-4 py-2'>{customer.FirstName}</td>
                                     <td className='border px-4 py-2'>{customer.LastName}</td>
                                     <td className='border px-4 py-2'>{customer.Age}</td>
