@@ -84,7 +84,7 @@ const CreateCustomer = () => {
                 title: "Success!",
                 text: `Customer account created successfully for ${Email}. Your Username is: ${CusID} and Password: ${Password}`,
                 showCancelButton: true,
-                confirmButtonText: "Send Account details to me",
+                confirmButtonText: "Registration Sucessfull",
               }).then((result) => {
                 if (result.isConfirmed) {
                   //sendEmailToCustomer(Email, Password); // Call sendEmailToCustomer function with the email address and password
@@ -97,11 +97,20 @@ const CreateCustomer = () => {
             })
             .catch((error) => {
               setLoading(false);
-              if (error.response && error.response.data) {
+              if (error.response && error.response.data === 'Already Registered Customer. Log In') {
                 Swal.fire({
                   icon: "error",
-                  title: "Oops...",
-                  text: "username or email is already in use. It should be unique!",
+                  title: "Already Registered",
+                  text: "This email is already registered. Please log in or use a different email.",
+                  showCancelButton: true,
+                  confirmButtonText: "OK",
+                  cancelButtonText: "Login",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    // User clicked OK
+                  } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    navigate("/login"); // Redirect to login page
+                  }
                 });
               } else {
                 Swal.fire({
@@ -119,6 +128,94 @@ const CreateCustomer = () => {
 
   return (
     <div className="container">
+        <style>{`
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+        }
+  
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+  
+        h1 {
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
+        }
+  
+        form {
+          display: flex;
+          flex-direction: column;
+        }
+  
+        label {
+          margin-bottom: 5px;
+          color: #555;
+          font-weight: bold;
+        }
+  
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        input[type="email"],
+        input[type="password"] {
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 16px;
+          width: 100%;
+        }
+  
+        button {
+          background-color: #4CAF50;
+          color: white;
+          padding: 10px 20px;
+          margin-top: 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          font-size: 16px;
+        }
+  
+        button:disabled {
+          background-color: #cccccc;
+          cursor: not-allowed;
+        }
+  
+        button:hover {
+          background-color: #45a049;
+        }
+  
+        @media screen and (max-width: 768px) {
+          .container {
+            padding: 10px;
+          }
+  
+          input[type="text"],
+          input[type="number"],
+          input[type="file"],
+          input[type="email"],
+          input[type="password"] {
+            padding: 8px;
+            font-size: 14px;
+          }
+  
+          button {
+            padding: 8px 16px;
+            font-size: 14px;
+          }
+        }
+      `}</style>
       {loading ? <Spinner /> : ""}
       <h1>Register</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -222,3 +319,4 @@ const CreateCustomer = () => {
 };
 
 export default CreateCustomer;
+
