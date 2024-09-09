@@ -1,16 +1,21 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import {Customer} from '../Models/Customer.js';
-
+import { Customer } from '../Models/Customer.js';
 
 const router = express.Router();
 
 // Route for Save a new Customer
-
 router.post('/', async (request, response) => {
     try {
+        // Check if the email already exists
+        const existingCustomer = await Customer.findOne({ Email: request.body.Email });
+        if (existingCustomer) {
+            return response.status(400).send('Already Registered Customer. Log In');
+        }
+
         const newCustomer = new Customer({
-            CusID:request.body.CusID,  // Generate a unique ID
+            image: request.body.image,
+            CusID: request.body.CusID,  // Generate a unique ID
             FirstName: request.body.FirstName,
             LastName: request.body.LastName,
             Age: request.body.Age,
