@@ -10,6 +10,7 @@ const router = express.Router();
 router.post('/', async (request, response) => {
     try {
         const newCustomer = new Customer({
+            image:request.body.image,
             CusID:request.body.CusID,  // Generate a unique ID
             FirstName: request.body.FirstName,
             LastName: request.body.LastName,
