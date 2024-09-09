@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ShowPackage = () => {
-  return <div>Create Package Component</div>;
+  return <div>show</div>;
 };
 
 export default ShowPackage;

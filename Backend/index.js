@@ -12,7 +12,7 @@ import { PORT, mongoDBURL } from './config.js';
 import Employee_Route from './Routes/Employee_Route.js';
 
 import Appointment_Route from './Routes/Appointment_Route.js';
-import Package_Route from './Routes/Package_Route.js';
+import SaloonPackage_Route from './Routes/SaloonPackage_Route.js';
 import Service_Route from './Routes/Service_Route.js';
 
 import Customer_Route from './Routes/Customer_Route.js';
@@ -41,7 +41,7 @@ app.use(cors());
 //app.use('/inventory', Inventory_Route);
 app.use('/employees', Employee_Route);
 
-app.use('/packages', Package_Route);
+app.use('/packages', SaloonPackage_Route);
 app.use('/services', Service_Route);
 app.use('/appointments', Appointment_Route);
 

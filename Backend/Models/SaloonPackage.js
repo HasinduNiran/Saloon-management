@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
-const packageSchema = mongoose.Schema(
+const saloonpackageSchema = mongoose.Schema(
     {
-        p_ID: {
+       
+        p_name: {
             type: String,
-            unique: true,
-            default: uuidv4
+            required: true
         },
         description: {
             type: String,
@@ -50,4 +50,4 @@ const packageSchema = mongoose.Schema(
         
     }
 );
-export const Package = mongoose.model('Package' ,packageSchema);
+export const SaloonPackage = mongoose.model('SaloonPackage' ,saloonpackageSchema);

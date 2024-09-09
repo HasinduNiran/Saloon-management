@@ -1,6 +1,7 @@
 import express from 'express';
-import { Package } from '../Models/Package.js';
+import { SaloonPackage } from '../Models/SaloonPackage.js';
 import mongoose from 'mongoose';
+
 const router = express.Router();
 
 // Middleware for validating required fields
@@ -16,6 +17,7 @@ const validateFields = (req, res, next) => {
         "image_url",
         "package_type",
         "service_ID",
+        "p_name",
     ];
 
     for (const field of requiredFields) {
@@ -26,7 +28,7 @@ const validateFields = (req, res, next) => {
     next();
 };
 
-// Route for retrieving a specific package by ID
+ // Route for retrieving a specific package by ID
 router.get('/:identifier', async (req, res) => {
     try {
         const { identifier } = req.params;
@@ -51,8 +53,9 @@ router.get('/:identifier', async (req, res) => {
         console.error(error);
         return res.status(500).send({ message: 'Error fetching service: ' + error.message });
     }
-});
+}); 
 
+// Route to create a new package
 // Route to create a new package
 router.post('/', validateFields, async (req, res) => {
     try {
@@ -67,10 +70,10 @@ router.post('/', validateFields, async (req, res) => {
             image_url: req.body.image_url,
             package_type: req.body.package_type,
             service_ID: req.body.service_ID,
+            p_name: req.body.p_name,
         };
 
-        const createdPackage = await Package.create(newPackage);
-
+        const createdPackage = await SaloonPackage.create(newPackage);
         return res.status(201).send(createdPackage);
     } catch (error) {
         console.log(error.message);
@@ -78,11 +81,12 @@ router.post('/', validateFields, async (req, res) => {
     }
 });
 
+
 // Route to get all packages
 router.get('/', async (req, res) => {
     try {
-        const packages = await Package.find({});
-        return res.status(200).json(packages);
+        const getPackages = await SaloonPackage.find({});
+        return res.status(200).json(getPackages);
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message });
@@ -90,18 +94,9 @@ router.get('/', async (req, res) => {
 });
 
 // Route to get a package by ID
-router.get('/:p_ID', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
-        const { p_ID } = req.params;
-
-        console.log(`Received ID: ${p_ID}`); // Debugging: Log the ID
-
-        if (!mongoose.Types.ObjectId.isValid(p_ID)) {
-            return res.status(400).json({ message: 'Invalid package ID format' });
-        }
-
-        const foundPackage = await Package.findById(p_ID);
-
+        const foundPackage = await SaloonPackage.findById(req.params.id);
         if (!foundPackage) {
             return res.status(404).json({ message: 'Package not found' });
         }
@@ -116,11 +111,11 @@ router.get('/:p_ID', async (req, res) => {
 });
 
 // Route to update a package
-router.put('/:p_ID', validateFields, async (req, res) => {
+router.put('/:id', validateFields, async (req, res) => {
     try {
-        const { p_ID } = req.params;
+        const { id } = req.params;
 
-        const updatedPackage = await Package.findByIdAndUpdate(p_ID, req.body, { new: true });
+        const updatedPackage = await SaloonPackage.findByIdAndUpdate(id, req.body, { new: true });
 
         if (!updatedPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -134,11 +129,11 @@ router.put('/:p_ID', validateFields, async (req, res) => {
 });
 
 // Route to delete a package
-router.delete('/:p_ID', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-        const { p_ID } = req.params;
+        const { id } = req.params;
 
-        const deletedPackage = await Package.findByIdAndDelete(p_ID);
+        const deletedPackage = await SaloonPackage.findByIdAndDelete(id);
 
         if (!deletedPackage) {
             return res.status(404).json({ message: 'Package not found' });
