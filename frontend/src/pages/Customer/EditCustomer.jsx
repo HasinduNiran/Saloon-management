@@ -4,8 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-
-// Importing Firebase configuration
 import { app } from "../../config/firebase";
 
 const EditCustomer = () => {
@@ -18,10 +16,12 @@ const EditCustomer = () => {
     ContactNo: '',
     Email: '',
     Password: '',
+    reEnteredPassword: '',
     image: null,
   });
   const [loading, setLoading] = useState(false);
-
+  const [errors, setErrors] = useState({});
+  
   const storage = getStorage(app);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -46,10 +46,50 @@ const EditCustomer = () => {
       });
   }, [id]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let error = "";
+
+    if (name === 'ContactNo') {
+      if (!/^(07\d{8})$/.test(value)) {
+        error = "Phone number must start with '07' and be exactly 10 digits long.";
+      }
+    }
+
+    if (name === 'FirstName') {
+      if (!/^[A-Z][a-z]*$/.test(value)) {
+        error = "First name must start with a capital letter and contain only letters.";
+      }
+    }
+
+    if (name === 'LastName') {
+      if (!/^[A-Z][a-z]*$/.test(value)) {
+        error = "Last name must start with a capital letter and contain only letters.";
+      }
+    }
+
+    if (name === 'Age') {
+      const ageValue = Number(value);
+      if (isNaN(ageValue) || ageValue < 0 || ageValue > 120) {
+        error = "Age must be a number between 0 and 120.";
+      }
+    }
+
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: error
+    }));
+
+    setCustomer(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
   const handleImageChange = async (e) => {
     if (e.target.files[0]) {
       const imageFile = e.target.files[0];
-      setCustomer((prevState) => ({
+      setCustomer(prevState => ({
         ...prevState,
         image: imageFile,
       }));
@@ -58,7 +98,19 @@ const EditCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     setLoading(true);
+    
+    // Check for errors before proceeding
+    if (Object.values(errors).some(err => err !== "")) {
+      setLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please correct the errors in the form.',
+      });
+      return;
+    }
     
     try {
       let imageUrl = customer.image; // Default to the current image URL
@@ -117,7 +169,7 @@ const EditCustomer = () => {
             padding: 0;
             background-color: #f4f4f4;
           }
-  
+
           .container {
             max-width: 600px;
             margin: 0 auto;
@@ -126,24 +178,24 @@ const EditCustomer = () => {
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
           }
-  
+
           h2 {
             color: #333;
             text-align: center;
             margin-bottom: 20px;
           }
-  
+
           form {
             display: flex;
             flex-direction: column;
           }
-  
+
           label {
             margin-bottom: 5px;
             color: #555;
             font-weight: bold;
           }
-  
+
           input[type="text"],
           input[type="number"],
           input[type="date"],
@@ -155,7 +207,7 @@ const EditCustomer = () => {
             font-size: 16px;
             width: 100%;
           }
-  
+
           button {
             background-color: #4CAF50;
             color: white;
@@ -167,27 +219,34 @@ const EditCustomer = () => {
             transition: background-color 0.3s ease;
             font-size: 16px;
           }
-  
+
           button:hover {
             background-color: #45a049;
           }
-  
+
           @media screen and (max-width: 768px) {
             .container {
               padding: 10px;
             }
-  
+
             input[type="text"],
             input[type="date"],
             input[type="email"] {
               padding: 8px;
               font-size: 14px;
             }
-  
+
             button {
               padding: 8px 16px;
               font-size: 14px;
             }
+          }
+
+          .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
           }
         `}</style>
        <h1>Edit Customer</h1>
@@ -215,34 +274,42 @@ const EditCustomer = () => {
                     <label>First Name</label>
                     <input
                         type="text"
+                        name="FirstName"
                         value={customer.FirstName}
-                        onChange={(e) => setCustomer({...customer, FirstName: e.target.value})}
+                        onChange={handleChange}
                     />
+                    {errors.FirstName && <p className="error-message">{errors.FirstName}</p>}
                 </div>
                 <div>
                     <label>Last Name</label>
                     <input
                         type="text"
+                        name="LastName"
                         value={customer.LastName}
-                        onChange={(e) => setCustomer({...customer, LastName: e.target.value})}
+                        onChange={handleChange}
                     />
+                    {errors.LastName && <p className="error-message">{errors.LastName}</p>}
                 </div>
                 <div>
                     <label>Phone</label>
                     <input
                         type="text"
+                        name="ContactNo"
                         value={customer.ContactNo}
-                        onChange={(e) => setCustomer({...customer, ContactNo: e.target.value})}
+                        onChange={handleChange}
                         maxLength={10}
                     />
+                    {errors.ContactNo && <p className="error-message">{errors.ContactNo}</p>}
                 </div>
                 <div>
                     <label>Age</label>
                     <input
                         type="text"
+                        name="Age"
                         value={customer.Age}
-                        onChange={(e) => setCustomer({...customer, Age: e.target.value})}
+                        onChange={handleChange}
                     />
+                    {errors.Age && <p className="error-message">{errors.Age}</p>}
                 </div>
                 <div>
                     <label>Gender</label>
@@ -256,8 +323,10 @@ const EditCustomer = () => {
                     <label>Email</label>
                     <input
                         type="email"
+                        name="Email"
+                        required
                         value={customer.Email}
-                        onChange={(e) => setCustomer({...customer, Email: e.target.value})}
+                        onChange={handleChange}
                         readOnly
                     />
                 </div>
@@ -265,17 +334,22 @@ const EditCustomer = () => {
                     <label>Password</label>
                     <input
                         type="password"
+                        name="Password"
+                        required
                         value={customer.Password}
-                        onChange={(e) => setCustomer({...customer, Password: e.target.value})}
+                        onChange={handleChange}
                     />
                 </div>
                 <div>
                     <label>Re-enter Password</label>
                     <input
                         type="password"
-                        value={customer.reEnteredPassword}
+                        name="reEnteredPassword"
+                        required
+                        value={customer.Password}
                         onChange={(e) => setCustomer({...customer, reEnteredPassword: e.target.value})}
                     />
+                    {customer.Password !== customer.reEnteredPassword && <p className="error-message">Passwords do not match</p>}
                 </div>
                 <button type="submit">Save</button>
             </form>
