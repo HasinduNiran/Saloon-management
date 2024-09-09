@@ -43,19 +43,10 @@ router.post('/', async (request, response) => {
 router.get('/', async (request, response) => {
   try {
     const suppliers = await Supplier.find({});
-    const formattedSupplier = suppliers.map(supplier => ({
-      SupplierID: supplier.SupplierID,
-      SupplierName: supplier.SupplierName,
-      ItemNo: supplier.ItemNo,
-      ItemName: supplier.ItemName,
-      ContactNo: supplier.ContactNo,
-      Email: supplier.Email,
-      Address: supplier.Address,
-    }));
     
     return response.status(200).json({
-      count: formattedSupplier.length,
-      data: formattedSupplier,
+      count: suppliers.length,
+      data: suppliers,
     });
   } catch (error) {
     console.log(error.message);
