@@ -41,7 +41,7 @@ app.use(cors());
 //app.use('/inventory', Inventory_Route);
 app.use('/employees', Employee_Route);
 
-app.use('/packages', SaloonPackage_Route);
+app.use('/s_packages', SaloonPackage_Route);
 app.use('/services', Service_Route);
 app.use('/appointments', Appointment_Route);
 

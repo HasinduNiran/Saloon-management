@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Spinner from "../../components/Spinner";
 
 const CreatePackage = () => {
     const [description, setDescription] = useState('');
@@ -15,13 +14,14 @@ const CreatePackage = () => {
     const [package_type,setType]=useState('');
     const [p_name,setPName]=useState('');
     const [service_ID,setServiceID]=useState('');
-
-    const [loading, setLoading] = useState(false);
+    const [error,setError]=useState('');
     const navigate = useNavigate();
  
-    const handleSavePackage = () => {
-      
-        const data = {
+    const handleSavePackage = async(e) => {
+        e.preventDefault();
+        try{
+        await axios
+        .post('http://localhost:5000/s_packages',{
           description,
           base_price,
           discount_rate,
@@ -33,28 +33,23 @@ const CreatePackage = () => {
           package_type,
           p_name,
           service_ID,
-        };
-        setLoading(true);
-  
-        axios
-        .post('http://localhost:5000/packages', data)
-        .then(()=> {
-          setLoading(false);
-        navigate('/packages/allPackage');
-        })
-      .catch((error) => {
-        setLoading(false);
-        alert('An error happened. Please check console');
-        console.log(error);
-      });
+        });
+        navigate('/s_packages/allPackage');
+        }catch(error){
+        console.error(error)
+        setError('An error happened. Please check console');
+        } 
   };
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Create New Package</h1>
-      {loading ? <Spinner /> : ''}
-      
-        {/* Service ID */}
+      {error && <p className='text-red-600'>{error}</p>}
+      <form
+        onSubmit={handleSavePackage}
+        className='space-y-4 border border-gray-300 p-4 rounded shadow-md' 
+        > 
+            {/* Service ID */}
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
             Service ID
@@ -64,6 +59,7 @@ const CreatePackage = () => {
             name="service_ID"
             value={service_ID}
             onChange={(e) => setServiceID(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -78,6 +74,7 @@ const CreatePackage = () => {
             name="p_name"
             value={p_name}
             onChange={(e) => setPName(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -92,6 +89,7 @@ const CreatePackage = () => {
                 name="package_type"
                  value={package_type}              
                 onChange={(e) => setType(e.target.value)}
+                required
                 className="border rounded w-full py-2 px-3 text-gray-700"
               />
               </div>
@@ -106,6 +104,7 @@ const CreatePackage = () => {
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -120,6 +119,7 @@ const CreatePackage = () => {
             name="base_price"
             value={base_price}
             onChange={(e) => setBasePrice(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -134,6 +134,7 @@ const CreatePackage = () => {
             name="discount_rate"
             value={discount_rate}
             onChange={(e) => setDiscount(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -145,7 +146,7 @@ const CreatePackage = () => {
             type="number"
             name="final_price"
             value={final_price}
-            
+            required
             onChange={(e) => setFinalPrice(e.target.value)}
             className="border rounded w-full py-2 px-3 bg-gray-200"
           />
@@ -161,6 +162,7 @@ const CreatePackage = () => {
             name="start_date"
             value={start_date}
             onChange={(e) => setStartDate(e.target.value)}
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -175,7 +177,7 @@ const CreatePackage = () => {
             name="end_date"
             value={end_date}
             onChange={(e) => setEndDate(e.target.value)}
-            
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -189,7 +191,7 @@ const CreatePackage = () => {
             name="conditions"
             value={conditions}
             onChange={(e) => setCondition(e.target.value)}
-            
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
@@ -204,15 +206,18 @@ const CreatePackage = () => {
             name="image_url"
             value={image_url}
             onChange={(e) => setImage(e.target.value)}
-            
+            required
             className="border rounded w-full py-2 px-3 text-gray-700"
           />
         </div>
 
-        <button  className='p-2 bg-sky-300 m-8' onClick={handleSavePackage}>
+        <button  
+        type='submit'
+        className='p-2 bg-sky-300 m-8' 
+        >
           Create Package
         </button>
-     
+     </form>
     </div>
   );
 };

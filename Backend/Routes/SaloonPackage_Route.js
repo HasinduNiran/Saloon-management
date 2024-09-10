@@ -28,7 +28,7 @@ const validateFields = (req, res, next) => {
     next();
 };
 
- // Route for retrieving a specific package by ID
+ /* // Route for retrieving a specific package by ID
 router.get('/:identifier', async (req, res) => {
     try {
         const { identifier } = req.params;
@@ -53,9 +53,8 @@ router.get('/:identifier', async (req, res) => {
         console.error(error);
         return res.status(500).send({ message: 'Error fetching service: ' + error.message });
     }
-}); 
+}); */
 
-// Route to create a new package
 // Route to create a new package
 router.post('/', validateFields, async (req, res) => {
     try {
@@ -96,16 +95,16 @@ router.get('/', async (req, res) => {
 // Route to get a package by ID
 router.get('/:id', async (req, res) => {
     try {
-        const foundPackage = await SaloonPackage.findById(req.params.id);
+        const { id } = req.params;
+        const foundPackage = await SaloonPackage.findById(id);
+
         if (!foundPackage) {
             return res.status(404).json({ message: 'Package not found' });
         }
 
-        console.log(`Found Package: ${foundPackage}`); // Debugging: Log the found package
-
         return res.status(200).json(foundPackage);
     } catch (error) {
-        console.log(`Error: ${error.message}`); // Debugging: Log the error
+        console.log(error.message); // Debugging: Log the error
         res.status(500).send({ message: error.message });
     }
 });

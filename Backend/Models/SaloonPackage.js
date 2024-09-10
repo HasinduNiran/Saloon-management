@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
 const saloonpackageSchema = mongoose.Schema(
     {
-       
+             
         p_name: {
             type: String,
             required: true

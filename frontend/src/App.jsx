@@ -59,11 +59,11 @@ const App = () => {
       <Route path='/services/edit/:id' element={<EditService />}></Route>
       <Route path='/services/details/:id' element={<ReadOneService />}></Route>
 
-      <Route path='/packages/allPackage' element={<ShowPackage />}></Route>
-      <Route path='/packages/create' element={<CreatePackage />}></Route>
-      <Route path='/packages/delete/:id' element={<DeletePackage />}></Route>
-      <Route path='/packages/edit/:id' element={<EditPackage />}></Route>
-      <Route path='/packages/details/:id' element={<ReadOnePackage />}></Route>
+      <Route path='/s_packages/allPackage' element={<ShowPackage />}></Route>
+      <Route path='/s_packages/create' element={<CreatePackage />}></Route>
+      <Route path='/s_packages/delete/:id' element={<DeletePackage />}></Route>
+      <Route path='/s_packages/edit/:id' element={<EditPackage />}></Route>
+      <Route path='/s_packages/details/:id' element={<ReadOnePackage />}></Route>
   
 
 
