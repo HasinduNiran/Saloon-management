@@ -313,11 +313,14 @@ const EditCustomer = () => {
                 </div>
                 <div>
                     <label>Gender</label>
-                    <input
-                        type="text"
+                    <select
                         value={customer.Gender}
                         onChange={(e) => setCustomer({...customer, Gender: e.target.value})}
-                    />
+                        >
+                        <option value="" disabled>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
                 </div>
                 <div>
                     <label>Email</label>

@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { BsInfoCircle } from 'react-icons/bs';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { MdOutlineDelete } from 'react-icons/md';
+import Spinner from "../../components/Spinner";
+import CustomerReport from './CustomerReport';
 
 const ShowAllCustomers = () => {
     const [customers, setCustomers] = useState([]);
@@ -42,21 +44,18 @@ const ShowAllCustomers = () => {
     };
 
     // Filter customers based on search query and selected category
-    // Filter customers based on search query, age, gender, and selected category
     const filteredCustomers = customers.filter((customer) => {
         const searchMatch = customer.CusID.toLowerCase().includes(searchQuery.toLowerCase()) ||
             customer.FirstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             customer.LastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             customer.Email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            customer.Age.toString().includes(searchQuery) || // Age search (converting to string to match query)
-            customer.Gender.toLowerCase().slice(0, 2) === searchQuery.toLowerCase().slice(0, 2); // Match first 2 letters of Gender
-    
-        const categoryMatch = selectedCategory === '' || customer.Category === selectedCategory;
-    
+            customer.Age.toString().includes(searchQuery); // Age search
+
+        // Match gender category (Male/Female)
+        const categoryMatch = selectedCategory === '' || customer.Gender === selectedCategory;
+
         return searchMatch && categoryMatch;
     });
-    
-
 
     return (
         <div className="container">
@@ -87,38 +86,41 @@ const ShowAllCustomers = () => {
                     className="border p-2 rounded"
                 />
 
-                {/* Assuming category selection dropdown */}
+                {/* Category selection for Male/Female */}
                 <select
                     value={selectedCategory}
                     onChange={handleCategoryChange}
                     className="border p-2 rounded"
                 >
-                    <option value="">All Categories</option>
-                    {/* Replace with actual category options */}
-                    <option value="Category1">Category 1</option>
-                    <option value="Category2">Category 2</option>
+                    <option value="">Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                 </select>
             </div>
 
-            <table className="w-full border-separate border-spacing-2">
-                <thead>
-                    <tr>
-                        <th className="border px-4 py-2 text-left">Customer ID</th>
-                        <th className="border px-4 py-2 text-left">Profile Picture</th>
-                        <th className="border px-4 py-2 text-left">First Name</th>
-                        <th className="border px-4 py-2 text-left">Last Name</th>
-                        <th className="border px-4 py-2 text-left">Age</th>
-                        <th className="border px-4 py-2 text-left">Gender</th>
-                        <th className="border px-4 py-2 text-left">ContactNo</th>
-                        <th className="border px-4 py-2 text-left">Email</th>
-                        <th className="border px-4 py-2 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {loading ? (
-                        <tr><td colSpan="9">Loading...</td></tr>
-                    ) : (
-                        filteredCustomers.length > 0 ? (
+            <div className='mb-4'>
+                <CustomerReport filteredCustomers={filteredCustomers} />
+            </div>
+
+            {loading ? (
+                <Spinner />
+            ) : (
+                <table className="w-full border-separate border-spacing-2">
+                    <thead>
+                        <tr>
+                            <th className="border px-4 py-2 text-left">Customer ID</th>
+                            <th className="border px-4 py-2 text-left">Profile Picture</th>
+                            <th className="border px-4 py-2 text-left">First Name</th>
+                            <th className="border px-4 py-2 text-left">Last Name</th>
+                            <th className="border px-4 py-2 text-left">Age</th>
+                            <th className="border px-4 py-2 text-left">Gender</th>
+                            <th className="border px-4 py-2 text-left">Contact No</th>
+                            <th className="border px-4 py-2 text-left">Email</th>
+                            <th className="border px-4 py-2 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredCustomers.length > 0 ? (
                             filteredCustomers.map((customer, index) => (
                                 <tr key={customer._id} className={index % 2 === 0 ? 'even' : 'odd'}>
                                     <td className="border px-4 py-2">{customer.CusID}</td>
@@ -148,10 +150,10 @@ const ShowAllCustomers = () => {
                             ))
                         ) : (
                             <tr><td colSpan="9">No customers found</td></tr>
-                        )
-                    )}
-                </tbody>
-            </table>
+                        )}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };
