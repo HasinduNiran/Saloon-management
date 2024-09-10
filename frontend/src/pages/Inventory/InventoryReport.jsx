@@ -74,7 +74,7 @@ const InventoryReport = ({ filteredInventories }) => {
 
         // Send email alert to inventory manager
         const emailSubject = encodeURIComponent('Inventory Report Generated');
-        const emailBody = encodeURIComponent(`Dear Inventory Manager,\n\nThe inventory report has been generated and is attached.\n\nBest regards,\nYour Company`);
+        const emailBody = encodeURIComponent(`Dear Inventory Manager,\n\nThe inventory report has been generated.\n\nBest regards,\nYour Company`);
         const emailRecipient = encodeURIComponent('inventorymanager@gmail.com');
         const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}&body=${emailBody}`;
         
