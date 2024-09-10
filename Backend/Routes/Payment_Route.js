@@ -6,38 +6,32 @@ import { Payment } from '../Models/Payment.js';
 const router = express.Router();
 
 // Route for saving a new Payment
-router.post('/', async (request, response) => {
+router.post('/', async (req, res) => {
+    console.log("Request body:", req.body); // Log the incoming request body
     try {
-        const newPayment = new Payment({
-            Amount: request.body.Amount,
-            cardHolderName: request.body.cardHolderName,
-            Cardno: request.body.Cardno,
-            expMonth: request.body.expMonth,
-            expYear: request.body.expYear,
-            cvv: request.body.cvv
-            
-        });
-
-        const savedPayment = await newPayment.save();
-        response.status(201).send(savedPayment);
+      const newPayment = new Payment(req.body);
+      const savedPayment = await newPayment.save();
+      res.status(201).send(savedPayment);
     } catch (error) {
-        if (error.code === 11000) {
-            response.status(400).send('');
-        } else {
-            response.status(400).send(error);
-        }
+      console.error("Error saving payment:", error); // Log the error
+      if (error.code === 11000) {
+        res.status(400).send('Duplicate card number');
+      } else {
+        res.status(400).send(error.message);
+      }
+    }
+  });
+  
+
+// Route for Get All Payments from database
+router.get('/', async (request, response) => {
+    try {
+        const payments = await Payment.find({});
+        response.json(payments);
+    } catch (error) {
+        response.status(500).json({ message: error.message });
     }
 });
-
-// // Route for Get All Payments from database
-// router.get('/', async (request, response) => {
-//     try {
-//         const payments = await Payment.find({});
-//         response.json(payments);
-//     } catch (error) {
-//         response.status(500).json({ message: error.message });
-//     }
-// });
 
 // // Route for Get One Payment from database by id or CusID
 // router.get('/:identifier', async (request, response) => {
