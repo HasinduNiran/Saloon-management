@@ -38,13 +38,14 @@ const handleAddClick = () => {
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-between">
-      <h1 className="text-3xl my-4">Services List</h1>
-      <FaPlus 
-          className="text-2xl cursor-pointer text-blue-500 hover:text-blue-700"
-          onClick={handleAddClick} // Handle icon click
-        />
-         </div>
+      <div className="flex items-center space-x-2 my-4">
+  <h1 className="text-3xl">Services List</h1>
+  <FaPlus 
+    className="text-2xl cursor-pointer text-blue-500 hover:text-blue-700"
+    onClick={handleAddClick}
+    title='Add New Service' // Handle icon click
+  />
+</div>
       {error && <p className="text-red-600">{error}</p>}
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
