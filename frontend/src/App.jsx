@@ -47,6 +47,10 @@ import EditCustomer from './pages/Customer/EditCustomer';
 import ShowAllCustomers from './pages/Customer/ShowAllCustomers';
 import ReadOneCustomer from './pages/Customer/ReadOneCustomer';
 
+import CreateStore from './pages/StoreM/CreateStore';
+import DeleteStore from './pages/StoreM/DeleteStore';
+import EditStore from './pages/StoreM/EditStore';
+import ShowStore from './pages/StoreM/ShowStore';
 
 import CreateCard from './pages/Card/CreateCard';
 
@@ -104,6 +108,11 @@ const App = () => {
 
       <Route path='/card/create' element={<CreateCard />}></Route>
 
+       <Route path='/store/create' element={<CreateStore />}></Route>
+      <Route path='/store/delete/:id' element={<DeleteStore />}></Route>
+      <Route path='/store/edit/:id' element={<EditStore />}></Route>
+      <Route path='/store/' element={<ShowStore />}></Route>
+     
     </Routes>
   )
 }

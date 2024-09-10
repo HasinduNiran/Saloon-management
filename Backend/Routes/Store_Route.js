@@ -48,7 +48,7 @@ router.put('/:id', async (request, response) => {
     try {
       if (
         
-        !request.body.ItemName ||
+        !request.body.ItemNo ||
         !request.body.ItemName ||
         !request.body.Description ||
         !request.body.Quantity ||
