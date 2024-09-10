@@ -15,7 +15,7 @@ const EditInventory = () => {
   const [Category, setCategory] = useState('');
   const [Quantity, setQuantity] = useState('');
   const [Price, setPrice] = useState('');
-  const [SupplierName, setEmail] = useState('');
+  const [SupplierName, setSupplierName] = useState('');
   const [SupplierEmail, setSupplierEmail] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ const EditInventory = () => {
       setCategory(Response.data.Category);
       setQuantity(Response.data.Quantity);
       setPrice(Response.data.Price);
-      setEmail(Response.data.SupplierName);
+      setSupplierName(Response.data.SupplierName);
       setSupplierEmail(Response.data.SupplierEmail);
 
       setLoading(false);
@@ -129,7 +129,7 @@ const EditInventory = () => {
           <input
             type="text"
             value={SupplierName}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setSupplierName(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>

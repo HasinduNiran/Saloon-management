@@ -102,6 +102,32 @@ router.put('/:id', async (request, response) => {
   }
 });
 
+// Route for Update Quantity of an Inventory
+router.patch('/updateQuantity/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    if (quantity === undefined) {
+      return res.status(400).send({
+        message: 'Send the quantity to be updated',
+      });
+    }
+
+    const updatedInventory = await Inventory.findByIdAndUpdate(id, { Quantity: quantity }, { new: true });
+
+    if (!updatedInventory) {
+      return res.status(404).json({ message: 'Inventory not found' });
+    }
+
+    return res.status(200).json(updatedInventory);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
+
+
 // Route for Delete an Inventory
 router.delete('/:id', async (request, response) => {
   try {
