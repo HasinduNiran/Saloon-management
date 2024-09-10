@@ -1,5 +1,5 @@
 import express from 'express';
-import { Pkg } from '../Models/Pkg';
+import { Pkg } from '../Models/Pkg.js';
 import mongoose from 'mongoose';
 
 const router = express.Router();

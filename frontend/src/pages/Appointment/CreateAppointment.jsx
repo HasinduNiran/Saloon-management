@@ -1,4 +1,3 @@
-// Importing necessary dependencies
 import { useState } from "react";
 import React from "react";
 import Spinner from "../../components/Spinner";

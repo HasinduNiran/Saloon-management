@@ -15,7 +15,7 @@ const Home = () => {
         <li style={styles.navItem}><Link to="/">Feedback</Link></li>
         <li style={styles.navItem}><Link to="/inventories/allInventory">Inventory</Link></li>
         <li style={styles.navItem}><Link to="/">Manager</Link></li>
-        <li style={styles.navItem}><Link to="/packages/allPackage">Package</Link></li>
+        <li style={styles.navItem}><Link to="/pkg/allPkg">Package</Link></li>
         <li style={styles.navItem}><Link to="/">Payment</Link></li>
         <li style={styles.navItem}><Link to="/">ReadOneHome</Link></li>
         <li style={styles.navItem}><Link to="/services/allService">Service</Link></li>
