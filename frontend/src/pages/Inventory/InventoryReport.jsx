@@ -1,4 +1,3 @@
-// InventoryReport.js
 import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -35,7 +34,7 @@ const InventoryReport = ({ filteredInventories }) => {
         const date = new Date().toLocaleDateString();
 
         doc.setFontSize(24).setFont("helvetica", "bold").setTextColor("#4B9CD3");
-        doc.text("Saloon Managemnt", 105, 15, { align: "center" });
+        doc.text("Saloon Management", 105, 15, { align: "center" });
 
         doc.setFont("helvetica", "normal").setFontSize(18).setTextColor("#333");
         doc.text("Inventory Details Report", 105, 25, { align: "center" });
@@ -45,7 +44,7 @@ const InventoryReport = ({ filteredInventories }) => {
 
         doc.setFont("helvetica", "normal").setFontSize(10).setTextColor("#999");
         doc.text(
-            "Saloon ,Gampaha",
+            "Saloon, Gampaha",
             105,
             45,
             { align: "center" }
@@ -72,6 +71,14 @@ const InventoryReport = ({ filteredInventories }) => {
         });
 
         doc.save(`Inventory-Details-Report_${date}.pdf`);
+
+        // Send email alert to inventory manager
+        const emailSubject = encodeURIComponent('Inventory Report Generated');
+        const emailBody = encodeURIComponent(`Dear Inventory Manager,\n\nThe inventory report has been generated and is attached.\n\nBest regards,\nYour Company`);
+        const emailRecipient = encodeURIComponent('inventorymanager@gmail.com');
+        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}&body=${emailBody}`;
+        
+        window.location.href = mailtoLink;
     };
 
     return (
