@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const CreatePayment = () => {
+const CreateCard = () => {
   const [Cardno, setCardno] = useState("");
   const [Amount, setAmount] = useState("");
   const [expMonth, setExpMonth] = useState("mm");
@@ -34,7 +34,7 @@ const CreatePayment = () => {
     setLoading(true);
 
     // Make the API call to create payment
-    axios.post('http://localhost:8076/payments', data)
+    axios.post('http://localhost:8076/card', data)
     .then(() => {
       setLoading(false);
       Swal.fire({
@@ -50,10 +50,10 @@ const CreatePayment = () => {
       console.error("Error creating payment:", error);
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'Something went wrong!',
+        text: `Something went wrong! Error: ${error.response?.data || error.message}`,
       });
     });
+    
 };
 
   const handleCardNumberChange = (e) => {
@@ -374,4 +374,4 @@ const CreatePayment = () => {
   );
 };
 
-export default CreatePayment;
+export default CreateCard;
