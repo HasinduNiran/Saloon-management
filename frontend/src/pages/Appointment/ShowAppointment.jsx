@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa"; 
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa"; 
 import { BsInfoCircle } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 
 const ShowAppointment = () => {
   // State to store fetched appointment data
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Function to handle the icon click
+const handleAddClick = () => {
+  navigate('/appointments/create');
+};
 
   // Fetch appointments from the backend on component mount
   useEffect(() => {
@@ -29,7 +36,14 @@ const ShowAppointment = () => {
 
   return (
     <div className="p-4">
+      <div className="flex items-center space-x-2 my-4">
       <h1 className="text-3xl my-4">Appointments</h1>
+      <FaPlus 
+    className="text-2xl cursor-pointer text-blue-500 hover:text-blue-700"
+    onClick={handleAddClick}
+    title='Add New Service' // Handle icon click
+  />
+</div>
       <table className="border-2 border-sky-400 w-full table-auto">
         <thead>
           <tr>

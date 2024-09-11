@@ -15,11 +15,11 @@ import DeleteService from './pages/SaloonService/DeleteService';
 import EditService from './pages/SaloonService/EditService';
 import ReadOneService from './pages/SaloonService/ReadOneService';
 
-import ShowPackage from './pages/SaloonPackage/ShowPackage';
-import CreatePackage from './pages/SaloonPackage/CreatePackage';
-import DeletePackage from './pages/SaloonPackage/DeletePackage';
-import EditPackage from './pages/SaloonPackage/EditPackage';
-import ReadOnePackage from './pages/SaloonPackage/ReadOnePackage';
+import ShowPkg from './pages/Pkgs/ShowPkg';
+import CreatePkg from './pages/Pkgs/CreatePkg';
+import DeletePkg from './pages/Pkgs/DeletePkg';
+import EditPkg from './pages/Pkgs/EditPkg';
+import ReadOnePkg from './pages/Pkgs/ReadOnePkg';
 
 
 import ShowEmployee from './pages/Employee/ShowEmployee';
@@ -72,11 +72,11 @@ const App = () => {
       <Route path='/services/edit/:id' element={<EditService />}></Route>
       <Route path='/services/details/:id' element={<ReadOneService />}></Route>
 
-      <Route path='/packages/allPackage' element={<ShowPackage />}></Route>
-      <Route path='/packages/create' element={<CreatePackage />}></Route>
-      <Route path='/packages/delete/:id' element={<DeletePackage />}></Route>
-      <Route path='/packages/edit/:id' element={<EditPackage />}></Route>
-      <Route path='/packages/details/:id' element={<ReadOnePackage />}></Route>
+      <Route path='/pkg/allPkg' element={<ShowPkg />}></Route>
+      <Route path='/pkg/create' element={<CreatePkg />}></Route>
+      <Route path='/pkg/delete/:id' element={<DeletePkg />}></Route>
+      <Route path='/pkg/edit/:id' element={<EditPkg />}></Route>
+      <Route path='/pkg/details/:id' element={<ReadOnePkg />}></Route>
   
 
 

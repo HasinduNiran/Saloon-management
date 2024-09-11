@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa"; 
+import { FaEdit, FaTrash, FaPlus} from "react-icons/fa"; 
 import { BsInfoCircle } from 'react-icons/bs';
 
 const ShowService = () => {
@@ -10,6 +10,12 @@ const ShowService = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+
+// Function to handle the icon click
+const handleAddClick = () => {
+  navigate('/services/create');
+};
+  
   // Fetch services data from API
   useEffect(() => {
     const fetchServices = async () => {
@@ -32,7 +38,14 @@ const ShowService = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl my-4">Services List</h1>
+      <div className="flex items-center space-x-2 my-4">
+  <h1 className="text-3xl">Services List</h1>
+  <FaPlus 
+    className="text-2xl cursor-pointer text-blue-500 hover:text-blue-700"
+    onClick={handleAddClick}
+    title='Add New Service' // Handle icon click
+  />
+</div>
       {error && <p className="text-red-600">{error}</p>}
       <table className="min-w-full bg-white border border-gray-300">
         <thead>

@@ -70,8 +70,8 @@ const handleDurationChange = (e) => {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl my-4">Create New Service</h1>
-      {error && <p className="text-red-600">{error}</p>}
+        <h1 className="text-3xl my-4">Create New Service</h1>
+       {error && <p className="text-red-600">{error}</p>}
       <form 
         onSubmit={handleSubmit} 
         className="space-y-4 border border-gray-300 p-4 rounded shadow-md"

@@ -1,7 +1,6 @@
 import express from 'express';
 import { Appointment } from '../Models/Appointment.js';
 import mongoose from 'mongoose';
-import { v4 as uuidv4 } from 'uuid'; 
 
 const router = express.Router();
 
@@ -30,7 +29,6 @@ const validateFields = (req, res, next) => {
 router.post('/', validateFields, async (req, res) => {
     try {
         const newAppointment = {
-            appoi_ID: uuidv4(),  // Generate a unique ID
             client_name: req.body.client_name,
             client_email: req.body.client_email,
             client_phone: req.body.client_phone,

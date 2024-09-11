@@ -1,6 +1,8 @@
 import express from 'express';
 import { Service } from '../Models/Service.js'; // Assuming the model is named Service
 const router = express.Router();
+import mongoose from 'mongoose';
+
 
 // Middleware for validating required fields
 const validateFields = (req, res, next) => {
