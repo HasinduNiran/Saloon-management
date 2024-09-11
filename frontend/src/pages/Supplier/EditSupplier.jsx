@@ -1,15 +1,13 @@
-// Importing necessary dependencies
 import { useState, useEffect } from "react";
 import React from 'react';
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/Spinner";
-
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 // Functional component for EditSupplier
 const EditSupplier = () => {
-  // State variables for managing form data and loading state
   const [SupplierID, setSupplierID] = useState('');
   const [SupplierName, setSupplierName] = useState('');
   const [ItemNo, setItemNo] = useState('');
@@ -17,34 +15,86 @@ const EditSupplier = () => {
   const [ContactNo, setContactNo] = useState('');
   const [Email, setEmail] = useState('');
   const [Address, setAddress] = useState('');
-
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     axios.get(`http://localhost:8076/suppliers/${id}`)
-    .then((Response) => {
-      setSupplierID(Response.data.SupplierID);
-      setSupplierName(Response.data.SupplierName);
-      setItemNo(Response.data.ItemNo);
-      setItemName(Response.data.ItemName);
-      setContactNo(Response.data.ContactNo);
-      setEmail(Response.data.Email);
-      setAddress(Response.data.Address);
+      .then((response) => {
+        const data = response.data;
+        setSupplierID(data.SupplierID);
+        setSupplierName(data.SupplierName);
+        setItemNo(data.ItemNo);
+        setItemName(data.ItemName);
+        setContactNo(data.ContactNo);
+        setEmail(data.Email);
+        setAddress(data.Address);
+      })
+      .catch((error) => {
+        console.error("Error fetching supplier:", error);
+      });
 
-      setLoading(false);
-    }).catch((error) =>{
-      setLoading(false);
-      alert(`An error happned. Please Check console`);
-      console.log(error);
-    });
-  }, [])
+    axios.get("http://localhost:8076/inventories")
+      .then((response) => {
+        const itemsData = response.data.data;
+        setItems(itemsData);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error fetching items:", error);
+      });
+  }, [id]);
 
-  // Event handler for edit the Supplier
+  const handleItemNoChange = (e) => {
+    const selectedItemNo = e.target.value;
+    setItemNo(selectedItemNo);
+
+    const selectedItem = items.find(item => item.ItemNo === selectedItemNo);
+    if (selectedItem) {
+      setItemName(selectedItem.ItemName);
+    } else {
+      setItemName('');
+    }
+  };
+
   const handleEditSupplier = () => {
-    // Creating data object from form inputs
+    // Validation checks
+    if (!SupplierName || !ItemNo || !ItemName || !ContactNo || !Email || !Address) {
+      Swal.fire({
+        icon: 'error',
+        title: 'All fields are required',
+        text: 'Please fill in all the fields before submitting the form.',
+      });
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(Email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
+    // Contact number validation (example: check if it's numeric and 10 digits long)
+    if (!/^\d{10}$/.test(ContactNo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Contact No',
+        text: 'Contact number should be 10 digits.',
+      });
+      return;
+    }
+
+    // Prepare data for submission
     const data = {
       SupplierName,
       ItemNo,
@@ -53,43 +103,46 @@ const EditSupplier = () => {
       Email,
       Address,
     };
+    
     setLoading(true);
-
-    // Making a PUT request to Edit the Supplier data
-    axios
-      .put(`http://localhost:8076/suppliers/${id}`, data)
+    axios.put(`http://localhost:8076/suppliers/${id}`, data)
       .then(() => {
-        // Resetting loading state and navigating to the home pItemName
         setLoading(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Supplier updated',
+          text: 'Supplier details have been successfully updated.',
+        });
         navigate('/suppliers/allSupplier');
       })
       .catch((error) => {
-        // Handling errors by resetting loading state, showing an alert, and logging the error
         setLoading(false);
-        alert('An error happened. Please check console');
-        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was an error updating the supplier. Please try again.',
+        });
+        console.error('Error editing supplier:', error);
       });
   };
 
-  // JSX for rendering the create Supplier form
   return (
     <div className="p-4">
-      <BackButton destination='/suppliers/allSupplier'/>
+      <BackButton destination='/suppliers/allSupplier' />
       <h1 className="text-3xl my-4">Edit Supplier</h1>
-      {loading ? <Spinner /> : ''}
+      {loading && <Spinner />}
       <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-      <div className="my-4">
+        <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>SupplierID</label>
           <input
             type="text"
             value={SupplierID}
-            onChange={(e) => setSupplierID(e.target.value)}
             readOnly
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>SupplierName</label>
+          <label className='text-xl mr-4 text-gray-500'>Supplier Name</label>
           <input
             type="text"
             value={SupplierName}
@@ -98,25 +151,31 @@ const EditSupplier = () => {
           />
         </div>
         <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>ItemNo</label>
+          <label className='text-xl mr-4 text-gray-500'>Item No</label>
+          <select
+            value={ItemNo}
+            onChange={handleItemNoChange}
+            className='border-2 border-gray-500 px-4 py-2 w-full'
+          >
+            <option value="" disabled>Select Item No</option>
+            {items.map((item) => (
+              <option key={item.ItemNo} value={item.ItemNo}>
+                {item.ItemNo}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="my-4">
+          <label className='text-xl mr-4 text-gray-500'>Item Name</label>
           <input
             type="text"
-            value={ItemNo}
-            onChange={(e) => setItemNo(e.target.value)}
+            value={ItemName}
+            readOnly
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>ItemName</label>
-          <input
-            type='text'
-            value={ItemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2  w-full '
-          />
-        </div>
         <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>ContactNo</label>
+          <label className='text-xl mr-4 text-gray-500'>Contact No</label>
           <input
             type="text"
             value={ContactNo}
@@ -150,5 +209,4 @@ const EditSupplier = () => {
   );
 };
 
-// Exporting the EditSupplier component
 export default EditSupplier;
