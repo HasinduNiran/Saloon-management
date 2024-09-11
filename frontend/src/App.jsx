@@ -41,6 +41,19 @@ import EditInventory from './pages/Inventory/EditInventory';
 import ReadOneInventory from './pages/Inventory/ReadOneInventory';
  
 
+import CreateCustomer from './pages/Customer/CreateCustomer';
+import DeleteCustomer from './pages/Customer/DeleteCustomer';
+import EditCustomer from './pages/Customer/EditCustomer';
+import ShowAllCustomers from './pages/Customer/ShowAllCustomers';
+import ReadOneCustomer from './pages/Customer/ReadOneCustomer';
+
+import CreateStore from './pages/StoreM/CreateStore';
+import DeleteStore from './pages/StoreM/DeleteStore';
+import EditStore from './pages/StoreM/EditStore';
+import ShowStore from './pages/StoreM/ShowStore';
+
+import CreateCard from './pages/Card/CreateCard';
+
 const App = () => {
   return (
     <Routes>
@@ -85,7 +98,21 @@ const App = () => {
       <Route path='/inventories/delete/:id' element={<DeleteInventory />}></Route>
       <Route path='/inventories/edit/:id' element={<EditInventory />}></Route>
       <Route path='/inventories/details/:id' element={<ReadOneInventory />}></Route>
- 
+
+      
+      <Route path='/customers/create' element={<CreateCustomer />}></Route>
+      <Route path='/customers/delete/:id' element={<DeleteCustomer />}></Route>
+      <Route path='/customers/edit/:id' element={<EditCustomer />}></Route>
+      <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
+      <Route path='/customers/' element={<ShowAllCustomers />}></Route>
+
+      <Route path='/card/create' element={<CreateCard />}></Route>
+
+       <Route path='/store/create' element={<CreateStore />}></Route>
+      <Route path='/store/delete/:id' element={<DeleteStore />}></Route>
+      <Route path='/store/edit/:id' element={<EditStore />}></Route>
+      <Route path='/store/' element={<ShowStore />}></Route>
+     
     </Routes>
   )
 }

@@ -1,50 +1,66 @@
-// Importing necessary dependencies
-import { useState, useEffect } from "react";
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/Spinner";
-
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from 'sweetalert2';
 
-// Functional component for EditInventory
 const EditInventory = () => {
-  // State variables for managing form data and loading state
   const [ItemNo, setItemNo] = useState('');
   const [ItemName, setItemName] = useState('');
   const [Category, setCategory] = useState('');
   const [Quantity, setQuantity] = useState('');
   const [Price, setPrice] = useState('');
-  const [SupplierName, setEmail] = useState('');
+  const [SupplierName, setSupplierName] = useState('');
   const [SupplierEmail, setSupplierEmail] = useState('');
-
+  const [suppliers, setSuppliers] = useState([]); // State for supplier list
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
 
-  useEffect(()=>{
+  // Fetch supplier data and inventory details when component mounts
+  useEffect(() => {
     setLoading(true);
+    
+    // Fetch suppliers
+    axios.get('http://localhost:8076/suppliers')
+      .then((response) => {
+        const suppliersData = response.data.data;
+        if (Array.isArray(suppliersData)) {
+          setSuppliers(suppliersData);
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching suppliers:', error);
+      });
+
+    // Fetch inventory details
     axios.get(`http://localhost:8076/inventories/${id}`)
-    .then((Response) => {
-      setItemNo(Response.data.ItemNo);
-      setItemName(Response.data.ItemName);
-      setCategory(Response.data.Category);
-      setQuantity(Response.data.Quantity);
-      setPrice(Response.data.Price);
-      setEmail(Response.data.SupplierName);
-      setSupplierEmail(Response.data.SupplierEmail);
+      .then((response) => {
+        setItemNo(response.data.ItemNo);
+        setItemName(response.data.ItemName);
+        setCategory(response.data.Category);
+        setQuantity(response.data.Quantity);
+        setPrice(response.data.Price);
+        setSupplierName(response.data.SupplierName);
+        setSupplierEmail(response.data.SupplierEmail);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'An error occurred while fetching inventory details.',
+        });
+        console.error('Error fetching inventory details:', error);
+      });
+  }, [id]);
 
-      setLoading(false);
-    }).catch((error) =>{
-      setLoading(false);
-      alert(`An error happned. Please Check console`);
-      console.log(error);
-    });
-  }, [])
-
-  // Event handler for edit the Inventory
+  // Event handler for editing the Inventory
   const handleEditInventory = () => {
-    // Creating data object from form inputs
     const data = {
       ItemName,
       Category,
@@ -53,37 +69,51 @@ const EditInventory = () => {
       SupplierName,
       SupplierEmail,
     };
+    
     setLoading(true);
-
-    // Making a PUT request to Edit the Inventory data
     axios
       .put(`http://localhost:8076/inventories/${id}`, data)
       .then(() => {
-        // Resetting loading state and navigating to the home pQuantity
         setLoading(false);
-        navigate('/inventories/allInventory');
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Inventory updated successfully.',
+        }).then(() => {
+          navigate('/inventories/allInventory');
+        });
       })
       .catch((error) => {
-        // Handling errors by resetting loading state, showing an alert, and logging the error
         setLoading(false);
-        alert('An error happened. Please check console');
-        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'An error occurred while updating the inventory.',
+        });
+        console.error('Error updating inventory:', error);
       });
   };
 
-  // JSX for rendering the create Inventory form
+  // Event handler for selecting supplier and setting email automatically
+  const handleSupplierChange = (e) => {
+    const selectedSupplierName = e.target.value;
+    setSupplierName(selectedSupplierName);
+    
+    const selectedSupplier = suppliers.find(supplier => supplier.SupplierName === selectedSupplierName);
+    setSupplierEmail(selectedSupplier ? selectedSupplier.Email : '');
+  };
+
   return (
     <div className="p-4">
       <BackButton destination='/inventories/allInventory'/>
       <h1 className="text-3xl my-4">Edit Inventory</h1>
-      {loading ? <Spinner /> : ''}
+      {loading && <Spinner />}
       <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-      <div className="my-4">
+        <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>ItemNo</label>
           <input
             type="text"
             value={ItemNo}
-            onChange={(e) => setItemNo(e.target.value)}
             readOnly
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
@@ -112,7 +142,7 @@ const EditInventory = () => {
             type='number'
             value={Quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2  w-full '
+            className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
         <div className="my-4">
@@ -126,19 +156,25 @@ const EditInventory = () => {
         </div>
         <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>SupplierName</label>
-          <input
-            type="text"
+          <select
             value={SupplierName}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleSupplierChange}
             className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+          >
+            <option value="" disabled>Select Supplier</option>
+            {suppliers.map((supplier) => (
+              <option key={supplier.SupplierID} value={supplier.SupplierName}>
+                {supplier.SupplierName}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>SupplierEmail</label>
           <input
             type="text"
             value={SupplierEmail}
-            onChange={(e) => setSupplierEmail(e.target.value)}
+            readOnly
             className='border-2 border-gray-500 px-4 py-2 w-full'
           />
         </div>
@@ -150,5 +186,4 @@ const EditInventory = () => {
   );
 };
 
-// Exporting the EditInventory component
 export default EditInventory;

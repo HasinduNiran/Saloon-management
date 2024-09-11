@@ -10,12 +10,18 @@ const Home = () => {
       </p>
       <ul style={styles.navList}>
         <li style={styles.navItem}><Link to="/appointments/allAppointment">Appointment</Link></li>
-        <li style={styles.navItem}><Link to="/">Customer</Link></li>
+
+        <li style={styles.navItem}><Link to="/customers">Customer</Link></li>
+ 
         <li style={styles.navItem}><Link to="/employees/allEmployee">Employee</Link></li>
         <li style={styles.navItem}><Link to="/">Feedback</Link></li>
         <li style={styles.navItem}><Link to="/inventories/allInventory">Inventory</Link></li>
         <li style={styles.navItem}><Link to="/">Manager</Link></li>
+ 
         <li style={styles.navItem}><Link to="/pkg/allPkg">Package</Link></li>
+
+        <li style={styles.navItem}><Link to="/packages/allPackage">Package</Link></li>
+ 
         <li style={styles.navItem}><Link to="/">Payment</Link></li>
         <li style={styles.navItem}><Link to="/">ReadOneHome</Link></li>
         <li style={styles.navItem}><Link to="/services/allService">Service</Link></li>

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const paymentSchema = mongoose.Schema({
+const cardSchema = mongoose.Schema({
     Amount: {
         type: String,
         required: true
@@ -29,4 +29,4 @@ const paymentSchema = mongoose.Schema({
 
 
 
-export const Payment = mongoose.model('Payment', paymentSchema);
+export const Card = mongoose.model('Card', cardSchema);
