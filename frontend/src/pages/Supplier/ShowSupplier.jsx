@@ -4,11 +4,14 @@ import Spinner from "../../components/Spinner";
 import { Link } from 'react-router-dom';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { BsInfoCircle } from 'react-icons/bs';
-import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
+import { MdOutlineAddBox, MdOutlineDelete, MdEmail } from 'react-icons/md';
+import SupplierReport from './SupplierReport';
 
 const ShowSupplier = () => {
     const [suppliers, setSupplier] = useState([]);
+    const [filteredSuppliers, setFilteredSuppliers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         setLoading(true);
@@ -16,6 +19,7 @@ const ShowSupplier = () => {
             .get('http://localhost:8076/suppliers')
             .then((response) => {
                 setSupplier(response.data.data);
+                setFilteredSuppliers(response.data.data); // Initialize filteredSuppliers
                 setLoading(false);
             })
             .catch((error) => {
@@ -23,7 +27,33 @@ const ShowSupplier = () => {
                 setLoading(false);
             });
     }, []);
-    
+
+    useEffect(() => {
+        if (searchQuery === '') {
+            setFilteredSuppliers(suppliers);
+        } else {
+            const query = searchQuery.toLowerCase();
+            setFilteredSuppliers(
+                suppliers.filter(supplier =>
+                    Object.values(supplier).some(
+                        value => value && value.toString().toLowerCase().includes(query)
+                    )
+                )
+            );
+        }
+    }, [searchQuery, suppliers]);
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const handleEmailClick = (email) => {
+        const emailSubject = encodeURIComponent('Urgent: Low Item Quantity Alert');
+        const emailBody = encodeURIComponent(`Dear Supplier Manager,\n\nWe have identified that the quantity of one or more items is running low. We kindly request that you arrange for new supplies at your earliest convenience.\n\nBest regards,\nYour Company`);
+        const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+        
+        window.location.href = mailtoLink;
+    };
 
     return (
         <div className='p-4'>
@@ -34,6 +64,21 @@ const ShowSupplier = () => {
                     <MdOutlineAddBox className='text-sky-800 text-4xl' />
                 </Link>
             </div>
+            <div className='mb-4'>
+                <input
+                    type='text'
+                    placeholder='Search...'
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className='p-2 border border-slate-300 rounded-md'
+                />
+            </div>
+
+            {/* Use SupplierReport component */}
+            <div className='mb-4'>
+                <SupplierReport filteredSuppliers={filteredSuppliers} />
+            </div>
+
             {loading ? (
                 <Spinner />
             ) : (
@@ -51,7 +96,7 @@ const ShowSupplier = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {suppliers.map((supplier, index) => (
+                        {filteredSuppliers.map((supplier) => (
                             <tr key={supplier._id} className='h-8'>
                                 <td className='border border-slate-700 rounded-md text-center'>
                                     {supplier.SupplierID}
@@ -85,6 +130,12 @@ const ShowSupplier = () => {
                                         <Link to={`/suppliers/delete/${supplier._id}`}>
                                             <MdOutlineDelete className='text-2xl text-red-600' />
                                         </Link>
+                                        <button 
+                                            onClick={() => handleEmailClick(supplier.Email)}
+                                            className='text-blue-600'
+                                        >
+                                            <MdEmail className='text-2xl' />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
