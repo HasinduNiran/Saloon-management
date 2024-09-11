@@ -64,21 +64,18 @@ const CreateCustomer = () => {
         });
         return false;
       }
-      
-      if (!/^(07\d{8})$/.test(ContactNo)) {
+      if (ContactNo.length !== 10) {
         Swal.fire({
-          icon: "error",
-
-          text: "Phone number must start with '07' and be exactly 10 digits long.",
+          icon: 'error',
+          text: 'Phone number must have 10 digits',
         });
         return false;
-      } 
+      }
       const ageValue = Number(Age);
-  if (isNaN(ageValue) || ageValue < 0 || ageValue > 120) {
+  if (isNaN(ageValue) || ageValue < 0 || ageValue > 99) {
     Swal.fire({
-      icon: "error",
-      
-      text: "Age must be a number between 0 and 120.",
+      icon: "error",    
+      text: "Age must be a number between 0 and 99.",
     });
     return;
   }
@@ -306,16 +303,26 @@ const CreateCustomer = () => {
             required
           />
         </div>
-        <div>
-          <label>Phone</label>
-          <input
-            type="text"
-            value={ContactNo}
-            onChange={(e) => setContactNo(e.target.value)}
-            maxLength={10}
-            required
-          />
-        </div>
+        <div >
+            <label>Phone</label>
+            <input
+              type="text"
+              value={ContactNo}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                if (inputValue.length === 0 || (inputValue.length > 0 && inputValue[0] === '0')) {
+                  setContactNo(inputValue);
+                } else {
+                  // Show SweetAlert error message
+                  Swal.fire({
+                    icon: 'error',
+                    text: 'Phone number must start with 0',
+                  });
+                }
+              }}
+              maxLength={10}
+            />
+          </div>
         <div>
           <label>Age</label>
           <input
