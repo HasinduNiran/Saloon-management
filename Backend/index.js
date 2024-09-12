@@ -30,11 +30,6 @@ import EmployeeAttendence_Route from "./Routes/EmployeeAttendence_Route.js";
 
 
 
-
-
-
-
-
 // Creating an instance of the Express application
 const app = express();
 
@@ -64,24 +59,10 @@ app.use('/card',Card_Route);
 app.use('/feedback', Feedback_Route);
 
 
-
-
 app.use('/order',Order_Route);
 
 
-
-
-
-
 app.use('/employeeAttendence', EmployeeAttendence_Route);
-
-
-//app.use('/order',Order_Route);
-
-
-
-
-
 
 
 
