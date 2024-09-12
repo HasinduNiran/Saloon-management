@@ -23,6 +23,7 @@ import Feedback_Route from './Routes/Feedback_Route.js';
 import Store_Route from './Routes/Store_Route.js';
 import Card_Route from './Routes/Card_Route.js';
 import EmployeeAttendence_Route from "./Routes/EmployeeAttendence_Route.js";
+import EmployeeSalary_Route from "./Routes/EmployeeSalary_Route.js";
 
 
 
@@ -54,6 +55,7 @@ app.use('/card',Card_Route);
 
 app.use('/feedback', Feedback_Route);
 app.use('/employeeAttendence', EmployeeAttendence_Route);
+app.use('/employeeSalary', EmployeeSalary_Route);
 
 
 
