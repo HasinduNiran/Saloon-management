@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div style={styles.container}>
+       <li><Link to="/">Home</Link></li>
       <h1 style={styles.title}>Welcome to the Home Page</h1>
       <p style={styles.description}>
         This is a simple home page built with React. Explore more by navigating through the links!
       </p>
       <ul style={styles.navList}>
-      <li style={styles.navItem}><Link to="/cLogin">Login</Link></li>
         <li style={styles.navItem}><Link to="/appointments/allAppointment">Appointment</Link></li>
 
         <li style={styles.navItem}><Link to="/customers">Customer</Link></li>

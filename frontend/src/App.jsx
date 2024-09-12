@@ -1,7 +1,8 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home'
-
+import CLogin from './components/cLogin';
+import ReadOneHome  from './pages/ReadOneHome';
  
 import ShowAppointment from './pages/Appointment/ShowAppointment';
 import CreateAppointment from './pages/Appointment/CreateAppointment';
@@ -106,6 +107,8 @@ const App = () => {
       <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
       <Route path='/customers/' element={<ShowAllCustomers />}></Route>
 
+      <Route path='/cLogin' element={<CLogin />}></Route>'
+      <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
       <Route path='/card/create' element={<CreateCard />}></Route>
 
        <Route path='/store/create' element={<CreateStore />}></Route>
