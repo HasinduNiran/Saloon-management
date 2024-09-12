@@ -16,93 +16,93 @@ function CLogin() {
     };
 
     // Check if the credentials are 'staff'
-    if (CusID === "customer" && Password === "customer123") {
+    if (CusID === "Appointment" && Password === "Appointment123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Kasuni",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/customer/customerDashboard");
+      navigate("/appointments/allAppointment");
       return;
-    } else if (CusID === "package" && Password === "package123") {
+    } else if (CusID === "Customer" && Password === "Customer123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Ravindu",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/package/dashboard");
+      navigate("/customers");
       return;
-    } else if (CusID === "booking" && Password === "booking123") {
+    } else if (CusID === "Employee" && Password === "Employee123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Isuru",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/booking/dashboard");
+      navigate("/employees/allEmployee");
       return;
-    } else if (CusID === "vehicle" && Password === "vehicle123") {
+    } else if (CusID === "Inventory" && Password === "Inventory123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Hasindu",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/vehicle/dashboard");
+      navigate("/inventories/allInventory");
       return;
-    } else if (CusID === "inventory" && Password === "inventory123") {
+    } else if (CusID === "Package" && Password === "Package123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Lasal",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/inventory/InventoryDashboard");
+      navigate("/pkg/allPkg");
       return;
-    } else if (CusID === "payment" && Password === "payment123") {
+    } else if (CusID === "Service" && Password === "Service123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Sithagi",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/payments/pdashboard");
+      navigate("/services/allService");
       return;
-    } else if (CusID === "employee" && Password === "employee123") {
+    } else if (CusID === "Supplier" && Password === "Supplier123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Kavindi",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/employees/EmployeeDashboard");
+      navigate("/suppliers/allSupplier");
       return;
-    } else if (CusID === "feedback" && Password === "feedback123") {
+    } else if (CusID === "Feedback" && Password === "Feedback123") {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! Yenura",
+        title: "Welcome back! ",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/feedback/dashboard");
+      navigate("/Feedback/allFeedback");
       return;
     }
 
