@@ -22,7 +22,7 @@ import Inventory_Route from './Routes/Inventory_Route.js';
 import Feedback_Route from './Routes/Feedback_Route.js';
 import Store_Route from './Routes/Store_Route.js';
 import Card_Route from './Routes/Card_Route.js';
-
+import EmployeeAttendence_Route from "./Routes/EmployeeAttendence_Route.js";
 
 
 
@@ -53,7 +53,7 @@ app.use('/store',Store_Route);
 app.use('/card',Card_Route);
 
 app.use('/feedback', Feedback_Route);
-
+app.use('/employeeAttendence', EmployeeAttendence_Route);
 
 
 
