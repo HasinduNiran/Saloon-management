@@ -56,6 +56,8 @@ import ShowStore from './pages/StoreM/ShowStore';
 import CreateCard from './pages/Card/CreateCard';
 
 
+
+
 import ItemCard from './pages/Cart/ItemCard';
 import Main from './pages/Cart/Main';
 import ItemDis from './pages/Cart/ItemDis';
@@ -63,10 +65,26 @@ import Cart from './pages/Cart/Cart';
 import Checkout from './pages/Cart/Checkout';
 import MyOrder from './pages/Cart/MyOrder';
 
+
+
+
+
 import CreateEmployeeAttendance from './pages/EmployeeAttendence/CreateEmployeeAttendence';
 import DeleteEmployeeAttendance from './pages/EmployeeAttendence/DeleteEmployeeAttendence';
 import EditEmployeeAttendance from './pages/EmployeeAttendence/EditEmployeeAttendence';
 import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAttendence';
+
+
+
+
+
+
+import ItemCard from './pages/Cart/ItemCard';
+import Main from './pages/Cart/Main';
+import ItemDis from './pages/Cart/ItemDis';
+import Cart from './pages/Cart/Cart';
+import Checkout from './pages/Cart/Checkout';
+import MyOrder from './pages/Cart/MyOrder';
 
 
 const App = () => {
@@ -124,9 +142,11 @@ const App = () => {
 
       <Route path='/card' element={<CreateCard />}></Route>
 
+
       <Route path='/cLogin' element={<CLogin />}></Route>'
       <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
       <Route path='/card/create' element={<CreateCard />}></Route>
+
 
 
        <Route path='/store/create' element={<CreateStore />}></Route>
@@ -147,6 +167,7 @@ const App = () => {
       <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/edit/:id' element={<EditEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/allEmployeeAttendence' element={<ShowEmployeeAttendence />}></Route>
+
 
     </Routes>
   )
