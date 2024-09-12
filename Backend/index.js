@@ -26,6 +26,8 @@ import Card_Route from './Routes/Card_Route.js';
 import Order_Route from './Routes/Order_Route.js';
 
 import EmployeeAttendence_Route from "./Routes/EmployeeAttendence_Route.js";
+import Order_Route from './Routes/Order_Route.js';
+
 
 
 
@@ -59,10 +61,18 @@ app.use('/card',Card_Route);
 app.use('/feedback', Feedback_Route);
 
 
+
 app.use('/order',Order_Route);
 
 
+
+
 app.use('/employeeAttendence', EmployeeAttendence_Route);
+
+
+app.use('/order',Order_Route);
+
+
 
 
 
