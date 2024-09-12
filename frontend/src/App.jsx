@@ -1,7 +1,8 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home'
-
+import CLogin from './components/cLogin';
+import ReadOneHome  from './pages/ReadOneHome';
  
 import ShowAppointment from './pages/Appointment/ShowAppointment';
 import CreateAppointment from './pages/Appointment/CreateAppointment';
@@ -54,12 +55,19 @@ import ShowStore from './pages/StoreM/ShowStore';
 
 import CreateCard from './pages/Card/CreateCard';
 
+
 import ItemCard from './pages/Cart/ItemCard';
 import Main from './pages/Cart/Main';
 import ItemDis from './pages/Cart/ItemDis';
 import Cart from './pages/Cart/Cart';
 import Checkout from './pages/Cart/Checkout';
 import MyOrder from './pages/Cart/MyOrder';
+
+import CreateEmployeeAttendance from './pages/EmployeeAttendence/CreateEmployeeAttendence';
+import DeleteEmployeeAttendance from './pages/EmployeeAttendence/DeleteEmployeeAttendence';
+import EditEmployeeAttendance from './pages/EmployeeAttendence/EditEmployeeAttendence';
+import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAttendence';
+
 
 const App = () => {
   return (
@@ -113,13 +121,20 @@ const App = () => {
       <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
       <Route path='/customers/' element={<ShowAllCustomers />}></Route>
 
+
       <Route path='/card' element={<CreateCard />}></Route>
+
+      <Route path='/cLogin' element={<CLogin />}></Route>'
+      <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
+      <Route path='/card/create' element={<CreateCard />}></Route>
+
 
        <Route path='/store/create' element={<CreateStore />}></Route>
       <Route path='/store/delete/:id' element={<DeleteStore />}></Route>
       <Route path='/store/edit/:id' element={<EditStore />}></Route>
       <Route path='/store/' element={<ShowStore />}></Route>
      
+
      <Route path='/itemcard/create' element={<ItemCard />}></Route>
      <Route path='/cart/main' element={<Main />}></Route>
      <Route path='/itemdis/:id' element={<ItemDis />}></Route>
@@ -127,6 +142,12 @@ const App = () => {
     <Route path='/checkout' element={<Checkout />}></Route>
 
     <Route path='/my-orders' element={<MyOrder />}></Route>
+
+      <Route path='/employeeattendence/create' element={<CreateEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/edit/:id' element={<EditEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/allEmployeeAttendence' element={<ShowEmployeeAttendence />}></Route>
+
     </Routes>
   )
 }

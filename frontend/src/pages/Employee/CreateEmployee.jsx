@@ -6,6 +6,7 @@ import Spinner from "../../components/Spinner";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 // Functional component for creating employees
 const CreateEmployees = () => {
@@ -22,7 +23,45 @@ const CreateEmployees = () => {
 
   // Event handler for saving the Employee
   const handleSaveEmployee = () => {
-    // Creating data object from form inputs
+    // Validate form fields
+    if (!FirstName || !LastName || !Age || !Gender || !ContactNo || !Email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please fill in all fields!',
+      });
+      return;
+    }
+
+    if (isNaN(Age) || Age <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Age',
+        text: 'Please enter a valid age.',
+      });
+      return;
+    }
+
+    if (!/^\d{10}$/.test(ContactNo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Contact Number',
+        text: 'Please enter a valid 10-digit contact number.',
+      });
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(Email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
+    setLoading(true);
+
     const data = {
       FirstName,
       LastName,
@@ -31,20 +70,25 @@ const CreateEmployees = () => {
       ContactNo,
       Email,
     };
-    setLoading(true);
 
-    // Making a POST request to save the Employee data
     axios
       .post('http://localhost:8076/employees', data)
       .then(() => {
-        // Resetting loading state and navigating to the home page
         setLoading(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Employee created successfully!',
+        });
         navigate('/employees/allEmployee');
       })
       .catch((error) => {
-        // Handling errors by resetting loading state, showing an alert, and logging the error
         setLoading(false);
-        alert('An error happened. Please check console');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while creating the employee. Please check console.',
+        });
         console.log(error);
       });
   };
@@ -85,26 +129,31 @@ const CreateEmployees = () => {
         </div>
         <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>Gender</label>
-          <input
-            type="text"
+          <select
             value={Gender}
             onChange={(e) => setGender(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+          >
+            <option value="" disabled>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
         </div>
         <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>ContactNo</label>
           <input
-            type="text"
+            type="tel"
             value={ContactNo}
             onChange={(e) => setContactNo(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
+            pattern="[0-9]{10}"
+            placeholder="10-digit contact number"
           />
         </div>
         <div className="my-4">
           <label className='text-xl mr-4 text-gray-500'>Email</label>
           <input
-            type="text"
+            type="email"
             value={Email}
             onChange={(e) => setEmail(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'

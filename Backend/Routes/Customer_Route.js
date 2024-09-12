@@ -92,4 +92,24 @@ router.delete('/:id', async (request, response) => {
     }
 });
 
+router.post('/cLogin', async (request, response) => {
+    try {
+        const { CusID, Password } = request.body;
+        if (!CusID || !Password) {
+            return response.status(400).json({ message: 'CusID and Password are required' });
+        }
+        const customer = await Customer.findOne({ CusID });
+        if (!customer) {
+            return response.status(404).json({ message: 'User not found' });
+        }
+        if (Password !== customer.Password) {
+            return response.status(401).json({ message: 'Incorrect Password' });
+        }
+        response.status(200).json(customer);
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 export default router;
