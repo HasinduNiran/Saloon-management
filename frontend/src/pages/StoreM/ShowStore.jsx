@@ -12,7 +12,8 @@ const ShowStore = () => {
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     // const [selectedCategory, setSelectedCategory] = useState('');
-    
+    const [orders, setOrders] = useState([]);
+
     useEffect(() => {
         setLoading(true);
         axios
@@ -34,7 +35,6 @@ const ShowStore = () => {
                 setLoading(false);
             });
     }, []);
-
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -72,10 +72,18 @@ const ShowStore = () => {
 
                 <div className="flex justify-center items-center mt-8">
                     <button
-                        className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="absolute top-4 right-25 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => (window.location.href = "/store/create")}
                     >
-                        Add
+                        Add Item
+                    </button>
+                </div>
+                <div className="flex justify-center items-center mt-8">
+                    <button
+                        className="absolute top-4 right-1 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => (window.location.href = "/allorders")}
+                    >
+                        Orders
                     </button>
                 </div>
             </div>

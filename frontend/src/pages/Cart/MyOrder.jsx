@@ -207,7 +207,8 @@ const MyOrder = () => {
               )
             );
             setShowEditPopup(false);
-          }}
+          }
+        }
         />
       )}
     </div>

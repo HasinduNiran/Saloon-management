@@ -85,6 +85,8 @@ import ItemDis from './pages/Cart/ItemDis';
 import Cart from './pages/Cart/Cart';
 import Checkout from './pages/Cart/Checkout';
 import MyOrder from './pages/Cart/MyOrder';
+import AllOrders from './pages/Cart/AllOrders';
+import DeleteOrder from './pages/Cart/DeleteOrder';
 
 
 const App = () => {
@@ -162,6 +164,8 @@ const App = () => {
     <Route path='/checkout' element={<Checkout />}></Route>
 
     <Route path='/my-orders' element={<MyOrder />}></Route>
+    <Route path='/allorders' element={<AllOrders />}></Route>
+<Route path='/deleteorder' element={<DeleteOrder />}></Route>
 
       <Route path='/employeeattendence/create' element={<CreateEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
