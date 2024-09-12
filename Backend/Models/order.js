@@ -41,6 +41,10 @@ const orderSchema = mongoose.Schema({
         expiryDate: { type: String },
         cvv: { type: String },
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+      },
 });
 
 const Order = mongoose.model("Order", orderSchema);
