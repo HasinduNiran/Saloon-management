@@ -55,6 +55,11 @@ import ShowStore from './pages/StoreM/ShowStore';
 
 import CreateCard from './pages/Card/CreateCard';
 
+import CreateEmployeeAttendance from './pages/EmployeeAttendence/CreateEmployeeAttendence';
+import DeleteEmployeeAttendance from './pages/EmployeeAttendence/DeleteEmployeeAttendence';
+import EditEmployeeAttendance from './pages/EmployeeAttendence/EditEmployeeAttendence';
+import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAttendence';
+
 const App = () => {
   return (
     <Routes>
@@ -116,6 +121,10 @@ const App = () => {
       <Route path='/store/edit/:id' element={<EditStore />}></Route>
       <Route path='/store/' element={<ShowStore />}></Route>
      
+      <Route path='/employeeattendence/create' element={<CreateEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/edit/:id' element={<EditEmployeeAttendance />}></Route>
+      <Route path='/employeeattendence/allEmployeeAttendence' element={<ShowEmployeeAttendence />}></Route>
     </Routes>
   )
 }
