@@ -53,17 +53,48 @@ import DeleteStore from './pages/StoreM/DeleteStore';
 import EditStore from './pages/StoreM/EditStore';
 import ShowStore from './pages/StoreM/ShowStore';
 
-import CreateCard from './pages/Card/CreateCard';
+//import CreateCard from './pages/Card/CreateCard';
+
+
+
+
+// import ItemCard from './pages/Cart/ItemCard';
+// import Main from './pages/Cart/Main';
+// import ItemDis from './pages/Cart/ItemDis';
+// import Cart from './pages/Cart/Cart';
+// import Checkout from './pages/Cart/Checkout';
+// import MyOrder from './pages/Cart/MyOrder';
+
+
+
+
 
 import CreateEmployeeAttendance from './pages/EmployeeAttendence/CreateEmployeeAttendence';
 import DeleteEmployeeAttendance from './pages/EmployeeAttendence/DeleteEmployeeAttendence';
 import EditEmployeeAttendance from './pages/EmployeeAttendence/EditEmployeeAttendence';
 import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAttendence';
 
+ 
 import CreateEmployeeSalary from './pages/EmployeeSalary/CreateEmployeeSalary';
 import DeleteEmployeeSalary from './pages/EmployeeSalary/DeleteEmployeeSalary';
 import EditEmployeeSalary from './pages/EmployeeSalary/EditEmployeeSalary';
 import ShowEmployeeSalary from './pages/EmployeeSalary/ShowEmployeeSalary';
+
+
+
+
+
+
+import ItemCard from './pages/Cart/ItemCard';
+import Main from './pages/Cart/Main';
+import ItemDis from './pages/Cart/ItemDis';
+import Cart from './pages/Cart/Cart';
+import Checkout from './pages/Cart/Checkout';
+import MyOrder from './pages/Cart/MyOrder';
+import AllOrders from './pages/Cart/AllOrders';
+import DeleteOrder from './pages/Cart/DeleteOrder';
+
+ 
 
 const App = () => {
   return (
@@ -117,24 +148,43 @@ const App = () => {
       <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
       <Route path='/customers/' element={<ShowAllCustomers />}></Route>
 
+
+      {/* <Route path='/card' element={<CreateCard />}></Route> */}
+
+
       <Route path='/cLogin' element={<CLogin />}></Route>'
       <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
-      <Route path='/card/create' element={<CreateCard />}></Route>
+      {/* <Route path='/card/create' element={<CreateCard />}></Route> */}
+
+
 
        <Route path='/store/create' element={<CreateStore />}></Route>
       <Route path='/store/delete/:id' element={<DeleteStore />}></Route>
       <Route path='/store/edit/:id' element={<EditStore />}></Route>
       <Route path='/store/' element={<ShowStore />}></Route>
      
+
+     <Route path='/itemcard/create' element={<ItemCard />}></Route>
+     <Route path='/cart/main' element={<Main />}></Route>
+     <Route path='/itemdis/:id' element={<ItemDis />}></Route>
+      <Route path='/cart' element={<Cart />}></Route>
+    <Route path='/checkout' element={<Checkout />}></Route>
+
+    <Route path='/my-orders' element={<MyOrder />}></Route>
+    <Route path='/allorders' element={<AllOrders />}></Route>
+<Route path='/deleteorder' element={<DeleteOrder />}></Route>
+
       <Route path='/employeeattendence/create' element={<CreateEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/edit/:id' element={<EditEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/allEmployeeAttendence' element={<ShowEmployeeAttendence />}></Route>
 
+
       <Route path='/employeesalary/create' element={<CreateEmployeeSalary />}></Route>
       <Route path='/employeesalary/delete/:id' element={<DeleteEmployeeSalary />}></Route>
       <Route path='/employeesalary/edit/:id' element={<EditEmployeeSalary />}></Route>
       <Route path='/employeesalary/allEmployeeSalary' element={<ShowEmployeeSalary />}></Route>
+
 
     </Routes>
   )
