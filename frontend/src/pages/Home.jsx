@@ -16,6 +16,8 @@ const Home = () => {
  
         <li style={styles.navItem}><Link to="/employees/allEmployee">Employee</Link></li>
         <li style={styles.navItem}><Link to="/employeeattendence/allEmployeeAttendence">Employee Attendence</Link></li>
+        <li style={styles.navItem}><Link to="/employeesalary/allEmployeeSalary">Employee Salary</Link></li>
+
         
         <li style={styles.navItem}><Link to="/">Feedback</Link></li>
         <li style={styles.navItem}><Link to="/inventories/allInventory">Inventory</Link></li>

@@ -74,6 +74,12 @@ import DeleteEmployeeAttendance from './pages/EmployeeAttendence/DeleteEmployeeA
 import EditEmployeeAttendance from './pages/EmployeeAttendence/EditEmployeeAttendence';
 import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAttendence';
 
+ 
+import CreateEmployeeSalary from './pages/EmployeeSalary/CreateEmployeeSalary';
+import DeleteEmployeeSalary from './pages/EmployeeSalary/DeleteEmployeeSalary';
+import EditEmployeeSalary from './pages/EmployeeSalary/EditEmployeeSalary';
+import ShowEmployeeSalary from './pages/EmployeeSalary/ShowEmployeeSalary';
+
 
 
 
@@ -88,6 +94,7 @@ import MyOrder from './pages/Cart/MyOrder';
 import AllOrders from './pages/Cart/AllOrders';
 import DeleteOrder from './pages/Cart/DeleteOrder';
 
+ 
 
 const App = () => {
   return (
@@ -171,6 +178,12 @@ const App = () => {
       <Route path='/employeeattendence/delete/:id' element={<DeleteEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/edit/:id' element={<EditEmployeeAttendance />}></Route>
       <Route path='/employeeattendence/allEmployeeAttendence' element={<ShowEmployeeAttendence />}></Route>
+
+
+      <Route path='/employeesalary/create' element={<CreateEmployeeSalary />}></Route>
+      <Route path='/employeesalary/delete/:id' element={<DeleteEmployeeSalary />}></Route>
+      <Route path='/employeesalary/edit/:id' element={<EditEmployeeSalary />}></Route>
+      <Route path='/employeesalary/allEmployeeSalary' element={<ShowEmployeeSalary />}></Route>
 
 
     </Routes>
