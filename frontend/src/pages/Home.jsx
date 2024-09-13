@@ -60,6 +60,7 @@ const Home = () => {
   };
 
   return (
+
     <div className=''>
     <div className="min-h-screen text-white flex flex-col items-center">
       
@@ -152,6 +153,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+
 
       <div id="products" className="bg-gray-200 py-16 px-8 md:px-16 min-h-screen w-[100%] animate-fadeIn rounded-t-[20%]">
         <h3 className="text-3xl font-light text-center mb-8 text-black">Products <span className="text-pink-500">&rhard;</span></h3>
