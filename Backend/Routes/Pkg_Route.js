@@ -14,7 +14,6 @@ const validateFields = (req, res, next) => {
         "start_date",
         "end_date",
         "conditions",
-        "image_url",
         "package_type",
         "p_name",
         "category",
@@ -42,7 +41,6 @@ router.post('/', validateFields, async (req, res) => {
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             conditions: req.body.conditions,
-            image_url: req.body.image_url,
             package_type: req.body.package_type,
             category: req.body.category,
             p_name: req.body.p_name,
@@ -123,5 +121,39 @@ router.delete('/:id', async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+
+// Route to get all packages or search packages
+router.get("/searchPackage", async (req, res) => {
+    try {
+      // Destructuring the request query with default values
+      const { page = 1, limit = 7, search = "", sort = "ID" } = req.query;
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      // Regular expression for case-insensitive search
+      const query = {
+        $or: [
+          { ID: { $regex: new RegExp(search, 'i') } }, // Using RegExp instead of directly passing $regex
+          { p_name: { $regex: new RegExp(search, 'i') } },
+          { base_price: { $regex: new RegExp(search, 'i') } },
+          { discount_rate: { $regex: new RegExp(search, 'i') } },
+          { Gender: { $regex: new RegExp(search, 'i') } },
+          { category: { $regex: new RegExp(search, 'i') } },
+          { final_price: { $regex: new RegExp(search, 'i') } },
+          { package_type: { $regex: new RegExp(search, 'i') } },
+          { subCategory: { $regex: new RegExp(search, 'i') } },
+        ],
+      };
+      // Using await to ensure that sorting and pagination are applied correctly
+      const pkgs = await Pkg.find(query)
+        .sort({ [sort]: 1 }) // Sorting based on the specified field
+        .skip(skip)
+        .limit(parseInt(limit));
+      res.status(200).json({ count: pkgs.length, data: pkgs });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  });
+  
+
 
 export default router;

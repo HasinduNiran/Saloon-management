@@ -88,10 +88,7 @@ const ReadOnePkg = () => {
               <h2 className="text-2xl font-semibold mb-2">Conditions</h2>
               <p className="text-lg">{pkg.conditions}</p>
             </div>
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Image URL</h2>
-              <p className="text-lg">{pkg.image_url}</p>
-            </div>
+        
           </div>
 
 

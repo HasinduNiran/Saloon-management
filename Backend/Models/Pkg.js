@@ -48,10 +48,6 @@ const pkgSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        image_url: {
-            type: String,
-            required: true
-        },
         package_type: {
             type: String,
             required: true

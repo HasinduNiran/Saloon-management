@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
+const subCategories = {
+  Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
+  'Skin Care': ['Facial', 'Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
+  Nail: ['Manicure', 'Pedicure', 'Nail Art', 'Gel Nails', 'Acrylic Nails', 'Nail Repair', 'Nail Polish', 'Cuticle Care'],
+};
+
 const EditService = () => {
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
@@ -93,15 +99,15 @@ const EditService = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl my-4">Edit Service</h1>
+    <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
+      <h1 className="text-3xl font-bold mb-6">Edit Service</h1>
       {error && <p className="text-red-600">{error}</p>}
       <form 
         onSubmit={handleSubmit} 
         className="space-y-4 border border-gray-300 p-4 rounded shadow-md"
       >
         <div>
-          <label className="block text-gray-700">Category:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
           <select
             value={category}
             onChange={(e) => {
@@ -120,7 +126,7 @@ const EditService = () => {
 
         {category && (
           <div>
-            <label className="block text-gray-700">Sub Category:</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Sub Category:</label>
             <select
               value={subCategory}
               onChange={(e) => setSubCategory(e.target.value)}
@@ -138,7 +144,7 @@ const EditService = () => {
         )}
 
         <div>
-          <label className="block text-gray-700">Description:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -148,7 +154,7 @@ const EditService = () => {
           />
         </div>
         <div>
-          <label className="block text-gray-700">Duration: (min)</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Duration: (min)</label>
           <input
             type="text"
             value={duration}
@@ -160,7 +166,7 @@ const EditService = () => {
           {durationError && <p className="text-red-600">{durationError}</p>} {/* Display duration error */}
         </div>
         <div>
-          <label className="block text-gray-700">Price: (Rs)</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Price: (Rs)</label>
           <input
             type="text"
             value={price}
@@ -171,7 +177,7 @@ const EditService = () => {
           {priceError && <p className="text-red-600">{priceError}</p>} {/* Display price error */}
         </div>
         <div>
-          <label className="block text-gray-700">Available:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Available:</label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
@@ -195,7 +201,7 @@ const EditService = () => {
         </div>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-violet-300 text-white px-4 py-2 rounded"
         >
           Update Service
         </button>

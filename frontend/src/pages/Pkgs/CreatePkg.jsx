@@ -12,7 +12,6 @@ const CreatePkg = () => {
     const [start_date, setStartDate] = useState('');
     const [end_date, setEndDate] = useState('');
     const [conditions, setCondition] = useState('');
-    const [image_url, setImage] = useState('');
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
     const [category, setCategory] = useState('');
@@ -79,7 +78,6 @@ const CreatePkg = () => {
                 start_date,
                 end_date,
                 conditions,
-                image_url,
                 package_type,
                 p_name,
                 category,
@@ -278,21 +276,6 @@ const CreatePkg = () => {
                         name="conditions"
                         value={conditions}
                         onChange={(e) => setCondition(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Image URL */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Image URL
-                    </label>
-                    <input
-                        type="text"
-                        name="image_url"
-                        value={image_url}
-                        onChange={(e) => setImage(e.target.value)}
                         required
                         className="border rounded w-full py-2 px-3 text-gray-700"
                     />
