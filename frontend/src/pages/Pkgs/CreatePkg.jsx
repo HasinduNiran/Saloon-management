@@ -15,7 +15,10 @@ const CreatePkg = () => {
     const [image_url, setImage] = useState('');
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
-    const [service_ID, setServiceID] = useState('');
+    const [category, setCategory] = useState('');
+    const [subCategory, setSubCategory] = useState('');
+    const [categoryOptions, setCategoryOptions] = useState([]); // Categories for dropdown
+    const [subCategoryOptions, setSubCategoryOptions] = useState([]); // Subcategories for dropdown
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -27,6 +30,43 @@ const CreatePkg = () => {
             setFinalPrice(final.toFixed(2));
         }
     }, [base_price, discount_rate]);
+
+    // Fetch all services and populate categories and subcategories
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get('http://localhost:8076/services');
+                const services = response.data;
+
+                // Extract unique categories
+                const uniqueCategories = [...new Set(services.map(service => service.category))];
+                setCategoryOptions(uniqueCategories);
+            } catch (error) {
+                console.error("Error fetching services:", error);
+                setError('Unable to fetch services.');
+            }
+        };
+
+        fetchServices();
+    }, []);
+
+    // Handle category change and load relevant subcategories
+    const handleCategoryChange = (e) => {
+        const selectedCategory = e.target.value;
+        setCategory(selectedCategory);
+
+        // Fetch subcategories related to the selected category
+        axios.get('http://localhost:8076/services').then((response) => {
+            const services = response.data;
+            const filteredServices = services.filter(service => service.category === selectedCategory);
+
+            const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
+            setSubCategoryOptions(uniqueSubCategories);
+        }).catch(error => {
+            console.error("Error fetching subcategories:", error);
+            setError('Unable to fetch subcategories.');
+        });
+    };
 
     const handleSavePackage = async (e) => {
         e.preventDefault();
@@ -42,12 +82,13 @@ const CreatePkg = () => {
                 image_url,
                 package_type,
                 p_name,
-                service_ID,
+                category,
+                subCategory,
             });
             navigate('/pkg/allPkg');
         } catch (error) {
             console.error(error);
-            setError('An error happened. Please check console');
+            setError('An error happened. Please check the console.');
         }
     };
 
@@ -59,21 +100,47 @@ const CreatePkg = () => {
                 onSubmit={handleSavePackage}
                 className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
             >
-                {/* Service ID */}
+                {/* Category */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Service ID
+                        Service Category
                     </label>
-                    <input
-                        type="text"
-                        name="service_ID"
-                        value={service_ID}
-                        onChange={(e) => setServiceID(e.target.value)}
-                        required
+                    <select
+                        value={category}
+                        onChange={handleCategoryChange}
                         className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
+                        required
+                    >
+                        <option value="" disabled>Select Service Category</option>
+                        {categoryOptions.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
+                {/* Subcategory */}
+                {category && subCategoryOptions.length > 0 && (
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                            Service Subcategory
+                        </label>
+                        <select
+                            value={subCategory}
+                            onChange={(e) => setSubCategory(e.target.value)}
+                            className="border rounded w-full py-2 px-3 text-gray-700"
+                            required
+                        >
+                            <option value="" disabled>Select Subcategory</option>
+                            {subCategoryOptions.map((sub, index) => (
+                                <option key={index} value={sub}>
+                                    {sub}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 {/* Package Name */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -233,7 +300,7 @@ const CreatePkg = () => {
 
                 <button
                     type='submit'
-                    className='p-2 bg-sky-300 rounded text-white'
+                    className='p-2 bg-violet-300 rounded text-white'
                 >
                     Create Package
                 </button>

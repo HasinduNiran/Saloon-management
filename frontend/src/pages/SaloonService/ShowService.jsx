@@ -31,10 +31,6 @@ const handleAddClick = () => {
     fetchServices();
   }, []);
 
-  // Handle view details action
-  const handleViewDetails = (serviceId) => {
-    navigate(`/services/${serviceId}`); // Navigate to service details page
-  };
 
   return (
     <div className="p-4">
@@ -52,6 +48,7 @@ const handleAddClick = () => {
           <tr>
           <th className="border-2 border-sky-400 px-4 py-2">Service ID</th>
             <th className="border-2 border-sky-400 px-4 py-2">Category</th>
+            <th className="border-2 border-sky-400 px-4 py-2">Service Type</th>
             <th className="border-2 border-sky-400 px-4 py-2">Description</th>
             <th className="border-2 border-sky-400 px-4 py-2">Duration (min)</th>
             <th className="border-2 border-sky-400 px-4 py-2">Price (Rs)</th>
@@ -64,6 +61,7 @@ const handleAddClick = () => {
             <tr key={service._id}>
                <td className="border-2 border-sky-400 px-4 py-2">{service.service_ID}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{service.category}</td>
+              <td className="border-2 border-sky-400 px-4 py-2">{service.subCategory}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{service.description}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{service.duration}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{service.price}</td>

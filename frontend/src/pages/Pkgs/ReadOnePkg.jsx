@@ -42,8 +42,13 @@ const ReadOnePkg = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Service ID</h2>
-              <p className="text-lg">{pkg.service_ID}</p>
+              <h2 className="text-2xl font-semibold mb-2">Service Category</h2>
+              <p className="text-lg">{pkg.category}</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Service Type</h2>
+              <p className="text-lg">{pkg.subCategory}</p>
             </div>
 
             <div>

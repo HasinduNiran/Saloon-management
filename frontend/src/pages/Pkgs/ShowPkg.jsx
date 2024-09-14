@@ -51,7 +51,8 @@ const handleAddClick = () => {
         <thead>
           <tr>
           <th className="border-2 border-sky-400 px-4 py-2">Package ID</th>
-            <th className="border-2 border-sky-400 px-4 py-2">Service ID</th>
+            <th className="border-2 border-sky-400 px-4 py-2">Service Category</th>
+            <th className="border-2 border-sky-400 px-4 py-2">Service Type</th>
             <th className="border-2 border-sky-400 px-4 py-2">Package Name</th>
             <th className="border-2 border-sky-400 px-4 py-2">Package Type</th>
             <th className="border-2 border-sky-400 px-4 py-2">Description</th>
@@ -68,7 +69,8 @@ const handleAddClick = () => {
           {pkg.map((pkg) => (
             <tr key={pkg._id}>
                <td className="border-2 border-sky-400 px-4 py-2">{pkg.ID}</td>
-              <td className="border-2 border-sky-400 px-4 py-2">{pkg.service_ID}</td>
+              <td className="border-2 border-sky-400 px-4 py-2">{pkg.category}</td>
+              <td className="border-2 border-sky-400 px-4 py-2">{pkg.subCategory}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{pkg.p_name}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{pkg.package_type}</td>
               <td className="border-2 border-sky-400 px-4 py-2">{pkg.description}</td>

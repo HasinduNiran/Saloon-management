@@ -56,7 +56,11 @@ const pkgSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        service_ID: {
+        category: {
+            type: String,
+            required: true
+        },
+        subCategory: {
             type: String,
             required: true
         }

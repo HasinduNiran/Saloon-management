@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const EditService = () => {
   const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
@@ -20,6 +21,7 @@ const EditService = () => {
       try {
         const { data } = await axios.get(`http://localhost:8076/services/${id}`);
         setCategory(data.category);
+        setSubCategory(data.subCategory);
         setDescription(data.description);
         setDuration(data.duration);
         setPrice(data.price);
@@ -55,6 +57,7 @@ const EditService = () => {
     try {
       await axios.put(`http://localhost:8076/services/${id}`, {
         category,
+        subCategory,
         description,
         duration,
         price,
@@ -101,7 +104,10 @@ const EditService = () => {
           <label className="block text-gray-700">Category:</label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setSubCategory(''); // Reset subcategory when category changes
+            }}
             required
             className="border px-2 py-1 w-full max-w-xs"
           >
@@ -111,6 +117,26 @@ const EditService = () => {
             <option value="Nail">Nail</option>
           </select>
         </div>
+
+        {category && (
+          <div>
+            <label className="block text-gray-700">Sub Category:</label>
+            <select
+              value={subCategory}
+              onChange={(e) => setSubCategory(e.target.value)}
+              required
+              className="border px-2 py-1 w-full max-w-xs"
+            >
+              <option value="">Select Sub Category</option>
+              {subCategories[category].map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div>
           <label className="block text-gray-700">Description:</label>
           <textarea
