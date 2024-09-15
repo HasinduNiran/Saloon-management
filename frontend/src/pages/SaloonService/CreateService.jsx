@@ -193,6 +193,9 @@ const CreateService = () => {
           type='file' />
           </div>
         </div> 
+          className='form-control' type='file' name='image'/>
+          </div>
+        </div>
         <button
           type="submit"
           className="p-2 bg-violet-300 rounded text-white"

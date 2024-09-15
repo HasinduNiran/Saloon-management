@@ -6,6 +6,20 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads'); 
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+const uploads = multer({ storage: storage }).single('image');
+router.use('/uploads', express.static(join(__dirname, 'uploads')));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,6 +48,13 @@ const validateFields = (req, res, next) => {
         'price',
         'available',
         'subCategory'
+        "category",
+        "description",
+        "duration",
+        "price",
+        "available",
+        "subCategory",
+        "image"
     ];
 
     for (const field of requiredFields) {
@@ -51,6 +72,21 @@ router.post('/', uploads, validateFields, async (req, res) => {
         const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
         const newService = new Service({
+router.post('/', validateFields, async (req, res) => {
+    uploads(req, res,async(err) => {
+        try{
+            if (err instanceof multer.MulterError) {
+                // Multer error occurred
+                return res.status(400).json({ error: err.message });
+            } else if (err) {
+                // Other errors occurred
+                return res.status(500).json({ error: err.message });
+            }
+
+            const { category, description, duration, price,available, subCategory } = req.body;
+            const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
+            
+        const newService =  new Service ({
             category,
             description,
             duration,
@@ -60,12 +96,13 @@ router.post('/', uploads, validateFields, async (req, res) => {
             image
         });
 
-        await newService.save();
-        return res.status(201).json({ message: "Service created" });
+         await newService.save();
+         return res.status(201).json({ message: "Service created" });
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
     }
+});
 });
 
 // Route to get all services
