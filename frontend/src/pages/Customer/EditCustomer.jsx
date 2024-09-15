@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { app } from "../../config/firebase";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const EditCustomer = () => {
   const [customer, setCustomer] = useState({
@@ -31,8 +33,7 @@ const EditCustomer = () => {
     axios
       .get(`http://localhost:8076/customers/${id}`)
       .then((response) => {
-        const data = response.data;
-        setCustomer(data);
+        setCustomer(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -50,22 +51,17 @@ const EditCustomer = () => {
     const { name, value } = e.target;
     let error = "";
 
-    if (name === 'ContactNo') {
-      if (!/^(07\d{8})$/.test(value)) {
-        error = "Phone number must start with '07' and be exactly 10 digits long.";
-      }
+    // Validation logic
+    if (name === 'ContactNo' && !/^(07\d{8})$/.test(value)) {
+      error = "Phone number must start with '07' and be exactly 10 digits long.";
     }
 
-    if (name === 'FirstName') {
-      if (!/^[A-Z][a-z]*$/.test(value)) {
-        error = "First name must start with a capital letter and contain only letters.";
-      }
+    if (name === 'FirstName' && !/^[A-Z][a-z]*$/.test(value)) {
+      error = "First name must start with a capital letter and contain only letters.";
     }
 
-    if (name === 'LastName') {
-      if (!/^[A-Z][a-z]*$/.test(value)) {
-        error = "Last name must start with a capital letter and contain only letters.";
-      }
+    if (name === 'LastName' && !/^[A-Z][a-z]*$/.test(value)) {
+      error = "Last name must start with a capital letter and contain only letters.";
     }
 
     if (name === 'Age') {
@@ -113,17 +109,16 @@ const EditCustomer = () => {
     }
     
     try {
-      let imageUrl = customer.image; // Default to the current image URL
+      let imageUrl = customer.image ? await getDownloadURL(ref(storage, `customer_images/${id}`)) : '';
+
       if (customer.image && customer.image instanceof File) {
         const storageRef = ref(storage, `customer_images/${id}`);
         const uploadTask = uploadBytesResumable(storageRef, customer.image);
 
         await uploadTask;
-
         imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
       }
 
-      // Update customer data with image URL
       const updatedCustomer = { ...customer, image: imageUrl };
       axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer)
         .then((response) => {
@@ -142,7 +137,6 @@ const EditCustomer = () => {
         .catch((error) => {
           setLoading(false);
           console.error('Error updating customer:', error);
-          console.log('Response data:', error.response?.data);
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -160,204 +154,194 @@ const EditCustomer = () => {
     }
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="container">
-      <style>{`
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-          }
-
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          }
-
-          h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-          }
-
-          form {
-            display: flex;
-            flex-direction: column;
-          }
-
-          label {
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-          }
-
-          input[type="text"],
-          input[type="number"],
-          input[type="date"],
-          input[type="email"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            width: 100%;
-          }
-
-          button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 16px;
-          }
-
-          button:hover {
-            background-color: #45a049;
-          }
-
-          @media screen and (max-width: 768px) {
-            .container {
-              padding: 10px;
-            }
-
-            input[type="text"],
-            input[type="date"],
-            input[type="email"] {
-              padding: 8px;
-              font-size: 14px;
-            }
-
-            button {
-              padding: 8px 16px;
-              font-size: 14px;
-            }
-          }
-
-          .error-message {
-            color: red;
-            font-size: 14px;
-            margin-top: -10px;
-            margin-bottom: 10px;
-          }
-        `}</style>
-       <h1>Edit Customer</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
-                    <input
-                        type="text"
-                        value={customer.CusID}
-                        onChange={(e) => setCustomer({...customer, CusID: e.target.value})}
-                        maxLength={10}
-                        required
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label>Image</label>
-                    <input
-                        type="file"
-                        onChange={handleImageChange}
-                    />
-                    {customer.image && <img src={customer.image instanceof File ? URL.createObjectURL(customer.image) : customer.image} alt="Customer" style={{ maxWidth: '100%', maxHeight: '200px' }} />}
-                </div>
-                <div>
-                    <label>First Name</label>
-                    <input
-                        type="text"
-                        name="FirstName"
-                        value={customer.FirstName}
-                        onChange={handleChange}
-                    />
-                    {errors.FirstName && <p className="error-message">{errors.FirstName}</p>}
-                </div>
-                <div>
-                    <label>Last Name</label>
-                    <input
-                        type="text"
-                        name="LastName"
-                        value={customer.LastName}
-                        onChange={handleChange}
-                    />
-                    {errors.LastName && <p className="error-message">{errors.LastName}</p>}
-                </div>
-                <div>
-                    <label>Phone</label>
-                    <input
-                        type="text"
-                        name="ContactNo"
-                        value={customer.ContactNo}
-                        onChange={handleChange}
-                        maxLength={10}
-                    />
-                    {errors.ContactNo && <p className="error-message">{errors.ContactNo}</p>}
-                </div>
-                <div>
-                    <label>Age</label>
-                    <input
-                        type="text"
-                        name="Age"
-                        value={customer.Age}
-                        onChange={handleChange}
-                    />
-                    {errors.Age && <p className="error-message">{errors.Age}</p>}
-                </div>
-                <div>
-                    <label>Gender</label>
-                    <select
-                        value={customer.Gender}
-                        onChange={(e) => setCustomer({...customer, Gender: e.target.value})}
-                        >
-                        <option value="" disabled>Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                      </select>
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="Email"
-                        required
-                        value={customer.Email}
-                        onChange={handleChange}
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        name="Password"
-                        required
-                        value={customer.Password}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label>Re-enter Password</label>
-                    <input
-                        type="password"
-                        name="reEnteredPassword"
-                        required
-                        value={customer.Password}
-                        onChange={(e) => setCustomer({...customer, reEnteredPassword: e.target.value})}
-                    />
-                    {customer.Password !== customer.reEnteredPassword && <p className="error-message">Passwords do not match</p>}
-                </div>
-                <button type="submit">Save</button>
-            </form>
+    <div style={containerStyle}>
+      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+          <img className="mx-auto h-10 w-auto" src={Logo} alt="logo" style={{ width: '50px', height: '50px', marginRight: '400px'}} />
+          <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+            Edit Customer Information
+          </h2>
+          <p className="mt-2 text-center text-sm leading-5 text-gray-500 max-w">
+            <a href="/cLogin" className="font-medium text-pink-600 hover:text-pink-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+              Login to your account
+            </a>
+          </p>
         </div>
-    );
+
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="FirstName" className="block text-sm font-medium leading-5 text-gray-700">First Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="FirstName"
+                    name="FirstName"
+                    placeholder="John"
+                    type="text"
+                    value={customer.FirstName}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  {errors.FirstName && <p className="text-red-500 text-xs">{errors.FirstName}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="LastName" className="block text-sm font-medium leading-5 text-gray-700">Last Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="LastName"
+                    name="LastName"
+                    placeholder="Doe"
+                    type="text"
+                    value={customer.LastName}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  {errors.LastName && <p className="text-red-500 text-xs">{errors.LastName}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Profile Image</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="image"
+                    name="image"
+                    type="file"
+                    onChange={handleImageChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="Age" className="block text-sm font-medium leading-5 text-gray-700">Age</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Age"
+                    name="Age"
+                    type="number"
+                    placeholder="25"
+                    value={customer.Age}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  {errors.Age && <p className="text-red-500 text-xs">{errors.Age}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="Gender" className="block text-sm font-medium leading-5 text-gray-700">Gender</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <select
+                    id="Gender"
+                    name="Gender"
+                    value={customer.Gender}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact No</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="ContactNo"
+                    name="ContactNo"
+                    type="text"
+                    placeholder="0712345678"
+                    value={customer.ContactNo}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  {errors.ContactNo && <p className="text-red-500 text-xs">{errors.ContactNo}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="Email" className="block text-sm font-medium leading-5 text-gray-700">Email</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Email"
+                    name="Email"
+                    type="email"
+                    placeholder="example@example.com"
+                    value={customer.Email}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="Password" className="block text-sm font-medium leading-5 text-gray-700">Password</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Password"
+                    name="Password"
+                    type="password"
+                    placeholder="********"
+                    value={customer.Password}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="reEnteredPassword" className="block text-sm font-medium leading-5 text-gray-700">Re-enter Password</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="reEnteredPassword"
+                    name="reEnteredPassword"
+                    type="password"
+                    placeholder="********"
+                    value={customer.reEnteredPassword}
+                    onChange={handleChange}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  {customer.Password !== customer.reEnteredPassword && <p className="text-red-500 text-xs">Passwords do not match.</p>}
+                </div>
+              </div>
+
+              <div className="col-span-2 flex justify-center">
+                <button
+                  type="submit"
+                  className="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition duration-150 ease-in-out"
+                >
+                  {loading ? <Spinner /> : 'Update Customer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default EditCustomer;
