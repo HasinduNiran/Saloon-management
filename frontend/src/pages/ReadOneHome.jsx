@@ -2,15 +2,34 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import homebg from '../images/home1.jpg';
 import './Home.css'; 
-import Card from './HomeCard/Hcard';
+//import Card from './HomeCard/Hcard';
+//import ItemCard from './Cart/ItemCard';
+import Main from './Cart/Main';
 import Footer from './footer/Footer';
 import Logo from '../images/logo.png';
+import { Link, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const ReadOneHome = () => {
+  const [CusID, setCusID] = useState('');
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState('');
   const [buttonPressed, setButtonPressed] = useState(false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    if (CusID) {
+      fetchData();
+    }
+  }, [CusID]);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8076/customers/${CusID}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +52,24 @@ const ReadOneHome = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  useEffect(() => {
+    const fetchCustomerData = async () => {
+        try {
+            const response = await axios.get('http://localhost:8076/customers'); // Adjust URL as needed
+            if (response.data && response.data.CusID) {
+                setCusID(response.data.CusID);
+            }
+        } catch (error) {
+            console.error('Error fetching customer data:', error);
+        }
+    };
 
+    fetchCustomerData();
+}, []);
+const handleItemClick = (itemId) => {
+  navigate(`/item/${itemId}?cusID=${CusID}`);
+};
   const handleSmoothScroll = (event, sectionId) => {
     event.preventDefault();
     if (sectionId === 'home') {
@@ -178,7 +214,7 @@ const ReadOneHome = () => {
         <div id="products" className="bg-gray-200 py-16 px-8 md:px-16 min-h-screen w-[100%] animate-fadeIn rounded-t-[20%]">
           <h3 className="text-3xl font-light text-center mb-8 text-black">Products <span className="text-pink-500">&rhard;</span></h3>
           <div className="flex flex-col md:flex-row justify-center space-y-8 md:space-y-0 md:space-x-8">
-            <Card />
+          <Main onItemClick={handleItemClick} />
           </div>
         </div>
       </div>

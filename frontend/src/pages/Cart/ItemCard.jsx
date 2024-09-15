@@ -1,31 +1,28 @@
 import React from 'react';
-import { BsStarFill, BsStarHalf } from 'react-icons/bs';
+import { FaCartArrowDown } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
-import Button from '../../components/Button';
 
-export default function ItemCard({ ItemNo, image, ItemName, SPrice }) {
+const ItemCard = ({ ItemNo, image, ItemName, SPrice }) => {
     return (
-        <Link
-            to={`/itemdis/${ItemNo}`}  // Correct navigation using ItemNo
-            className="w-full lg:w-1/4 p-5 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-lg"
-        >
-            <img className="rounded-xl" src={image} alt={ItemName} />
-            <div className="space-y-4">
-                <h3 className="font-semibold text-center text-xl pt-6 truncate">
-                    {ItemName}
-                </h3>
-                <div className="flex flex-row justify-center">
-                    <BsStarFill className="text-orange-600" />
-                    <BsStarFill className="text-orange-600" />
-                    <BsStarFill className="text-orange-600" />
-                    <BsStarFill className="text-orange-600" />
-                    <BsStarHalf className="text-orange-600" />
-                </div>
-                <div className="flex flex-row items-center justify-center gap-4">
-                    <h3 className="font-semibold text-lg">${SPrice}</h3>
-                    <Button title="Buy Now" />
-                </div>
+        <div className="w-72 shadow-lg rounded-lg bg-neutral-50 p-4 transform transition-transform duration-300 hover:-translate-y-2">
+            <Link to={`/itemdis/${ItemNo}`}>
+                <img
+                    src={image}
+                    alt={ItemName}
+                    className="w-full h-48 object-cover rounded-md"
+                />
+            </Link>
+            <div className="mt-4">
+                <h2 className="font-semibold text-lg font-title text-pink-500">{ItemName}</h2>
             </div>
-        </Link>
+            <div className="mt-4 flex justify-between items-center">
+                <span className="text-lg font-semibold text-pink-500">{`$${SPrice}`}</span>
+                <button className="bg-primary rounded-md text-pink-500 py-2 px-4">
+                    <FaCartArrowDown size={24} />
+                </button>
+            </div>
+        </div>
     );
-}
+};
+
+export default ItemCard;

@@ -146,6 +146,13 @@ const Checkout = () => {
                     <h2 className="text-2xl font-semibold mb-4">Customer Information</h2>
                     <input
                         type="text"
+                        name="CusID"
+                        value={CusID || ""}
+                        readOnly
+                        className="w-full p-2 border rounded bg-gray-200"
+                    />
+                    <input
+                        type="text"
                         name="FirstName"
                         placeholder="Name"
                         value={customerInfo.FirstName}
@@ -240,13 +247,12 @@ const Checkout = () => {
 
                     {/* Place Order Button */}
                     <button
-    onClick={handlePlaceOrder}
-    className="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
-    disabled={loading}
->
-    {loading ? "Placing Order..." : "Place Order"}
-</button>
-
+                        onClick={handlePlaceOrder}
+                        className="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
+                        disabled={loading}
+                    >
+                        {loading ? "Placing Order..." : "Place Order"}
+                    </button>
                 </div>
             </div>
         </div>
@@ -254,4 +260,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-

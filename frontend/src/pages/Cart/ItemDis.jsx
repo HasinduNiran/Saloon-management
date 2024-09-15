@@ -3,12 +3,17 @@ import { useParams } from 'react-router-dom';
 import ItemCard from './ItemCard';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ItemDis = () => {
-    const { id } = useParams();  // Extract id from URL
+    const { CusID } = useParams(); 
+    //const { id } = useParams();  
     const [store, setStore] = useState([]);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [cussID, setcussID] = useState('');
+    const navigate = useNavigate();
+    const [userData, setUserData] = useState({});
 
     useEffect(() => {
         axios.get('http://localhost:8076/store')
@@ -29,19 +34,31 @@ const ItemDis = () => {
             });
     }, []);
 
-    const itemdis = store.find((item) => item.ItemNo.toString() === id);  // Ensure matching string types
-    const recommendedItems = store.filter((item) => item.ItemNo.toString() !== id);  // Filter out current item
-
-    console.log('ID:', id);
-    console.log('Store:', store);
-    console.log('Item Details:', itemdis);
-    console.log('Recommended Items:', recommendedItems);
+    const itemdis = store.find((item) => item.ItemNo.toString() === id);
+    const recommendedItems = store.filter((item) => item.ItemNo.toString() !== id);
 
     const handleIncrease = () => setQuantity(quantity + 1);
     const handleDecrease = () => {
         if (quantity > 1) setQuantity(quantity - 1);
     };
-
+    useEffect(() => {
+        setLoading(true);
+        axios.get(`http://localhost:8076/customers/${CusID}`)
+            .then((response) => {
+                const data = response.data;
+                setUserData(response.data);
+                setcussID(data.CusID);
+                //setContact_Number(data.phone);
+                //setEmail(data.email);
+                //setCustomer_Name(`${data.firstName} ${data.lastName}`);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setLoading(false);
+                alert(`An error happened. Please check console`);
+                console.log(error);
+            });
+    }, [CusID]);
     const handleAddToCart = () => {
         try {
             if (!itemdis) {
@@ -55,7 +72,7 @@ const ItemDis = () => {
             }
 
             const cartItem = {
-                userId: 'user001',
+                CusID: CusID,
                 ItemNo: itemdis.ItemNo,
                 ItemName: itemdis.ItemName,
                 image: itemdis.image,
@@ -90,27 +107,46 @@ const ItemDis = () => {
 
     const handleBuyNow = () => {
         // Logic to buy the item immediately
+        navigate('/checkout');
+    };
+
+    const fadeInStyle = {
+        animation: 'fadeIn 1s ease-in-out'
+    };
+
+    const slideInStyle = {
+        animation: 'slideIn 1s ease-in-out'
+    };
+
+    const bounceStyle = {
+        animation: 'bounce 2s infinite'
+    };
+
+    const zoomInStyle = {
+        animation: 'zoomIn 1s ease-in-out'
     };
 
     if (loading) {
-        return <div>Loading...</div>;  // Show loading until data is fetched
+        return <div style={fadeInStyle}>Loading...</div>;
     }
 
     if (!itemdis) {
-        return <div>Item not found</div>;  // If no matching item is found
+        return <div style={slideInStyle}>Item not found</div>;
     }
 
     return (
-        <div className="min-h-screen p-8 flex flex-col items-center">
-            <div className="w-2/3 flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-10">
-                <div className="w-full lg:w-1/2">
+        
+        <div className="min-h-screen p-8 flex flex-col items-center" style={fadeInStyle}>
+          <div className="bg-gray-200 py-8 px-4 md:px-6 h-[70vh] w-3/4 animate-fadeIn rounded-t-[20%]">
+            <div className="w-2/3 flex flex-col lg:flex-row items-center space-y-8 lg:space-y-0 lg:space-x-10">
+                <div className="w-full lg:w-3/4" style={zoomInStyle}>
                     <img
                         className="rounded-xl w-full transition-transform duration-300 transform hover:scale-105"
                         src={itemdis?.image}
                         alt={itemdis?.ItemName}
                     />
                 </div>
-                <div className="w-full lg:w-1/2 space-y-6">
+                <div className="w-full lg:w-1/2 space-y-6" style={slideInStyle}>
                     <h1 className="text-4xl font-semibold">{itemdis?.ItemName}</h1>
                     <p className="text-lg text-gray-600">{itemdis?.Description}</p>
                     <h2 className="text-2xl font-semibold">${itemdis?.SPrice}</h2>
@@ -136,12 +172,14 @@ const ItemDis = () => {
                         >
                             Add to Cart
                         </button>
-                        <button
+                        {/* <button
                             onClick={handleBuyNow}
                             className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300"
+                            style={bounceStyle}
                         >
                             Buy Now
-                        </button>
+                        </button> */}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -149,7 +187,16 @@ const ItemDis = () => {
             <div className="w-full lg:w-2/3 mt-16">
                 <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
                 <div className="overflow-x-hidden whitespace-nowrap mb-5">
-                    <div className="flex space-x-4 animate-marquee">
+                <div style={styles.inputGroup}>
+                        <label style={styles.label}>Customer ID</label>
+                        <input
+                            type='text'
+                            value={cussID}
+                            onChange={(e) => setcussID(e.target.value)}
+                            style={styles.input}
+                        />
+                    </div>
+                    <div className="flex space-x-4">
                         {recommendedItems.length > 0 ? (
                             <div className="flex flex-wrap gap-8 justify-center">
                                 {recommendedItems.map((item) => (

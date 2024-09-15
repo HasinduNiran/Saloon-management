@@ -14,8 +14,39 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   
   const navigate = useNavigate();
+  const CusID = localStorage.getItem('CusID') || "defaultCusID"; // Replace "defaultCusID" with a fallback if needed
 
+ 
   // Load cart items from local storage and store items from API
+  // useEffect(() => {
+  //   // Fetch store items from the API
+  //   axios.get('http://localhost:8076/store')
+  //     .then((response) => {
+  //       const data = response.data;
+  //       if (Array.isArray(data)) {
+  //         setStore(data);
+  //       } else {
+  //         console.warn('Data is not an array:', data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching store data:', error);
+  //     })
+  //     .finally(() => setLoading(false));
+
+  //   // Load cart data from localStorage
+  //   const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+  //   setCartItems(cartData);
+  //   calculateTotal(cartData);
+  // }, []);
+  useEffect(() => {
+    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+    setCartItems(cartData);
+    calculateTotal(cartData);
+    setLoading(false); // Set loading to false after loading data
+  }, []);
+
+  //Load cart items from local storage and store items from API
   useEffect(() => {
     // Fetch store items from the API
     axios.get('http://localhost:8076/store')
@@ -37,7 +68,7 @@ const Cart = () => {
     setCartItems(cartData);
     calculateTotal(cartData);
   }, []);
-
+  
   // Function to calculate total price
   const calculateTotal = (items) => {
     const totalAmount = items.reduce((acc, item) => acc + item.SPrice * item.quantity, 0);
@@ -80,11 +111,12 @@ const Cart = () => {
       });
     }
   };
+  
 
   // Handle checkout
   const handleCheckout = () => {
     const checkoutData = {
-      userId: "user001",
+      CusID: CusID,
       items: cartItems,
       total: total - discount,
     };
@@ -112,10 +144,12 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center">
-      <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10">
+      <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10 mx-auto">
+      
+      <div className="bg-gray-200 py-8 px-4 md:px-6 h-auto w-full lg:w-2/3 animate-fadeIn rounded-t-[20%] mx-auto">
         {/* Cart Items Section */}
         <div className="w-full lg:w-2/3 space-y-6">
-          <h1 className="text-3xl font-semibold mb-4">Your Cart</h1>
+          <h1 className="text-3xl font-semibold text-center mb-4">Your Cart</h1>
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <div key={item.ItemNo} className="flex items-center justify-between p-4 border-b">
@@ -142,9 +176,10 @@ const Cart = () => {
                     Total: ${(item.SPrice * item.quantity).toFixed(2)}
                   </p>
                 </div>
+                
                 <button
                   onClick={() => handleRemoveItem(item.ItemNo)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 hover:text-red-700 text-align:right"
                 >
                   Remove
                 </button>
@@ -154,7 +189,7 @@ const Cart = () => {
             <p>Your cart is empty.</p>
           )}
         </div>
-
+</div>
         {/* Order Summary Section */}
         <div className="w-full lg:w-1/3 p-6 bg-gray-100 rounded-lg space-y-4">
           <h2 className="text-2xl font-semibold">Order Summary</h2>
@@ -186,11 +221,11 @@ const Cart = () => {
             Apply Promo Code
           </button>
           <button
-            className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
-            onClick={handleCheckout}
-          >
-            Checkout
-          </button>
+                className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
+                onClick={handleCheckout}
+            >
+                Checkout
+            </button>
         </div>
       </div>
 

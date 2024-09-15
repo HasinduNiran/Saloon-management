@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner"; // Ensure this component exists
+//import EditOrderPopup from "../../components/EditOrderPopup"; // Ensure this component exists
 
 const MyOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -9,12 +10,15 @@ const MyOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [expandedOrders, setExpandedOrders] = useState({});
   const [showEditPopup, setShowEditPopup] = useState(false);
-  const userId = "user001"; // Replace with dynamic userId or context
+
+  // Replace this with dynamic retrieval of user ID
+  const CusID = "user001"; 
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`http://localhost:8076/order/${userId}`);
+        const response = await axios.get(`http://localhost:8076/order/${CusID}`);
+        console.log("Fetched Orders:", response.data);  // Debug log
         setOrders(response.data);
       } catch (error) {
         Swal.fire("Error", "Failed to fetch orders", "error");
@@ -24,7 +28,7 @@ const MyOrder = () => {
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [CusID]);
 
   const handleToggleExpand = (orderId) => {
     setExpandedOrders((prev) => ({
@@ -47,7 +51,7 @@ const MyOrder = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:8076/orders/${orderId}`);
+        await axios.delete(`http://localhost:8076/order/${orderId}`);
         setOrders((prevOrders) =>
           prevOrders.filter((order) => order._id !== orderId)
         );
@@ -196,21 +200,7 @@ const MyOrder = () => {
         <p className="text-center">No orders found</p>
       )}
 
-      {showEditPopup && selectedOrder && (
-        <EditOrderPopup
-          order={selectedOrder}
-          onClose={() => setShowEditPopup(false)}
-          onUpdate={(updatedOrder) => {
-            setOrders((prevOrders) =>
-              prevOrders.map((order) =>
-                order._id === updatedOrder._id ? updatedOrder : order
-              )
-            );
-            setShowEditPopup(false);
-          }
-        }
-        />
-      )}
+      
     </div>
   );
 };
