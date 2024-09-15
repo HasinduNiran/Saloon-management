@@ -219,10 +219,10 @@ const ShowService = () => {
               <td className="px-6 py-4 text-sm text-gray-700">{service.price}</td>
               <td className="px-6 py-4 text-sm text-gray-700">{service.available ? 'Yes' : 'No'}</td>
 
-             <td className="px-6 py-4 text-sm text-gray-700">
+              <td className="px-6 py-4 text-sm text-gray-700">
               <img src={`http://localhost:8076/${service.image}`}  className='w-full h-32 object-cover rounded-t-lg' />
                   {console.log(`http://localhost:8076/${service.image}`)}
-              </td> 
+              </td>
 
               <td className="px-6 py-4 text-sm text-gray-700 flex items-center space-x-4">
                 <Link
