@@ -100,6 +100,14 @@ const ReadOneHome = () => {
     navigate(`/appointments/create/${customer.Email}`); // Navigate to the appointments page
   };
 
+  const handlePackageClick = () => {
+    navigate(`/pkg/pkgPage`); // Navigate to the appointments page
+  };
+
+  const handleServiceClick = () => {
+    navigate(`/services/servicePage`); // Navigate to the appointments page
+  };
+
   return (
     <div>
       <div className="min-h-screen text-white flex flex-col items-center">
@@ -129,6 +137,22 @@ const ReadOneHome = () => {
               </li>
             ))}
           </ul>
+
+          {/*  Packages Button */}
+          <button 
+            onClick={handlePackageClick} 
+            className=" text-pink font-semibold hover:bg-pink-200"
+          >
+            Our Packages
+          </button>
+
+          {/*  Services Button */}
+          <button 
+            onClick={handleServiceClick} 
+            className=" text-pink font-semibold hover:bg-pink-200"
+          >
+            Our Services
+          </button>
 
           {/* Make Appointment Button */}
           <button 

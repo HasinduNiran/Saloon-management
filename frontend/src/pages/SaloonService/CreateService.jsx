@@ -21,6 +21,7 @@ const CreateService = () => {
   const [priceError, setPriceError] = useState(''); // New state for price errors
   const [durationError, setDurationError] = useState(''); // New state for duration errors
   const navigate = useNavigate(); // For programmatic navigation
+  const [loading,setLoading] = useState('');
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -165,7 +166,7 @@ const CreateService = () => {
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
                 checked={available === 'Yes'}
                 onChange={() => setAvailable('Yes')}
                 className="mr-2"
@@ -174,7 +175,7 @@ const CreateService = () => {
             </label>
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
                 checked={available === 'No'}
                 onChange={() => setAvailable('No')}
                 className="mr-2"
