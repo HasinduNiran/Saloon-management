@@ -103,7 +103,7 @@ const App = () => {
 
  
       <Route path='/appointments/allAppointment' element={<ShowAppointment />}></Route>
-      <Route path='/appointments/create' element={<CreateAppointment />}></Route>
+      <Route path='/appointments/create/:id' element={<CreateAppointment />}></Route>
       <Route path='/appointments/delete/:id' element={<DeleteAppointment />}></Route>
       <Route path='/appointments/edit/:id' element={<EditAppointment />}></Route>
       <Route path='/appointments/details/:id' element={<ReadOneAppointment />}></Route>

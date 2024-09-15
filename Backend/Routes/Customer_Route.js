@@ -112,4 +112,22 @@ router.post('/cLogin', async (request, response) => {
     }
 });
 
+router.get('/:Email', async (req, res) => { // view one customer by email
+    try {
+        const Email = req.params.Email; // Extract email from URL params
+        const customer = await Customer.findOne({ Email:Email })
+
+        if (!customer) {
+            return res.status(404).json({ message: "customer not found" });
+        }
+
+        return res.status(200).json({
+            data: customer
+        });
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send({ message: err.message });
+    }
+}); 
+
 export default router;

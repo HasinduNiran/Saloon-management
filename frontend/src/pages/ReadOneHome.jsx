@@ -7,13 +7,28 @@ import Card from './HomeCard/Hcard';
 import Footer from './footer/Footer';
 import Logo from '../images/logo.png';
 import Swal from 'sweetalert2';
+import {  useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const ReadOneHome = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState('');
   const [buttonPressed, setButtonPressed] = useState(false);
-
+  const [customer, setCustomer] = useState('');
+  const { Email } = useParams();
   const navigate = useNavigate(); // Use navigate for routing
+
+  useEffect(() => {
+    axios
+        .get(`http://localhost:8076/customers/${Email}`)
+        .then((res) => {
+          setCustomer(res.data.data);
+            console.log(res.data.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}, [Email]); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,7 +97,7 @@ const ReadOneHome = () => {
   };
 
   const handleAppointmentClick = () => {
-    navigate('/appointments/create'); // Navigate to the appointments page
+    navigate(`/appointments/create/${customer.Email}`); // Navigate to the appointments page
   };
 
   return (
