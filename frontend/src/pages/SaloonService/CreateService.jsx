@@ -2,8 +2,16 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const subCategories = {
+  Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
+  'Skin Care': ['Facial', 'Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
+  Nail: ['Manicure', 'Pedicure', 'Nail Art', 'Gel Nails', 'Acrylic Nails', 'Nail Repair', 'Nail Polish', 'Cuticle Care'],
+};
+
+
 const CreateService = () => {
   const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState(''); // State for subcategory
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
@@ -27,13 +35,14 @@ const CreateService = () => {
     }
 
     // Validate duration input
-  if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
-    setDurationError('Please enter a valid whole number for duration.');
-    return;
-  }
+    if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
+      setDurationError('Please enter a valid whole number for duration.');
+      return;
+    }
     try {
       await axios.post('http://localhost:8076/services', {
         category,
+        subCategory, // Include subcategory in the form data
         description,
         duration,
         price,
@@ -57,8 +66,8 @@ const CreateService = () => {
     }
   };
 
- // Handle duration input change
-const handleDurationChange = (e) => {
+  // Handle duration input change
+  const handleDurationChange = (e) => {
     const value = e.target.value;
     if (/^\d+$/.test(value)) { // Allow only whole numbers
       setDuration(value);
@@ -69,18 +78,21 @@ const handleDurationChange = (e) => {
   };
 
   return (
-    <div className="p-4">
-        <h1 className="text-3xl my-4">Create New Service</h1>
-       {error && <p className="text-red-600">{error}</p>}
+    <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
+      <h1 className="text-3xl font-bold mb-6">Create New Service</h1>
+      {error && <p className="text-red-600">{error}</p>}
       <form 
         onSubmit={handleSubmit} 
-        className="space-y-4 border border-gray-300 p-4 rounded shadow-md"
+        className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
       >
         <div>
-          <label className="block text-gray-700">Category:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setSubCategory(''); // Reset subcategory when category changes
+            }}
             required
             className="border px-2 py-1 w-full max-w-xs"
           >
@@ -90,8 +102,28 @@ const handleDurationChange = (e) => {
             <option value="Nail">Nail</option>
           </select>
         </div>
+
+        {category && (
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Sub Category:</label>
+            <select
+              value={subCategory}
+              onChange={(e) => setSubCategory(e.target.value)}
+              required
+              className="border px-2 py-1 w-full max-w-xs"
+            >
+              <option value="">Select Sub Category</option>
+              {subCategories[category].map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div>
-          <label className="block text-gray-700">Description:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -101,7 +133,7 @@ const handleDurationChange = (e) => {
           />
         </div>
         <div>
-          <label className="block text-gray-700">Duration: (min)</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Duration: (min)</label>
           <input
             type="text"
             value={duration}
@@ -110,10 +142,10 @@ const handleDurationChange = (e) => {
             required
             className="border px-2 py-1 w-full max-w-xs"
           />
-          {durationError && <p className="text-red-600">{durationError}</p>} {/* Display duration error */}
+          {durationError && <p className="text-red-600">{durationError}</p>}
         </div>
         <div>
-          <label className="block text-gray-700">Price: (Rs)</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Price: (Rs)</label>
           <input
             type="text"
             value={price}
@@ -121,10 +153,10 @@ const handleDurationChange = (e) => {
             required
             className="border px-2 py-1 w-full max-w-xs"
           />
-          {priceError && <p className="text-red-600">{priceError}</p>} {/* Display price error */}
+          {priceError && <p className="text-red-600">{priceError}</p>}
         </div>
         <div>
-          <label className="block text-gray-700">Available:</label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Available:</label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
@@ -148,7 +180,7 @@ const handleDurationChange = (e) => {
         </div>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="p-2 bg-violet-300 rounded text-white"
         >
           Create Service
         </button>
