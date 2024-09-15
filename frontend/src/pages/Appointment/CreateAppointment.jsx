@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import Spinner from "../../components/Spinner";
 import DatePicker from "react-datepicker"; // Importing DatePicker
@@ -18,13 +18,47 @@ const CreateAppointment = () => {
   const [customize_package, setPackage] = useState("");
   const [appoi_date, setDate] = useState(null);
   const [appoi_time, setTime] = useState(null);
-
+  
+  // State for services and packages
+  const [services, setServices] = useState([]);
+  const [packages, setPackages] = useState([]);
+  
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Dummy data for dropdown options
+  useEffect(() => {
+    const fetchServicesAndPackages = async () => {
+      try {
+        // Make API requests for services and packages
+        const servicesResponse = await axios.get("http://localhost:8076/services");
+        const packagesResponse = await axios.get("http://localhost:8076/pkg");
+  
+        // Set the fetched data to state
+        setServices(servicesResponse.data);
+        setPackages(packagesResponse.data);
+      } catch (error) {
+        // Log detailed error information
+        console.error("Error fetching services and packages:", error.message);
+        if (error.response) {
+          // Server responded with a status other than 2xx
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+          console.error("Response headers:", error.response.headers);
+        } else if (error.request) {
+          // No response was received
+          console.error("Request data:", error.request);
+        } else {
+          // Error setting up the request
+          console.error("Error message:", error.message);
+        }
+      }
+    };
+  
+    fetchServicesAndPackages();
+  }, []);
+  
+
   const stylists = ["Stylist 1", "Stylist 2", "Stylist 3"];
-  const services = ["Haircut", "Nail", "Skin Care"];
   const timeIntervals = [
     "08:00 AM", "08:15 AM", "08:30 AM", "08:45 AM",
     "09:00 AM", "09:15 AM", "09:30 AM", "09:45 AM",
@@ -42,7 +76,6 @@ const CreateAppointment = () => {
 
   // Event handler for saving the Appointment
   const handleSaveAppointment = () => {
-    // Creating data object from form inputs
     const data = {
       client_name,
       client_email,
@@ -55,29 +88,25 @@ const CreateAppointment = () => {
     };
     setLoading(true);
 
-    // Making a POST request to save the Appointment data
     axios
       .post("http://localhost:8076/appointments", data)
       .then(() => {
-        // Resetting loading state and navigating to the home page
         setLoading(false);
         navigate("/appointments/allAppointment");
       })
       .catch((error) => {
-        // Handling errors by resetting loading state, showing an alert, and logging the error
         setLoading(false);
         alert("An error happened. Please check console");
         console.log(error);
       });
   };
 
-  // JSX for rendering the create appointments form
   return (
-    <div className="p-4">
-     
-      <h1 className="text-3xl my-4">Create Appointments</h1>
-      {loading ? <Spinner /> : ""}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
+    <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
+      <h1 className="text-3xl font-bold mb-6">Create Appointment</h1>
+      {loading && <Spinner />}
+      <div className='space-y-4 border border-gray-300 p-4 rounded shadow-md'>
+        {/* Client Name */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Name with initials</label>
           <input
@@ -87,15 +116,19 @@ const CreateAppointment = () => {
             className="border-2 border-gray-500 px-4 py-2 w-full"
           />
         </div>
+        
+        {/* Email */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Email</label>
           <input
-            type="text"
+            type="email"
             value={client_email}
             onChange={(e) => setEmail(e.target.value)}
             className="border-2 border-gray-500 px-4 py-2 w-full"
           />
         </div>
+        
+        {/* Contact Number */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Contact Number</label>
           <input
@@ -105,6 +138,8 @@ const CreateAppointment = () => {
             className="border-2 border-gray-500 px-4 py-2 w-full"
           />
         </div>
+
+        {/* Preferred Stylist */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Preferred Stylist</label>
           <select
@@ -120,6 +155,8 @@ const CreateAppointment = () => {
             ))}
           </select>
         </div>
+
+        {/* Choose Service */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Choose Service(s)</label>
           <select
@@ -129,21 +166,31 @@ const CreateAppointment = () => {
           >
             <option value="">Select Service</option>
             {services.map((service) => (
-              <option key={service} value={service}>
-                {service}
+              <option key={service._id} value={service.service_ID}>
+                {service.category} - {service.subCategory}
               </option>
             ))}
           </select>
         </div>
+
+        {/* Customize Package */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Customize Package (Optional)</label>
-          <input
-            type="text"
+          <select
             value={customize_package}
             onChange={(e) => setPackage(e.target.value)}
             className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
+          >
+            <option value="">Select Package</option>
+            {packages.map((pkg) => (
+              <option key={pkg._id} value={pkg.ID}>
+                {pkg.p_name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Appointment Date */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Appointment Date</label>
           <DatePicker
@@ -153,6 +200,8 @@ const CreateAppointment = () => {
             className="border-2 border-gray-500 px-4 py-2 w-full"
           />
         </div>
+
+        {/* Appointment Time */}
         <div className="my-4">
           <label className="text-xl mr-4 text-gray-500">Appointment Time</label>
           <select
@@ -168,7 +217,9 @@ const CreateAppointment = () => {
             ))}
           </select>
         </div>
-        <button className="p-2 bg-sky-300 m-8" onClick={handleSaveAppointment}>
+
+        {/* Save Button */}
+        <button className="p-2 bg-violet-300 rounded text-white" onClick={handleSaveAppointment}>
           Save
         </button>
       </div>

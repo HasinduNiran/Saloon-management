@@ -48,6 +48,14 @@ const appointmentSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        services: {
+            type: String,
+            required: true
+        },
+        packages: {
+            type: String,
+            required: true
+        },
     }
 );
 

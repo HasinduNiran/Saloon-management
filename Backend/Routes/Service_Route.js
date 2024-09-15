@@ -12,6 +12,7 @@ const validateFields = (req, res, next) => {
         "duration",
         "price",
         "available",
+        "subCategory"
     ];
 
     for (const field of requiredFields) {
@@ -22,33 +23,7 @@ const validateFields = (req, res, next) => {
     next();
 };
 
-// Route for retrieving a specific service by ID
-router.get('/:identifier', async (req, res) => {
-    try {
-        const { identifier } = req.params;
-
-        let service;
-        
-        // Check if the identifier is a valid MongoDB ObjectId
-        if (mongoose.Types.ObjectId.isValid(identifier)) {
-            // Fetch by MongoDB ObjectId
-            service = await Service.findById(identifier);
-        } else {
-            // Fetch by custom string identifier
-            service = await Service.findOne({ service_ID: identifier });
-        }
-
-        if (service) {
-            return res.status(200).json(service);
-        } else {
-            return res.status(404).send({ message: 'Service not found' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: 'Error fetching service: ' + error.message });
-    }
-});
-
+ 
 // Route to create a new service
 router.post('/', validateFields, async (req, res) => {
     try {
@@ -58,6 +33,7 @@ router.post('/', validateFields, async (req, res) => {
             duration: req.body.duration,
             price: req.body.price,
             available: req.body.available,
+            subCategory:req.body.subCategory
         };
 
         const createdService = await Service.create(newService);
@@ -131,6 +107,31 @@ router.delete('/:id', async (req, res) => {
         console.log(error.message);
         res.status(500).send({ message: error.message });
     }
+});
+
+//GET search bar
+router.get("searchservice", function (req, res) {
+    var search = req.query.search;
+    console.log(search);
+    Pkg.find({
+        $or: [
+            
+            { service_ID: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+           { duration: { $regex: search, $options: "i" } },
+            { price: { $regex: search, $options: "i" } },
+            { available: { $regex: search, $options: "i"} },
+         { subCategory: { $regex: search, $options: "i"} }
+           
+        ]
+    }, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.json(result);
+        }
+    });
 });
 
 export default router;

@@ -12,10 +12,12 @@ const EditPkg = () => {
     const [start_date, setStartDate] = useState('');
     const [end_date, setEndDate] = useState('');
     const [conditions, setCondition] = useState('');
-    const [image_url, setImage] = useState('');
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
-    const [service_ID, setServiceID] = useState('');
+    const [category, setCategory] = useState('');
+    const [subCategory, setSubCategory] = useState('');
+    const [categoryOptions, setCategoryOptions] = useState([]); // Categories for dropdown
+    const [subCategoryOptions, setSubCategoryOptions] = useState([]); 
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
@@ -32,10 +34,10 @@ const EditPkg = () => {
                 setStartDate(data.start_date);
                 setEndDate(data.end_date);
                 setCondition(data.conditions);
-                setImage(data.image_url);
                 setType(data.package_type);
                 setPName(data.p_name);
-                setServiceID(data.service_ID);
+                setCategory(data.category);
+                setSubCategory(data.subCategory);
             } catch (error) {
                 console.error(error);
                 setError('Failed to fetch the package details.');
@@ -54,6 +56,43 @@ const EditPkg = () => {
         }
     }, [base_price, discount_rate]);
 
+    // Fetch all services and populate categories and subcategories
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get('http://localhost:8076/services');
+                const services = response.data;
+
+                // Extract unique categories
+                const uniqueCategories = [...new Set(services.map(service => service.category))];
+                setCategoryOptions(uniqueCategories);
+            } catch (error) {
+                console.error("Error fetching services:", error);
+                setError('Unable to fetch services.');
+            }
+        };
+
+        fetchServices();
+    }, []);
+
+     // Handle category change and load relevant subcategories
+     const handleCategoryChange = (e) => {
+        const selectedCategory = e.target.value;
+        setCategory(selectedCategory);
+
+        // Fetch subcategories related to the selected category
+        axios.get('http://localhost:8076/services').then((response) => {
+            const services = response.data;
+            const filteredServices = services.filter(service => service.category === selectedCategory);
+
+            const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
+            setSubCategoryOptions(uniqueSubCategories);
+        }).catch(error => {
+            console.error("Error fetching subcategories:", error);
+            setError('Unable to fetch subcategories.');
+        });
+    };
+
     const handleSavePackage = async (e) => {
         e.preventDefault();
         try {
@@ -67,10 +106,10 @@ const EditPkg = () => {
                 start_date,
                 end_date,
                 conditions,
-                image_url,
                 package_type,
                 p_name,
-                service_ID,
+                category,
+                subCategory,
             });
             navigate('/pkg/allPkg');
         } catch (error) {
@@ -95,20 +134,47 @@ const EditPkg = () => {
                 onSubmit={handleSavePackage}
                 className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
             >
-                {/* Service ID */}
+                {/* Category */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Service ID
+                        Service Category
                     </label>
-                    <input
-                        type="text"
-                        name="service_ID"
-                        value={service_ID}
-                        onChange={(e) => setServiceID(e.target.value)}
-                        required
+                    <select
+                        value={category}
+                        onChange={handleCategoryChange}
                         className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
+                        required
+                    >
+                        <option value="" disabled>Select Service Category</option>
+                        {categoryOptions.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
+                {/* Subcategory */}
+                {category && subCategoryOptions.length > 0 && (
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                            Service Subcategory
+                        </label>
+                        <select
+                            value={subCategory}
+                            onChange={(e) => setSubCategory(e.target.value)}
+                            className="border rounded w-full py-2 px-3 text-gray-700"
+                            required
+                        >
+                            <option value="" disabled>Select Subcategory</option>
+                            {subCategoryOptions.map((sub, index) => (
+                                <option key={index} value={sub}>
+                                    {sub}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 {/* Package Name */}
                 <div className="mb-4">
@@ -247,21 +313,6 @@ const EditPkg = () => {
                         name="conditions"
                         value={conditions}
                         onChange={(e) => setCondition(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Image URL */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Image URL
-                    </label>
-                    <input
-                        type="text"
-                        name="image_url"
-                        value={image_url}
-                        onChange={(e) => setImage(e.target.value)}
                         required
                         className="border rounded w-full py-2 px-3 text-gray-700"
                     />

@@ -97,4 +97,33 @@ router.delete('/:id', async (request, response) => {
     }
 });
 
+//GET search bar
+router.get("searchappointment", function (req, res) {
+    var search = req.query.search;
+    console.log(search);
+    Pkg.find({
+        $or: [
+            
+            { appoi_ID: { $regex: search, $options: "i" } },
+            { client_name: { $regex: search, $options: "i" } },
+           { client_email: { $regex: search, $options: "i" } },
+            { client_phone: { $regex: search, $options: "i" } },
+            { stylist: { $regex: search, $options: "i"} },
+         { service: { $regex: search, $options: "i"} },
+          { appoi_date: { $regex: search, $options: "i"} },
+            { appoi_time: { $regex: search, $options: "i"} },
+            { services: { $regex: search, $options: "i"} },
+            { packages: { $regex: search, $options: "i"} }
+           
+        ]
+    }, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.json(result);
+        }
+    });
+});
+
 export default router;

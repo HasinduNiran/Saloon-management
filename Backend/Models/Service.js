@@ -35,6 +35,10 @@ const serviceSchema = mongoose.Schema(
         available: {
             type: String,
             required: true
+        },
+        subCategory: {
+            type: String,
+            required: true
         }
     }
 );
