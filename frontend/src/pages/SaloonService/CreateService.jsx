@@ -8,20 +8,19 @@ const subCategories = {
   Nail: ['Manicure', 'Pedicure', 'Nail Art', 'Gel Nails', 'Acrylic Nails', 'Nail Repair', 'Nail Polish', 'Cuticle Care'],
 };
 
-
 const CreateService = () => {
   const [category, setCategory] = useState('');
-  const [subCategory, setSubCategory] = useState(''); // State for subcategory
+  const [subCategory, setSubCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState(null); // Initialize image as null
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
-  const [available, setAvailable] = useState(''); // Use a string to represent 'Yes' or 'No'
+  const [available, setAvailable] = useState('Yes'); // Default to "Yes"
   const [error, setError] = useState('');
-  const [priceError, setPriceError] = useState(''); // New state for price errors
-  const [durationError, setDurationError] = useState(''); // New state for duration errors
-  const navigate = useNavigate(); // For programmatic navigation
-  const [loading,setLoading] = useState('');
+  const [priceError, setPriceError] = useState('');
+  const [durationError, setDurationError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -29,42 +28,48 @@ const CreateService = () => {
     setError('');
     setPriceError('');
     setDurationError('');
+    setLoading(true); // Set loading state
 
     // Validate price input
     if (!price || isNaN(price)) {
       setPriceError('Please enter a valid number for price.');
+      setLoading(false);
       return;
     }
 
-    // Validate duration input
+    // Validate duration input (only whole numbers)
     if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
       setDurationError('Please enter a valid whole number for duration.');
+      setLoading(false);
       return;
     }
 
+    // Prepare form data
     const formData = new FormData();
-  formData.append('category', category);
-  formData.append('subCategory', subCategory);
-  formData.append('description', description);
-  formData.append('duration', duration);
-  formData.append('price', price);
-  formData.append('available', available);
-  formData.append('image', image);
+    formData.append('category', category);
+    formData.append('subCategory', subCategory);
+    formData.append('description', description);
+    formData.append('duration', duration);
+    formData.append('price', price);
+    formData.append('available', available);
+    formData.append('image', image); // Send image as file
 
-     axios.post('http://localhost:8076/services',formData)
-        .then(() => {
-          setLoading(false);
-          navigate('/services/allService'); // Redirect to services list on success
-        }).catch ((error) => {
+    // Send POST request to backend
+    try {
+      await axios.post('http://localhost:8076/services', formData);
+      setLoading(false);
+      navigate('/services/allService'); // Redirect to services list on success
+    } catch (error) {
       console.error(error);
       setError('Failed to create the service. Please try again.');
-    });
+      setLoading(false); // Stop loading state on error
+    }
   };
 
   // Handle price input change
   const handlePriceChange = (e) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) { // Allow only numbers and optional decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
       setPrice(value);
       setPriceError(''); // Clear error message if valid
     } else {
@@ -75,7 +80,7 @@ const CreateService = () => {
   // Handle duration input change
   const handleDurationChange = (e) => {
     const value = e.target.value;
-    if (/^\d+$/.test(value)) { // Allow only whole numbers
+    if (/^\d+$/.test(value)) {
       setDuration(value);
       setDurationError(''); // Clear error message if valid
     } else {
@@ -138,6 +143,7 @@ const CreateService = () => {
             rows="3"
           />
         </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Duration: (min)</label>
           <input
@@ -150,6 +156,7 @@ const CreateService = () => {
           />
           {durationError && <p className="text-red-600">{durationError}</p>}
         </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Price: (Rs)</label>
           <input
@@ -161,6 +168,7 @@ const CreateService = () => {
           />
           {priceError && <p className="text-red-600">{priceError}</p>}
         </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Available:</label>
           <div className="flex items-center space-x-4">
@@ -186,18 +194,20 @@ const CreateService = () => {
         </div>
 
         <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">Select Image</label>
-        <div className="flex items-center space-x-4">
-          <input 
-          onChange={(e) => setImage(e.target.files[0])}
-          type='file' />
-          </div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Select Image</label>
+          <input
+            type="file"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="border px-2 py-1"
+          />
         </div>
+
         <button
           type="submit"
-          className="p-2 bg-violet-300 rounded text-white"
+          className="p-2 bg-violet-500 rounded text-white"
+          disabled={loading}
         >
-          Create Service
+          {loading ? 'Creating Service...' : 'Create Service'}
         </button>
       </form>
     </div>

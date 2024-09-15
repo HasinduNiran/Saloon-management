@@ -21,30 +21,34 @@ const EditPkg = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
+    const [loading, setLoading] = useState(true);
+    const [image, setImage] = useState(null);
+    const [existingImage, setExistingImage] = useState('');
 
     // Fetch the existing package details when the component mounts
     useEffect(() => {
-        const fetchPkg = async () => {
-            try {
-                const { data } = await axios.get(`http://localhost:8076/pkg/${id}`);
-                setDescription(data.description);
-                setBasePrice(data.base_price);
-                setDiscount(data.discount_rate);
-                setFinalPrice(data.final_price);
-                setStartDate(data.start_date);
-                setEndDate(data.end_date);
-                setCondition(data.conditions);
-                setType(data.package_type);
-                setPName(data.p_name);
-                setCategory(data.category);
-                setSubCategory(data.subCategory);
-            } catch (error) {
+     axios.get(`http://localhost:8076/pkg/${id}`)
+        .then((response) => {
+            const pkg = response.data;
+            setDescription(pkg.description);
+            setBasePrice(pkg.base_price);
+            setDiscount(pkg.discount_rate);
+            setFinalPrice(pkg.final_price);
+            setStartDate(new Date(pkg.start_date));
+            setEndDate(new Date(pkg.end_date));
+            setCondition(pkg.conditions);
+            setType(pkg.package_type);
+            setPName(pkg.p_name);
+            setCategory(pkg.category);
+            setSubCategory(pkg.subCategory);
+            setExistingImage(pkg.image);
+            setLoading(false);
+        })
+        .catch ((error) => {
                 console.error(error);
                 setError('Failed to fetch the package details.');
-            }
-        };
-
-        fetchPkg();
+                setLoading(false);
+            });
     }, [id]);
 
     // Calculate final price based on base price and discount rate
@@ -95,28 +99,38 @@ const EditPkg = () => {
 
     const handleSavePackage = async (e) => {
         e.preventDefault();
-        try {
-            const selectedTypes = Object.keys(package_type).filter(type => package_type[type]);
+        setError('');
 
-            await axios.put(`http://localhost:8076/pkg/${id}`, {
-                description,
-                base_price,
-                discount_rate,
-                final_price,
-                start_date,
-                end_date,
-                conditions,
-                package_type,
-                p_name,
-                category,
-                subCategory,
-            });
-            navigate('/pkg/allPkg');
-        } catch (error) {
+            const selectedTypes = Object.keys(package_type).filter(type => package_type[type]);
+    
+            const formData = new FormData();
+            formData.append('description', description);
+            formData.append('base_price', base_price);
+            formData.append('discount_rate', discount_rate);
+            formData.append('final_price', final_price);
+            formData.append('start_date', start_date);
+            formData.append('end_date', end_date);
+            formData.append('conditions', conditions);
+            formData.append('package_type', JSON.stringify(selectedTypes));
+            formData.append('p_name', p_name);
+            formData.append('category', category);
+            formData.append('subCategory', subCategory);
+            if (image) {
+                formData.append('image', image);
+            }
+    
+            // Assuming `id` is available from props or elsewhere
+             axios.put(`http://localhost:8076/pkg/${id}`, formData)
+             .then(() => {
+                setLoading(false);
+                navigate('/pkg/allPkg'); // Redirect to packages list on success
+            })
+            .catch ((error) => {
             console.error(error);
-            setError('An error happened. Please check console');
-        }
+            setError('Failed to save the package. Please try again.');
+            });
     };
+    
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
@@ -125,6 +139,10 @@ const EditPkg = () => {
             [name]: checked
         }));
     };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+      };
 
     return (
         <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
@@ -317,6 +335,28 @@ const EditPkg = () => {
                         className="border rounded w-full py-2 px-3 text-gray-700"
                     />
                 </div>
+
+                <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
+          {existingImage ? (
+            <img 
+              src={`http://localhost:8076/${existingImage}`} 
+              alt="Package Image" 
+              className="w-32 h-32 object-cover mb-4"
+            />
+          ) : (
+            <p>No image available.</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Select New Image (optional)</label>
+          <input 
+            type="file" 
+            onChange={handleImageChange}
+          />
+          {image && <p>New image selected: {image.name}</p>}
+        </div>
 
                 <button
                     type='submit'

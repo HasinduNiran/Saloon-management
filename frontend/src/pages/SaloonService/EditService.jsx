@@ -213,7 +213,7 @@ const EditService = () => {
               No
             </label>
           </div>
-</div>
+        </div>
 
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>

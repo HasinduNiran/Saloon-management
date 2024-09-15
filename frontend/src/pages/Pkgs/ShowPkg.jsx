@@ -220,6 +220,7 @@ const ShowPkg = () => {
               <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Start Date</th>
               <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">End Date</th>
               <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Conditions</th>
+              <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Image</th>
               <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -238,6 +239,12 @@ const ShowPkg = () => {
                 <td className="px-6 py-4 text-sm text-gray-700">{pkg.start_date}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{pkg.end_date}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{pkg.conditions}</td>
+
+                <td className="px-6 py-4 text-sm text-gray-700">
+              <img src={`http://localhost:8076/${pkg.image}`}  className='w-full h-32 object-cover rounded-t-lg' />
+                  {console.log(`http://localhost:8076/${pkg.image}`)}
+              </td> 
+
                 <td className="px-6 py-4 text-sm text-gray-700 flex space-x-2">
                   <BsInfoCircle 
                     className="text-blue-500 cursor-pointer hover:text-blue-700"
