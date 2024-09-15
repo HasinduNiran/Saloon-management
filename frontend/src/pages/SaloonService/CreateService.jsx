@@ -192,9 +192,6 @@ const CreateService = () => {
           onChange={(e) => setImage(e.target.files[0])}
           type='file' />
           </div>
-        </div> 
-          className='form-control' type='file' name='image'/>
-          </div>
         </div>
         <button
           type="submit"
