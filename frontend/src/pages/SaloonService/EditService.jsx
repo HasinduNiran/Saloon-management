@@ -9,94 +9,109 @@ const subCategories = {
 };
 
 const EditService = () => {
+  const { id } = useParams(); // Get serviceId from the URL
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState(null); // For uploading a new image
+  const [existingImage, setExistingImage] = useState(''); // For displaying the existing image
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
-  const [available, setAvailable] = useState(''); // Use a string to represent 'Yes' or 'No'
+  const [available, setAvailable] = useState('');
   const [error, setError] = useState('');
-  const [priceError, setPriceError] = useState(''); // New state for price errors
-  const [durationError, setDurationError] = useState(''); // New state for duration errors
-  const navigate = useNavigate(); // For programmatic navigation
-  const { id } = useParams(); // Extract the service ID from the route parameters
+  const [priceError, setPriceError] = useState('');
+  const [durationError, setDurationError] = useState('');
+  const [loading, setLoading] = useState(true); // Set loading to true initially
+  const navigate = useNavigate();
 
-  // Fetch the existing service details when the component mounts
   useEffect(() => {
-    const fetchService = async () => {
-      try {
-        const { data } = await axios.get(`http://localhost:8076/services/${id}`);
-        setCategory(data.category);
-        setSubCategory(data.subCategory);
-        setDescription(data.description);
-        setDuration(data.duration);
-        setPrice(data.price);
-        setAvailable(data.available);
-      } catch (error) {
+    // Fetch the service details using the serviceId
+    axios.get(`http://localhost:8076/services/${id}`)
+      .then((response) => {
+        const service = response.data;
+        setCategory(service.category);
+        setSubCategory(service.subCategory);
+        setDescription(service.description);
+        setDuration(service.duration);
+        setPrice(service.price);
+        setAvailable(service.available);
+        setExistingImage(service.image); // Set the existing image URL
+        setLoading(false);
+      })
+      .catch((error) => {
         console.error(error);
-        setError('Failed to fetch the service details.');
-      }
-    };
-
-    fetchService();
+        setError('Failed to load the service. Please try again.');
+        setLoading(false);
+      });
   }, [id]);
 
-  // Handle form submission for editing
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     setPriceError('');
     setDurationError('');
 
-    // Validate price input
+    // Validate price and duration
     if (!price || isNaN(price)) {
       setPriceError('Please enter a valid number for price.');
       return;
     }
 
-    // Validate duration input
     if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
       setDurationError('Please enter a valid whole number for duration.');
       return;
     }
 
-    try {
-      await axios.put(`http://localhost:8076/services/${id}`, {
-        category,
-        subCategory,
-        description,
-        duration,
-        price,
-        available,
-      });
-      navigate('/services/allService'); // Redirect to services list on success
-    } catch (error) {
-      console.error(error);
-      setError('Failed to update the service. Please try again.');
+    const formData = new FormData();
+    formData.append('category', category);
+    formData.append('subCategory', subCategory);
+    formData.append('description', description);
+    formData.append('duration', duration);
+    formData.append('price', price);
+    formData.append('available', available);
+
+    // Append the new image if a new one is selected
+    if (image) {
+      formData.append('image', image);
     }
+
+    axios.put(`http://localhost:8076/services/${id}`, formData)
+      .then(() => {
+        navigate('/services/allService'); // Redirect to the list after successful update
+      })
+      .catch((error) => {
+        console.error(error);
+        setError('Failed to update the service. Please try again.');
+      });
   };
 
-  // Handle price input change
   const handlePriceChange = (e) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) { // Allow only numbers and optional decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
       setPrice(value);
-      setPriceError(''); // Clear error message if valid
+      setPriceError('');
     } else {
       setPriceError('Please enter a valid number.');
     }
   };
 
-  // Handle duration input change
   const handleDurationChange = (e) => {
     const value = e.target.value;
-    if (/^\d+$/.test(value)) { // Allow only whole numbers
+    if (/^\d+$/.test(value)) {
       setDuration(value);
-      setDurationError(''); // Clear error message if valid
+      setDurationError('');
     } else {
       setDurationError('Please enter a valid whole number.');
     }
   };
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  if (loading) {
+    return <p>Loading service details...</p>;
+  }
 
   return (
     <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
@@ -104,9 +119,9 @@ const EditService = () => {
       {error && <p className="text-red-600">{error}</p>}
       <form 
         onSubmit={handleSubmit} 
-        className="space-y-4 border border-gray-300 p-4 rounded shadow-md"
+        className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
       >
-        <div>
+         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
           <select
             value={category}
@@ -198,10 +213,33 @@ const EditService = () => {
               No
             </label>
           </div>
+</div>
+
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
+          {existingImage ? (
+            <img 
+              src={`http://localhost:8076/${existingImage}`} 
+              alt="Service Image" 
+              className="w-32 h-32 object-cover mb-4"
+            />
+          ) : (
+            <p>No image available.</p>
+          )}
         </div>
+
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Select New Image (optional)</label>
+          <input 
+            type="file" 
+            onChange={handleImageChange}
+          />
+          {image && <p>New image selected: {image.name}</p>}
+        </div>
+
         <button
           type="submit"
-          className="bg-violet-300 text-white px-4 py-2 rounded"
+          className="p-2 bg-violet-300 rounded text-white"
         >
           Update Service
         </button>

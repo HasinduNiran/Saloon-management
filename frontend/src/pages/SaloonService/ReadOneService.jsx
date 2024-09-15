@@ -64,6 +64,10 @@ const ReadOneService = () => {
               <h2 className="text-2xl font-semibold mb-2">Available</h2>
               <p className="text-lg">{service.available ? 'Yes' : 'No'}</p>
             </div>
+            <div>
+            <h2 className="text-2xl font-semibold mb-2"> Image </h2>
+            <img src={`http://localhost:8076/${service.image}`} alt="Service Image" style={{ width: '200px', height: '200px' }} />
+            </div>
           </div>
 
           <div className="mt-6 flex items-center">

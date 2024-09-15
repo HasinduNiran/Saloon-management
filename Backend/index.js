@@ -35,9 +35,10 @@ import EmployeeSalary_Route from "./Routes/EmployeeSalary_Route.js";
 
 
 
-
 // Creating an instance of the Express application
 const app = express();
+
+app.use('/uploads', express.static('uploads'));
 
 // Middleware for parsing request body
 app.use(express.json());

@@ -15,6 +15,7 @@ import CreateService from './pages/SaloonService/CreateService';
 import DeleteService from './pages/SaloonService/DeleteService';
 import EditService from './pages/SaloonService/EditService';
 import ReadOneService from './pages/SaloonService/ReadOneService';
+import ServicePage from './pages/SaloonService/ServicePage';
 
 import ShowPkg from './pages/Pkgs/ShowPkg';
 import CreatePkg from './pages/Pkgs/CreatePkg';
@@ -103,7 +104,7 @@ const App = () => {
 
  
       <Route path='/appointments/allAppointment' element={<ShowAppointment />}></Route>
-      <Route path='/appointments/create' element={<CreateAppointment />}></Route>
+      <Route path='/appointments/create/:id' element={<CreateAppointment />}></Route>
       <Route path='/appointments/delete/:id' element={<DeleteAppointment />}></Route>
       <Route path='/appointments/edit/:id' element={<EditAppointment />}></Route>
       <Route path='/appointments/details/:id' element={<ReadOneAppointment />}></Route>
@@ -113,6 +114,7 @@ const App = () => {
       <Route path='/services/delete/:id' element={<DeleteService />}></Route>
       <Route path='/services/edit/:id' element={<EditService />}></Route>
       <Route path='/services/details/:id' element={<ReadOneService />}></Route>
+      <Route path='/services/servicePage' element={<ServicePage />}></Route>
 
       <Route path='/pkg/allPkg' element={<ShowPkg />}></Route>
       <Route path='/pkg/create' element={<CreatePkg />}></Route>

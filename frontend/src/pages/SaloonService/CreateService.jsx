@@ -13,6 +13,7 @@ const CreateService = () => {
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState(''); // State for subcategory
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
   const [available, setAvailable] = useState(''); // Use a string to represent 'Yes' or 'No'
@@ -20,6 +21,7 @@ const CreateService = () => {
   const [priceError, setPriceError] = useState(''); // New state for price errors
   const [durationError, setDurationError] = useState(''); // New state for duration errors
   const navigate = useNavigate(); // For programmatic navigation
+  const [loading,setLoading] = useState('');
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -39,20 +41,24 @@ const CreateService = () => {
       setDurationError('Please enter a valid whole number for duration.');
       return;
     }
-    try {
-      await axios.post('http://localhost:8076/services', {
-        category,
-        subCategory, // Include subcategory in the form data
-        description,
-        duration,
-        price,
-        available,
-      });
-      navigate('/services/allService'); // Redirect to services list on success
-    } catch (error) {
+
+    const formData = new FormData();
+  formData.append('category', category);
+  formData.append('subCategory', subCategory);
+  formData.append('description', description);
+  formData.append('duration', duration);
+  formData.append('price', price);
+  formData.append('available', available);
+  formData.append('image', image);
+
+     axios.post('http://localhost:8076/services',formData)
+        .then(() => {
+          setLoading(false);
+          navigate('/services/allService'); // Redirect to services list on success
+        }).catch ((error) => {
       console.error(error);
       setError('Failed to create the service. Please try again.');
-    }
+    });
   };
 
   // Handle price input change
@@ -160,7 +166,7 @@ const CreateService = () => {
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
                 checked={available === 'Yes'}
                 onChange={() => setAvailable('Yes')}
                 className="mr-2"
@@ -169,7 +175,7 @@ const CreateService = () => {
             </label>
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
                 checked={available === 'No'}
                 onChange={() => setAvailable('No')}
                 className="mr-2"
@@ -178,6 +184,15 @@ const CreateService = () => {
             </label>
           </div>
         </div>
+
+        <div>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Select Image</label>
+        <div className="flex items-center space-x-4">
+          <input 
+          onChange={(e) => setImage(e.target.files[0])}
+          type='file' />
+          </div>
+        </div> 
         <button
           type="submit"
           className="p-2 bg-violet-300 rounded text-white"
