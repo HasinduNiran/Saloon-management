@@ -6,7 +6,6 @@ import BackButton from '../../components/BackButton';
 
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
-  // const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
 
@@ -16,8 +15,6 @@ const ReadOneCustomer = () => {
       try {
         const customerResponse = await axios.get(`http://localhost:8076/customers/${id}`);
         setCustomer(customerResponse.data);
-        // const bookingsResponse = await axios.get(`http://localhost:8076/bookings/${cusID}`);
-        // setBookings(bookingsResponse.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -29,99 +26,52 @@ const ReadOneCustomer = () => {
   }, [id]);
 
   return (
-    <div>
+    <div className="container mx-auto px-4">
       <BackButton destination='/customers/' />
-      <div className="nav-link">
-                <div className="sb-nav-link-icon">
-                  {/* <img src={logo} alt="Nadeeka Auto Logo" style={styles.logo} /> */}
-                  
-                   
-                  
-                  <button
-                    onClick={() => { window.location.href = `/customers/edit/${customers._id}` }}
-                    
-                  >
-                  Edit Profile
-                  </button>
-                  <button
-                    onClick={() => { window.location.href = `/feedback/create/${customers.cusID}` }}
-                  >
-                   Feedback
-                  </button>
-                  </div>
-                  </div>
-      <h1 className="show-Inventory-title text-3xl my-4">Show customer</h1>
+
+      <div className="text-center my-8">
+        <h1 className="text-4xl font-bold text-gray-800">Customer Profile</h1>
+      </div>
+
       {loading ? (
         <Spinner />
       ) : (
-        
-        <div className='flex flex-col border-2 border-red-400 rounded-xl w-fit p-4'>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Username:</span>
-            <span>{customers.CusID}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px' }}>
-                <img src={customers.image} alt="Vehicle" style={{maxWidth: '300px', height: '300px', borderRadius: '50%', border: '4px solid red',  padding: '10px' }} />
+        <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="flex flex-col md:flex-row items-center p-6">
+          <div className="md:w-1/3 w-full flex justify-center md:justify-start">
+              <img
+                src={customers.image || 'https://via.placeholder.com/150'}
+                alt="Customer"
+                className="w-48 h-48 object-cover rounded-full border-4 border-black"
+              />
+            </div>
+            <div className="md:w-2/3 w- text-center md:text-left mt-4 md:mt-0">
+              <h2 className="text-2xl font-bold text-gray-800">{customers.FirstName} {customers.LastName}</h2>
+              <p className="text-gray-600 mt-2">{customers.Email}</p>
+              <div className="text-gray-500 mt-4">
+                <p><strong>Username:</strong> {customers.CusID}</p>
+                <p><strong>Age:</strong> {customers.Age}</p>
+                <p><strong>Gender:</strong> {customers.Gender}</p>
+                <p><strong>Contact No:</strong> {customers.ContactNo}</p>
               </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>First Name:</span>
-            <span>{customers.FirstName}</span>
+            </div>
+     
           </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Last Name:</span>
-            <span>{customers.LastName}</span>
-          </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Age:</span>
-            <span>{customers.Age}</span>
-          </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Gender:</span>
-            <span>{customers.Gender}</span>
-          </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Contact No:</span>
-            <span>{customers.ContactNo}</span>
-          </div>
-          <div className='my-4'>
-            <span className='text-xl mr-4 text-gray-500'>Email:</span>
-            <span>{customers.Email}</span>
-          </div>
-          {/* {bookings.length > 0 ? (
-                <div>
-    <h2 className='text-2xl my-4' style={styles.heading}>Bookings</h2>
-                  <table style={styles.table}>
-                    <thead>
-                      <tr style={styles.tableHead}>
-                        <th style={styles.tableHeader}>Service Date</th>
-                        <th style={styles.tableHeader}>Customer Name</th>
-                        <th style={styles.tableHeader}>Vehicle Type</th>
-                        <th style={styles.tableHeader}>Vehicle Number</th>
-                        <th style={styles.tableHeader}>Contact Number</th>
-                        <th style={styles.tableHeader}>Email</th>
-                        <th style={styles.tableHeader}>Booking Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bookings.map((booking, index) => (
-                        <tr key={index} style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}>
-                          <td style={styles.tableCell}>{booking.Booking_Date}</td>
-                          <td style={styles.tableCell}>{booking.Customer_Name}</td>
-                          <td style={styles.tableCell}>{booking.Vehicle_Type}</td>
-                          <td style={styles.tableCell}>{booking.Vehicle_Number}</td>
-                          <td style={styles.tableCell}>{booking.Contact_Number}</td>
-                          <td style={styles.tableCell}>{booking.Email}</td>
-                          <td style={styles.tableCell}>{booking.Booking_Date}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p>No bookings available for this customer.</p>
-              )} */}
 
-          {/* Avoid displaying passwords */}
+          <div className="flex justify-center md:justify p-6 border-t">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-4 hover:bg-blue-600 transition duration-200"
+              onClick={() => { window.location.href = `/customers/edit/${customers._id}` }}
+            >
+              Edit Profile
+            </button>
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+              onClick={() => { window.location.href = `/feedback/create/${customers.CusID}` }}
+            >
+              Feedback
+            </button>
+          </div>
         </div>
       )}
     </div>
