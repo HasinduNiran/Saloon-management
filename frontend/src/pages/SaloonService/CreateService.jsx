@@ -189,7 +189,7 @@ const CreateService = () => {
         <div className="flex items-center space-x-4">
           <input 
           onChange={(e) => setImage(e.target.files[0])}
-          className='form-control' type='file' name='image'/>
+          type='file' />
           </div>
         </div>
         <button
