@@ -10,6 +10,54 @@ const ShowService = () => {
   const [services, setServices] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [noDataMessage, setNoDataMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Search function
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8076/searchservice?search=${searchQuery}`);
+      console.log("Search response:", response);
+      if (response.data.length === 0) {
+        console.log("No matching services found.");
+        setNoDataMessage('No matching services found.');
+      } else {
+        console.log("Matching services found:", response.data);
+        setNoDataMessage('');
+        setServices(response.data);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching packages:", err);
+      setLoading(false);
+    }
+  };
+
+    // Apply search filter
+    const applySearchFilter = (services) => {
+  
+      const service_ID = services.service_ID ? services.service_ID.toLowerCase() : '';
+      const category = services.category ? services.category.toLowerCase() : '';
+      const duration = services.duration ? services.duration.toLowerCase() : ''; 
+      const price = services.price ? services.price.toString() : ''; 
+      const available = services.available ? services.available.toLowerCase() : '';
+      const subCategory = services.subCategory ? services.subCategory.toLowerCase() : '';
+   
+  
+      return (
+        service_ID.includes(searchQuery.toLowerCase()) ||
+        category.includes(searchQuery.toLowerCase()) ||
+        duration.includes(searchQuery.toLowerCase()) ||
+        price.includes(searchQuery.toLowerCase()) ||
+        available.includes(searchQuery.toLowerCase()) || 
+        subCategory.includes(searchQuery.toLowerCase())
+      );
+    };
+
+    // Filter reviews based on search query
+    const filteredServices = services.filter(applySearchFilter);
 
   // Function to handle the icon click for adding new service
   const handleAddClick = () => {
@@ -117,7 +165,20 @@ const ShowService = () => {
    {/* Search bar and PDF button container */}
   <div className="flex items-center space-x-4 mb-6">
     {/* Search bar */}
-   
+    <input
+          type="text"
+          name="searchQuery"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search here..."
+          className="mr-2 border border-gray-400 p-2 rounded"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-violet-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Search
+        </button>
 
     {/* PDF Button */}
     <button 
@@ -127,7 +188,9 @@ const ShowService = () => {
       Generate PDF
     </button>
   </div>
-
+  {noDataMessage && (
+        <p className="text-red-500 text-center">{noDataMessage}</p>
+      )} 
 
       {error && <p className="text-red-600">{error}</p>}
       <div className="overflow-x-auto">
@@ -145,7 +208,7 @@ const ShowService = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {services.map((service) => (
+          {filteredServices.map((service) => (
             <tr key={service._id}className="hover:bg-gray-100 transition duration-150 ease-in-out">
               <td className="px-6 py-4 text-sm text-gray-700">{service.service_ID}</td>
               <td className="px-6 py-4 text-sm text-gray-700">{service.category}</td>

@@ -10,7 +10,9 @@ const ShowPkg = () => {
   const [pkg, setPkg] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [noDataMessage, setNoDataMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleAddClick = () => {
     navigate('/pkg/create');
@@ -111,6 +113,58 @@ const ShowPkg = () => {
     doc.save(`Package-Details-Report_${date}.pdf`);
   };
 
+  // Search function
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8076/searchpkg?search=${searchQuery}`);
+      console.log("Search response:", response);
+      if (response.data.length === 0) {
+        console.log("No matching packages found.");
+        setNoDataMessage('No matching packages found.');
+      } else {
+        console.log("Matching packages found:", response.data);
+        setNoDataMessage('');
+        setPkg(response.data);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching packages:", err);
+      setLoading(false);
+    }
+  };
+
+    // Apply search filter
+    const applySearchFilter = (pkg) => {
+  
+      const ID = pkg.ID ? pkg.ID.toLowerCase() : '';
+      const p_name = pkg.p_name ? pkg.p_name.toLowerCase() : '';
+      const base_price = pkg.base_price ? pkg.base_price.toString() : '';
+      const discount_rate = pkg.discount_rate ? pkg.discount_rate.toString() : '';
+      const final_price = pkg.final_price ? pkg.final_price.toString() : ''; 
+      const start_date = pkg.start_date ? pkg.start_date.toLowerCase() : '';
+      const end_date = pkg.end_date ? pkg.end_date.toLowerCase() : '';
+      const package_type = pkg.package_type ? pkg.package_type.toLowerCase() : '';
+      const category = pkg.category ? pkg.category.toLowerCase() : '';
+      const subCategory = pkg.subCategory ? pkg.subCategory.toLowerCase() : '';
+  
+      return (
+        ID.includes(searchQuery.toLowerCase()) ||
+        p_name.includes(searchQuery.toLowerCase()) ||
+        base_price.includes(searchQuery.toLowerCase()) ||
+        discount_rate.includes(searchQuery.toLowerCase()) ||
+        final_price.includes(searchQuery.toLowerCase()) || 
+        start_date.includes(searchQuery.toLowerCase()) ||
+        end_date.includes(searchQuery.toLowerCase()) ||
+        package_type.includes(searchQuery.toLowerCase()) ||
+        category.includes(searchQuery.toLowerCase()) ||
+        subCategory.includes(searchQuery.toLowerCase())
+      );
+    };
+
+    // Filter reviews based on search query
+    const filteredPackages = pkg.filter(applySearchFilter);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex items-center justify-between my-6">
@@ -123,15 +177,31 @@ const ShowPkg = () => {
       </div>
 
       <div className="flex items-center space-x-4 mb-6">
-        
+      <input
+          type="text"
+          name="searchQuery"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search here..."
+          className="mr-2 border border-gray-400 p-2 rounded"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-violet-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Search
+        </button>  
+
         <button 
           onClick={generatePDF} 
-          className="bg-violet-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition duration-150 ease-in-out"
+          className="bg-violet-500 text-white px-4 py-2 rounded-lg shadow hover:bg-slate-700 transition duration-150 ease-in-out"
         >
           Generate PDF
         </button>
-      </div>
-
+      </div> 
+      {noDataMessage && (
+        <p className="text-red-500 text-center">{noDataMessage}</p>
+      )}            
       {error && <p className="text-red-600">{error}</p>}
 
       <div className="overflow-x-auto">
@@ -154,7 +224,7 @@ const ShowPkg = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {pkg.map((pkg) => (
+            {filteredPackages.map((pkg) => (
               <tr key={pkg._id} className="hover:bg-gray-100 transition duration-150 ease-in-out">
                 <td className="px-6 py-4 text-sm text-gray-700">{pkg.ID}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{pkg.category}</td>

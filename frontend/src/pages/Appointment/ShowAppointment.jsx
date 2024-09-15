@@ -11,7 +11,62 @@ const ShowAppointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [noDataMessage, setNoDataMessage] = useState('');
 
+  // Search function
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8076/searchappointment?search=${searchQuery}`);
+      console.log("Search response:", response);
+      if (response.data.length === 0) {
+        console.log("No matching appointments found.");
+        setNoDataMessage('No matching appointments found.');
+      } else {
+        console.log("Matching appointments found:", response.data);
+        setNoDataMessage('');
+        setAppointments(response.data);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+      setLoading(false);
+    }
+  };
+
+    // Apply search filter
+    const applySearchFilter = (appointments) => {
+  
+      const appoi_ID = appointments.appoi_ID ? appointments.appoi_ID.toLowerCase() : '';
+      const client_name = appointments.client_name ? appointments.client_name.toLowerCase() : '';
+      const client_email = appointments.client_email ? appointments.client_email.toLowerCase() : '';
+      const client_phone = appointments.client_phone ? appointments.client_phone.toString() : '';
+      const stylist = appointments.stylist ? appointments.stylist.toLowerCase() : ''; 
+      const service = appointments.service ? appointments.service.toLowerCase() : '';
+      const appoi_date = appointments.appoi_date ? appointments.appoi_date.toLowerCase() : '';
+      const appoi_time = appointments.appoi_time ? appointments.appoi_time.toLowerCase() : '';
+      const services = appointments.services ? appointments.services.toLowerCase() : '';
+      const packages = appointments.packages ? appointments.packages.toLowerCase() : '';
+  
+      return (
+        appoi_ID.includes(searchQuery.toLowerCase()) ||
+        client_name.includes(searchQuery.toLowerCase()) ||
+        client_email.includes(searchQuery.toLowerCase()) ||
+        client_phone.includes(searchQuery.toLowerCase()) ||
+        stylist.includes(searchQuery.toLowerCase()) || 
+        service.includes(searchQuery.toLowerCase()) ||
+        appoi_date.includes(searchQuery.toLowerCase()) ||
+        appoi_time.includes(searchQuery.toLowerCase()) ||
+        services.includes(searchQuery.toLowerCase()) ||
+        packages.includes(searchQuery.toLowerCase())
+      );
+    };
+
+     
+    const filteredAppoointments = appointments.filter(applySearchFilter);
+
+  
   // Function to handle the icon click
   const handleAddClick = () => {
     navigate('/appointments/create');
@@ -134,7 +189,20 @@ const generatePDF = () => {
 
        {/* Search bar and PDF button container */}
   <div className="flex items-center space-x-4 mb-6">
-    
+  <input
+          type="text"
+          name="searchQuery"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search here..."
+          className="mr-2 border border-gray-400 p-2 rounded"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-violet-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Search
+        </button>  
 
     {/* PDF Button */}
     <button 
@@ -144,7 +212,9 @@ const generatePDF = () => {
       Generate PDF
     </button>
   </div>
-
+  {noDataMessage && (
+        <p className="text-red-500 text-center">{noDataMessage}</p>
+      )} 
   <div className="overflow-x-auto">
       <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
         <thead className="bg-violet-300 text-white">
@@ -162,7 +232,7 @@ const generatePDF = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {appointments.map((appointment) => (
+          {filteredAppoointments.map((appointment) => (
             <tr key={appointment.appoi_ID} className="hover:bg-gray-100 transition duration-150 ease-in-out">
               <td className="px-6 py-4 text-sm text-gray-700">{appointment.appoi_ID}</td>
               <td className="px-6 py-4 text-sm text-gray-700">{appointment.client_name}</td>

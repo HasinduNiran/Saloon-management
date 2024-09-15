@@ -109,4 +109,29 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+//GET search bar
+router.get("searchservice", function (req, res) {
+    var search = req.query.search;
+    console.log(search);
+    Pkg.find({
+        $or: [
+            
+            { service_ID: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+           { duration: { $regex: search, $options: "i" } },
+            { price: { $regex: search, $options: "i" } },
+            { available: { $regex: search, $options: "i"} },
+         { subCategory: { $regex: search, $options: "i"} }
+           
+        ]
+    }, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.json(result);
+        }
+    });
+});
+
 export default router;
