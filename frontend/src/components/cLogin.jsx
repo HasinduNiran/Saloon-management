@@ -2,7 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-
+import { FaArrowAltCircleRight } from "react-icons/fa";
+import  backgroundImage from '../images/logobg.jpg'
 function CLogin() {
   const [CusID, setCusID] = useState("");
   const [Password, setPassword] = useState("");
@@ -15,94 +16,27 @@ function CLogin() {
       Password,
     };
 
-    // Check if the credentials are 'staff'
-    if (CusID === "Appointment" && Password === "Appointment123") {
+    const rolePaths = {
+      Appointment: "/appointments/allAppointment",
+      Customer: "/customers",
+      Employee: "/employees/allEmployee",
+      Inventory: "/inventories/allInventory",
+      Package: "/pkg/allPkg",
+      Service: "/services/allService",
+      Supplier: "/suppliers/allSupplier",
+      Feedback: "/Feedback/allFeedback",
+    };
+
+    if (rolePaths[CusID] && Password === `${CusID}123`) {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Welcome back! ",
+        title: "Welcome back!",
         showConfirmButton: false,
         timer: 2000,
       });
 
-      navigate("/appointments/allAppointment");
-      return;
-    } else if (CusID === "Customer" && Password === "Customer123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/customers");
-      return;
-    } else if (CusID === "Employee" && Password === "Employee123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/employees/allEmployee");
-      return;
-    } else if (CusID === "Inventory" && Password === "Inventory123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/inventories/allInventory");
-      return;
-    } else if (CusID === "Package" && Password === "Package123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/pkg/allPkg");
-      return;
-    } else if (CusID === "Service" && Password === "Service123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/services/allService");
-      return;
-    } else if (CusID === "Supplier" && Password === "Supplier123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/suppliers/allSupplier");
-      return;
-    } else if (CusID === "Feedback" && Password === "Feedback123") {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Welcome back! ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      navigate("/Feedback/allFeedback");
+      navigate(rolePaths[CusID]);
       return;
     }
 
@@ -132,52 +66,168 @@ function CLogin() {
         });
       }
     } catch (error) {
-      console.error("Login failed:", error.response.data.message || error.message);
+      console.error("Login failed:", error.response?.data?.message || error.message);
       Swal.fire({
         position: "center",
         icon: "error",
         title: "Login failed",
-        text: error.response.data.message || error.message,
+        text: error.response?.data?.message || error.message,
         showConfirmButton: true,
       });
     }
   };
 
+  const containerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    
+  };
+
+  const screenStyle = {
+    background: 'linear-gradient(90deg, #ff91af, #efbbcc)',
+    position: 'relative',
+    height: '550px',
+    width: '340px',
+    boxShadow: '0px 0px 24px #5C5696',
+  };
+
+  const screenContentStyle = {
+    zIndex: 1,
+    position: 'relative',
+    height: '100%',
+  };
+
+  const screenBackgroundStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+    clipPath: 'inset(0 0 0 0)',
+  };
+
+  const shapeStyle = {
+    transform: 'rotate(45deg)',
+    position: 'absolute',
+  };
+
+  const shape1Style = {
+    height: '520px',
+    width: '520px',
+    background: '#FFF',
+    top: '-50px',
+    right: '120px',
+    borderRadius: '0 72px 0 0',
+  };
+
+  const shape2Style = {
+    height: '220px',
+    width: '220px',
+    background: '#db7093',
+    top: '-172px',
+    right: 0,
+    borderRadius: '32px',
+  };
+
+  const shape3Style = {
+    height: '540px',
+    width: '190px',
+    background: 'linear-gradient(270deg, #ff69b4, #ff1493 )',
+    top: '-24px',
+    right: 0,
+    borderRadius: '32px',
+  };
+
+  const shape4Style = {
+    height: '400px',
+    width: '200px',
+    background: '#cc3366',
+    top: '420px',
+    right: '50px',
+    borderRadius: '60px',
+  };
+
+  const loginStyle = {
+    width: '320px',
+    padding: '30px',
+    paddingTop: '156px',
+  };
+
+
+
+  const Style = {
+    margin:'10px',
+    
+    
+  };
+
+  const loginSubmitStyle = {
+    background: '#fff',
+    fontSize: '14px',
+    marginTop: '30px',
+    padding: '16px 20px',
+    borderRadius: '26px',
+    border: '2px solid #cc3366',
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    color: '#000',
+    boxShadow: '0px 2px 2px #cc3366',
+    cursor: 'pointer',
+    transition: '.2s',
+  };
+
+  const buttonIconStyle = {
+    fontSize: '24px',
+    marginLeft: 'auto',
+    color: '#cc3366',
+  };
+
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center">Log in to your account</h2>
-        <form onSubmit={onLogin}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              id="username"
-              className="w-full px-3 py-2 border rounded-md"
-              onChange={(e) => setCusID(e.target.value)}
-            />
+    
+    <div style={containerStyle } >
+        
+      <div style={screenStyle}>
+        
+        <div style={screenContentStyle}>
+          <form onSubmit={onLogin} style={loginStyle} >
+          <div style={Style}>
+          <h2 className="mb-5 text-center text-3xl leading-9 font-extrabold text-gray-900">
+          Login
+        </h2>
+            <input type="text" autocomplete="off" name="text" placeholder="Username" 
+            value={CusID} 
+            onChange={(e) => setCusID(e.target.value)}
+            className="border-none outline-none rounded-2xl p-4 bg-gray-100 shadow-inner transition-transform duration-300 ease-in-out focus:bg-white focus:scale-105 focus:shadow-[13px_13px_100px_#969696,-13px_-13px_100px_#ffffff] h-12 " />
+           </div>
+           <div style={Style}>
+            <input type="password" autocomplete="off" name="text" placeholder="Password" 
+            value={Password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border-none outline-none rounded-2xl p-4 bg-gray-100 shadow-inner transition-transform duration-300 ease-in-out focus:bg-white focus:scale-105 focus:shadow-[13px_13px_100px_#969696,-13px_-13px_100px_#ffffff] h-12" />
           </div>
-          <div className="mb-6">
-            <label htmlFor="Password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="Password"
-              id="Password"
-              className="w-full px-3 py-2 border rounded-md"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between mb-4">
-            <a href="#" className="text-sm text-blue-600">Forgot your Password?</a>
-          </div>
-          <button
-            type="submit"
-            className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-md hover:bg-blue-600"
-          >
-            Log In
-          </button>
-        </form>
-        <div className="mt-6 text-center">
-          <p>Don't have an account? <a href="/customers/create" className="text-blue-600">Sign up</a></p>
+            <button type="submit" style={loginSubmitStyle}>
+              <span>Log In Now </span>
+              <i className="button__icon fas fa-chevron-right" style={buttonIconStyle}><FaArrowAltCircleRight /></i>
+            </button>
+          </form>
+         
+        </div>
+        <div style={screenBackgroundStyle}>
+          <span style={{ ...shapeStyle, ...shape1Style }}></span>
+          <span style={{ ...shapeStyle, ...shape2Style }}></span>
+          <span style={{ ...shapeStyle, ...shape3Style }}></span>
+          <span style={{ ...shapeStyle, ...shape4Style }}></span>
         </div>
       </div>
     </div>

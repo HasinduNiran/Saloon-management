@@ -7,7 +7,7 @@ const Footer = () => {
     <footer class="w-full py-14">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <a href="https://pagedone.io/" class="flex justify-center ">
+            <a href="" class="flex justify-center ">
             <img 
         src={Logo} 
         alt="logo" 
