@@ -191,7 +191,7 @@ const CreateService = () => {
           onChange={(e) => setImage(e.target.files[0])}
           type='file' />
           </div>
-        </div>
+        </div> 
         <button
           type="submit"
           className="p-2 bg-violet-300 rounded text-white"
