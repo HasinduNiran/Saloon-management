@@ -13,6 +13,7 @@ const CreateService = () => {
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState(''); // State for subcategory
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
   const [duration, setDuration] = useState('');
   const [price, setPrice] = useState('');
   const [available, setAvailable] = useState(''); // Use a string to represent 'Yes' or 'No'
@@ -39,20 +40,24 @@ const CreateService = () => {
       setDurationError('Please enter a valid whole number for duration.');
       return;
     }
-    try {
-      await axios.post('http://localhost:8076/services', {
-        category,
-        subCategory, // Include subcategory in the form data
-        description,
-        duration,
-        price,
-        available,
-      });
-      navigate('/services/allService'); // Redirect to services list on success
-    } catch (error) {
+
+    const formData = new FormData();
+  formData.append('category', category);
+  formData.append('subCategory', subCategory);
+  formData.append('description', description);
+  formData.append('duration', duration);
+  formData.append('price', price);
+  formData.append('available', available);
+  formData.append('image', image);
+
+     axios.post('http://localhost:8076/services',formData)
+        .then(() => {
+          setLoading(false);
+          navigate('/services/allService'); // Redirect to services list on success
+        }).catch ((error) => {
       console.error(error);
       setError('Failed to create the service. Please try again.');
-    }
+    });
   };
 
   // Handle price input change
@@ -176,6 +181,15 @@ const CreateService = () => {
               />
               No
             </label>
+          </div>
+        </div>
+
+        <div>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Select Image</label>
+        <div className="flex items-center space-x-4">
+          <input 
+          onChange={(e) => setImage(e.target.files[0])}
+          className='form-control' type='file' name='image'/>
           </div>
         </div>
         <button

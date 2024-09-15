@@ -39,6 +39,10 @@ const serviceSchema = mongoose.Schema(
         subCategory: {
             type: String,
             required: true
+        },
+        image: {
+            type: String,
+            required: true
         }
     }
 );

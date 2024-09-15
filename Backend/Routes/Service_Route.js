@@ -2,7 +2,24 @@ import express from 'express';
 import { Service } from '../Models/Service.js'; // Assuming the model is named Service
 const router = express.Router();
 import mongoose from 'mongoose';
+import multer from 'multer';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads'); 
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+const uploads = multer({ storage: storage }).single('image');
+router.use('/uploads', express.static(join(__dirname, 'uploads')));
 
 // Middleware for validating required fields
 const validateFields = (req, res, next) => {
@@ -12,7 +29,8 @@ const validateFields = (req, res, next) => {
         "duration",
         "price",
         "available",
-        "subCategory"
+        "subCategory",
+        "image"
     ];
 
     for (const field of requiredFields) {
@@ -26,23 +44,35 @@ const validateFields = (req, res, next) => {
  
 // Route to create a new service
 router.post('/', validateFields, async (req, res) => {
-    try {
-        const newService = {
-            category: req.body.category,
-            description: req.body.description,
-            duration: req.body.duration,
-            price: req.body.price,
-            available: req.body.available,
-            subCategory:req.body.subCategory
-        };
+    uploads(req, res,async(err) => {
+        try{
+            if (err instanceof multer.MulterError) {
+                // Multer error occurred
+                return res.status(400).json({ error: err.message });
+            } else if (err) {
+                // Other errors occurred
+                return res.status(500).json({ error: err.message });
+            }
 
-        const createdService = await Service.create(newService);
-
-        return res.status(201).send(createdService);
+            const { category, description, duration, price,available, subCategory } = req.body;
+            const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
+            
+        const newService =  new Service ({
+            category,
+            description,
+            duration,
+            price,
+            available,
+            subCategory,
+            image
+        });
+         await newService.save();
+         return res.status(201).json({ message: "Service created" });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message });
     }
+});
 });
 
 // Route to get all services
