@@ -45,6 +45,10 @@ const ReadOneService = () => {
               <p className="text-lg">{service.category}</p>
             </div>
             <div>
+              <h2 className="text-2xl font-semibold mb-2">Service Type</h2>
+              <p className="text-lg">{service.subCategory}</p>
+            </div>
+            <div>
               <h2 className="text-2xl font-semibold mb-2">Description</h2>
               <p className="text-lg">{service.description}</p>
             </div>

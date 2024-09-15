@@ -14,10 +14,12 @@ const validateFields = (req, res, next) => {
         "start_date",
         "end_date",
         "conditions",
-        "image_url",
         "package_type",
-        "service_ID",
         "p_name",
+        "category",
+        "subCategory",
+        "services",
+        "packages",
     ];
 
     for (const field of requiredFields) {
@@ -27,33 +29,6 @@ const validateFields = (req, res, next) => {
     }
     next();
 };
-
- /* // Route for retrieving a specific package by ID
-router.get('/:identifier', async (req, res) => {
-    try {
-        const { identifier } = req.params;
-
-        let p;
-        
-        // Check if the identifier is a valid MongoDB ObjectId
-        if (mongoose.Types.ObjectId.isValid(identifier)) {
-            // Fetch by MongoDB ObjectId
-            p = await Package.findById(identifier);
-        } else {
-            // Fetch by custom string identifier
-            p = await Package.findOne({ service_ID: identifier });
-        }
-
-        if (p) {
-            return res.status(200).json(service);
-        } else {
-            return res.status(404).send({ message: 'Service not found' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: 'Error fetching service: ' + error.message });
-    }
-}); */
 
 // Route to create a new package
 router.post('/', validateFields, async (req, res) => {
@@ -66,10 +41,12 @@ router.post('/', validateFields, async (req, res) => {
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             conditions: req.body.conditions,
-            image_url: req.body.image_url,
             package_type: req.body.package_type,
-            service_ID: req.body.service_ID,
+            category: req.body.category,
             p_name: req.body.p_name,
+            subCategory: req.body.subCategory,
+            services: req.body.services,
+            packages: req.body.packages,
         };
 
         const createdPkg = await Pkg.create(newPackage);
@@ -144,5 +121,36 @@ router.delete('/:id', async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+
+//GET search bar
+router.get("searchpkg", function (req, res) {
+    var search = req.query.search;
+    console.log(search);
+    Pkg.find({
+        $or: [
+            
+            { ID: { $regex: search, $options: "i" } },
+            { p_name: { $regex: search, $options: "i" } },
+           { base_price: { $regex: search, $options: "i" } },
+            { discount_rate: { $regex: search, $options: "i" } },
+            { final_price: { $regex: search, $options: "i"} },
+         { start_date: { $regex: search, $options: "i"} },
+          { end_date: { $regex: search, $options: "i"} },
+            { package_type: { $regex: search, $options: "i"} },
+            { category: { $regex: search, $options: "i"} },
+            { subCategory: { $regex: search, $options: "i"} }
+           
+        ]
+    }, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.json(result);
+        }
+    });
+});
+  
+
 
 export default router;
