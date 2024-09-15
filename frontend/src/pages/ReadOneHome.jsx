@@ -98,15 +98,16 @@ const ReadOneHome = () => {
 
   const handleAppointmentClick = () => {
     navigate(`/appointments/create/${customer.Email}`); // Navigate to the appointments page
+
   };
 
-  const handlePackageClick = () => {
-    navigate(`/pkg/pkgPage`); // Navigate to the appointments page
-  };
+  // const handlePackageClick = () => {
+  //   navigate(`/pkg/pkgPage`); // Navigate to the appointments page
+  // };
 
-  const handleServiceClick = () => {
-    navigate(`/services/servicePage`); // Navigate to the appointments page
-  };
+  // const handleServiceClick = () => {
+  //   navigate(`/services/servicePage`); // Navigate to the appointments page
+  // };
 
   return (
     <div>
