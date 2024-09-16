@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import servicePC from '../../images/service.jpg';
+import servicePc from '../../images/service.jpg';
 
-const ServicePage = () => {
-  const [services, setServices] = useState([]);
+const PkgPage = () => {
+  const [pkg, setPkg] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchPkg = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8076/services');
-        setServices(response.data);
+        const response = await axios.get('http://localhost:8076/pkg');
+        setPkg(response.data);
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -23,13 +23,13 @@ const ServicePage = () => {
       }
     };
 
-    fetchServices();
+    fetchPkg();
   }, []);
 
   return (
     <div className="p-6 min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative bg-cover bg-center h-64" style={{ backgroundImage: `url(${servicePC})` }}>
+      <div className="relative bg-cover bg-center h-64" style={{ backgroundImage: `url(${servicePc})` }}>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 flex items-center justify-center h-full">
           <h1 className="text-4xl font-bold text-white text-center">Experience the Best in Beauty</h1>
@@ -37,45 +37,37 @@ const ServicePage = () => {
       </div>
 
       <div className="flex items-center justify-center my-6">
-        <h2 className="text-3xl font-semibold text-pink-500 ">Our Services</h2>
+        <h2 className="text-3xl font-semibold text-pink-500">Our Packages</h2>
       </div>
 
       {error && <p className="text-error text-center mb-6">{error}</p>}
 
-      {/* Services Grid */}
+      {/* Packages Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {services.map(service => (
+        {pkg.map(pkgs => (
           <div
-            key={service._id}
+            key={pkgs._id}
             className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl"
             style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
           >
             <img 
-              src={`http://localhost:8076/${service.image}`} 
-              alt={service.service_ID}
+              src={`http://localhost:8076/${pkgs.image}`} 
+              alt={pkgs.ID}
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-text mb-2">{service.service_ID}</h3>
-              <p className="text-text mb-2">{service.category} - {service.subCategory}</p>
-              <p className="text-text mb-2">Duration: {service.duration} min</p>
-              <p className="text-text mb-2">Price: Rs {service.price}</p>
-              <p className="text-text mb-2">Available: {service.available ? 'Yes' : 'No'}</p>
-              <p className="text-text">{service.description}</p>
+              <h3 className="text-2xl font-bold text-text mb-2">{pkgs.service_ID}</h3>
+              <p className="text-text mb-2">{pkgs.category} - {pkgs.subCategory}</p>
+              <p className="text-text mb-2">Package Name: {pkgs.p_name} min</p>
+              <p className="text-text mb-2">Package Type: {pkgs.package_type}</p>
+              <p className="text-text mb-2">Base Price: Rs {pkgs.base_price}</p>
+              <p className="text-text mb-2">Discount:  {pkgs.discount_rate} %</p>
+              <p className="text-text mb-2">Final Price: Rs {pkgs.final_price}</p>
+              <p className="text-text mb-2">Duration {pkgs.start_date} to {pkgs.end_date}</p>
+              <p className="text-text">{pkgs.description}</p>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Call to Action */}
-      <div className="flex justify-center mt-12">
-        <button 
-          onClick={() => navigate('/book-appointment')} 
-          className="bg-primary text-white py-3 px-6 rounded-lg shadow-custom hover:bg-violet-600 transition-colors"
-          style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
-        >
-          Book an Appointment
-        </button>
       </div>
 
       {/* Testimonials */}
@@ -93,4 +85,4 @@ const ServicePage = () => {
   );
 };
 
-export default ServicePage;
+export default PkgPage;

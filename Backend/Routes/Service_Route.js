@@ -97,7 +97,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Route to update a service (with optional file upload)
-router.put('/:id', uploads, validateFields, async (req, res) => {
+router.put('/:id', uploads, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -140,27 +140,26 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-//GET search bar
-router.get("searchservice", function (req, res) {
-    var search = req.query.search;
+// Route to search for services by multiple fields
+router.get('/searchservice', (req, res) => {
+    const search = req.query.search;
     console.log(search);
-    Pkg.find({
+
+    Service.find({
         $or: [
-            
             { service_ID: { $regex: search, $options: "i" } },
             { category: { $regex: search, $options: "i" } },
-           { duration: { $regex: search, $options: "i" } },
+            { duration: { $regex: search, $options: "i" } },
             { price: { $regex: search, $options: "i" } },
-            { available: { $regex: search, $options: "i"} },
-         { subCategory: { $regex: search, $options: "i"} }
-           
+            { available: { $regex: search, $options: "i" } },
+            { subCategory: { $regex: search, $options: "i" } }
         ]
-    }, function (err, result) {
+    }, (err, result) => {
         if (err) {
             console.log(err);
-        }
-        else {
-            res.json(result);
+            return res.status(500).json({ error: 'Search failed' });
+        } else {
+            return res.json(result);
         }
     });
 });

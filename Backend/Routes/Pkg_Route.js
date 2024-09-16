@@ -1,10 +1,30 @@
 import express from 'express';
 import { Pkg } from '../Models/Pkg.js';
-import mongoose from 'mongoose';
+import multer from 'multer';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 const router = express.Router();
 
-// Middleware for validating required fields
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Setup Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads'); // Save in the 'uploads' folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname); // Unique file name
+    }
+});
+
+const uploads = multer({ storage: storage }).single('image');
+
+// Serve static files from the uploads directory
+router.use('/uploads', express.static(join(__dirname, 'uploads')));
+
+// Middleware for validating required fields (excluding image)
 const validateFields = (req, res, next) => {
     const requiredFields = [
         "description",
@@ -17,9 +37,7 @@ const validateFields = (req, res, next) => {
         "package_type",
         "p_name",
         "category",
-        "subCategory",
-        "services",
-        "packages",
+        "subCategory"
     ];
 
     for (const field of requiredFields) {
@@ -31,32 +49,33 @@ const validateFields = (req, res, next) => {
 };
 
 // Route to create a new package
-router.post('/', validateFields, async (req, res) => {
+router.post('/', uploads, validateFields, async (req, res) => {
     try {
-        const newPackage = {
-            description: req.body.description,
-            base_price: req.body.base_price,
-            discount_rate: req.body.discount_rate,
-            final_price: req.body.final_price,
-            start_date: req.body.start_date,
-            end_date: req.body.end_date,
-            conditions: req.body.conditions,
-            package_type: req.body.package_type,
-            category: req.body.category,
-            p_name: req.body.p_name,
-            subCategory: req.body.subCategory,
-            services: req.body.services,
-            packages: req.body.packages,
-        };
+        const { description, base_price, discount_rate, final_price, start_date, end_date, conditions, package_type, category, subCategory, p_name } = req.body;
+        const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
-        const createdPkg = await Pkg.create(newPackage);
-        return res.status(201).send(createdPkg);
+        const newPackage = new Pkg({
+            description,
+            base_price,
+            discount_rate,
+            final_price,
+            start_date,
+            end_date,
+            conditions,
+            package_type,
+            category,
+            subCategory,
+            p_name,
+            image
+        });
+
+        await newPackage.save();
+        return res.status(201).json({ message: "Package created", package: newPackage });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message });
     }
 });
-
 
 // Route to get all packages
 router.get('/', async (req, res) => {
@@ -69,7 +88,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Route to get a package by ID
+// Route to get a package by custom ID field (not _id)
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -81,17 +100,23 @@ router.get('/:id', async (req, res) => {
 
         return res.status(200).json(foundPackage);
     } catch (error) {
-        console.log(error.message); // Debugging: Log the error
+        console.log(error.message);
         res.status(500).send({ message: error.message });
     }
 });
 
 // Route to update a package
-router.put('/:id', validateFields, async (req, res) => {
+router.put('/:id', uploads, validateFields, async (req, res) => {
     try {
         const { id } = req.params;
+        const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
-        const updatedPackage = await Pkg.findByIdAndUpdate(id, req.body, { new: true });
+        const updatedData = {
+            ...req.body,
+            ...(image && { image }) // Only update image if a new file is uploaded
+        };
+
+        const updatedPackage = await Pkg.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!updatedPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -99,7 +124,7 @@ router.put('/:id', validateFields, async (req, res) => {
 
         return res.status(200).send({ message: 'Package updated successfully', updatedPackage });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         res.status(500).send({ message: error.message });
     }
 });
@@ -122,35 +147,30 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-//GET search bar
-router.get("searchpkg", function (req, res) {
-    var search = req.query.search;
-    console.log(search);
-    Pkg.find({
-        $or: [
-            
-            { ID: { $regex: search, $options: "i" } },
-            { p_name: { $regex: search, $options: "i" } },
-           { base_price: { $regex: search, $options: "i" } },
-            { discount_rate: { $regex: search, $options: "i" } },
-            { final_price: { $regex: search, $options: "i"} },
-         { start_date: { $regex: search, $options: "i"} },
-          { end_date: { $regex: search, $options: "i"} },
-            { package_type: { $regex: search, $options: "i"} },
-            { category: { $regex: search, $options: "i"} },
-            { subCategory: { $regex: search, $options: "i"} }
-           
-        ]
-    }, function (err, result) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            res.json(result);
-        }
-    });
-});
-  
+// GET route for search functionality
+router.get('/searchpkg', async (req, res) => {
+    try {
+        const search = req.query.search;
+        const results = await Pkg.find({
+            $or: [
+                { ID: { $regex: search, $options: 'i' } },
+                { p_name: { $regex: search, $options: 'i' } },
+                { base_price: { $regex: search, $options: 'i' } },
+                { discount_rate: { $regex: search, $options: 'i' } },
+                { final_price: { $regex: search, $options: 'i' } },
+                { start_date: { $regex: search, $options: 'i' } },
+                { end_date: { $regex: search, $options: 'i' } },
+                { package_type: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } },
+                { subCategory: { $regex: search, $options: 'i' } }
+            ]
+        });
 
+        res.json(results);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 export default router;
