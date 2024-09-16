@@ -3,9 +3,11 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const EditPkg = () => {
-    const { id } = useParams(); // Fetching package ID from URL parameters
+    const { id } = useParams();
     const [description, setDescription] = useState('');
     const [base_price, setBasePrice] = useState('');
     const [discount_rate, setDiscount] = useState('');
@@ -25,7 +27,6 @@ const EditPkg = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Fetch the package details when the component mounts
     useEffect(() => {
         const fetchPackage = async () => {
             try {
@@ -54,7 +55,6 @@ const EditPkg = () => {
         fetchPackage();
     }, [id]);
 
-    // Calculate final price based on base price and discount rate
     useEffect(() => {
         if (base_price && discount_rate) {
             const discount = parseFloat(discount_rate) / 100;
@@ -63,7 +63,6 @@ const EditPkg = () => {
         }
     }, [base_price, discount_rate]);
 
-    // Fetch categories and subcategories
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -119,7 +118,7 @@ const EditPkg = () => {
             await axios.put(`http://localhost:8076/pkg/${id}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            navigate('/pkg/allPkg'); // Redirect on success
+            navigate('/pkg/allPkg');
         } catch (error) {
             console.error(error);
             setError('Failed to update the package. Please try again.');
@@ -130,199 +129,224 @@ const EditPkg = () => {
         setImage(e.target.files[0]);
     };
 
+    if (loading) {
+        return <p>Loading package details...</p>;
+    }
+
+    const containerStyle = {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      };
+
     return (
-        <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
-            <h1 className="text-3xl font-bold mb-6">Edit Package</h1>
-            {error && <p className='text-red-600'>{error}</p>}
-            <form onSubmit={handleUpdatePackage} className='space-y-4 border border-gray-300 p-4 rounded shadow-md'>
-                {/* Category */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Service Category</label>
-                    <select
-                        value={category}
-                        onChange={handleCategoryChange}
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                        required
-                    >
-                        <option value="" disabled>Select Service Category</option>
-                        {categoryOptions.map((category, index) => (
-                            <option key={index} value={category}>{category}</option>
-                        ))}
-                    </select>
-                </div>
+        <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Edit Package</h2>
+      </div>
 
-                {/* Subcategory */}
-                {category && subCategoryOptions.length > 0 && (
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">Service Subcategory</label>
-                        <select
-                            value={subCategory}
-                            onChange={(e) => setSubCategory(e.target.value)}
-                            className="border rounded w-full py-2 px-3 text-gray-700"
-                            required
-                        >
-                            <option value="" disabled>Select Subcategory</option>
-                            {subCategoryOptions.map((sub, index) => (
-                                <option key={index} value={sub}>{sub}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                {/* Package Name */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Package Name</label>
-                    <input
-                        type="text"
-                        name="p_name"
-                        value={p_name}
-                        onChange={(e) => setPName(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Package Type */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Package Type</label>
-                    <div className="flex items-center space-x-4">
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                checked={package_type === 'Standard'}
-                                onChange={() => setType('Standard')}
-                                className="mr-2"
-                            />
-                            Standard
-                        </label>
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                checked={package_type === 'Promotional'}
-                                onChange={() => setType('Promotional')}
-                                className="mr-2"
-                            />
-                            Promotional
-                        </label>
-                    </div>
-                </div>
-
-                {/* Description */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                    <input
-                        type="text"
-                        name="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Base Price */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Base Price</label>
-                    <input
-                        type="number"
-                        name="base_price"
-                        value={base_price}
-                        onChange={(e) => setBasePrice(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Discount Rate */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Discount Rate (%)</label>
-                    <input
-                        type="number"
-                        name="discount_rate"
-                        value={discount_rate}
-                        onChange={(e) => setDiscount(e.target.value)}
-                        required
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Final Price */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Final Price</label>
-                    <input
-                        type="number"
-                        name="final_price"
-                        value={final_price}
-                        readOnly
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Start Date */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
-                    <DatePicker
-                        selected={start_date}
-                        onChange={date => setStartDate(date)}
-                        dateFormat="yyyy-MM-dd"
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                        required
-                    />
-                </div>
-
-                {/* End Date */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
-                    <DatePicker
-                        selected={end_date}
-                        onChange={date => setEndDate(date)}
-                        dateFormat="yyyy-MM-dd"
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                        required
-                    />
-                </div>
-
-                {/* Conditions */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Conditions</label>
-                    <textarea
-                        name="conditions"
-                        value={conditions}
-                        onChange={(e) => setCondition(e.target.value)}
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
-
-                {/* Current Image */}
-                <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
-                    {existingImage ? (
-                        <div className="mb-4">
-                            <img src={existingImage} alt="Current package" className="mb-2" style={{ maxWidth: '100%', height: 'auto' }} />
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+                    <form onSubmit={handleUpdatePackage} className='space-y-4'>
+                        <div>
+                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Category:</label>
+                            <select
+                                id="category"
+                                value={category}
+                                onChange={handleCategoryChange}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            >
+                                <option value="">Select Category</option>
+                                {categoryOptions.map((cat, index) => (
+                                    <option key={index} value={cat}>{cat}</option>
+                                ))}
+                            </select>
                         </div>
-                    ) : (
-                        <p>No image uploaded.</p>
-                    )}
-                </div>
 
-                {/* Update Image */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Update Image</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="border rounded w-full py-2 px-3 text-gray-700"
-                    />
-                </div>
+                        {category && (
+                            <div>
+                                <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Sub Category:</label>
+                                <select
+                                    id="subCategory"
+                                    value={subCategory}
+                                    onChange={(e) => setSubCategory(e.target.value)}
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                                >
+                                    <option value="">Select Sub Category</option>
+                                    {subCategoryOptions.map((sub, index) => (
+                                        <option key={index} value={sub}>{sub}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        <div>
+                            <label htmlFor="p_name" className="block text-sm font-medium leading-5 text-gray-700">Package Name:</label>
+                            <input
+                                type="text"
+                                id="p_name"
+                                value={p_name}
+                                onChange={(e) => setPName(e.target.value)}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="package_type" className="block text-sm font-medium leading-5 text-gray-700">Package Type:</label>
+                            <div className="flex items-center space-x-4">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        value="Standard"
+                                        checked={package_type === 'Standard'}
+                                        onChange={() => setType('Standard')}
+                                        className="form-radio"
+                                    />
+                                    <span className="ml-2">Standard</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        value="Promotional"
+                                        checked={package_type === 'Promotional'}
+                                        onChange={() => setType('Promotional')}
+                                        className="form-radio"
+                                    />
+                                    <span className="ml-2">Promotional</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description:</label>
+                            <input
+                                type="text"
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="base_price" className="block text-sm font-medium leading-5 text-gray-700">Base Price:</label>
+                            <input
+                                type="number"
+                                id="base_price"
+                                value={base_price}
+                                onChange={(e) => setBasePrice(e.target.value)}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="discount_rate" className="block text-sm font-medium leading-5 text-gray-700">Discount Rate (%):</label>
+                            <input
+                                type="number"
+                                id="discount_rate"
+                                value={discount_rate}
+                                onChange={(e) => setDiscount(e.target.value)}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="final_price" className="block text-sm font-medium leading-5 text-gray-700">Final Price:</label>
+                            <input
+                                type="number"
+                                id="final_price"
+                                value={final_price}
+                                readOnly
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="start_date" className="block text-sm font-medium leading-5 text-gray-700">Start Date:</label>
+                            <DatePicker
+                                selected={start_date}
+                                onChange={date => setStartDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="end_date" className="block text-sm font-medium leading-5 text-gray-700">End Date:</label>
+                            <DatePicker
+                                selected={end_date}
+                                onChange={date => setEndDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="conditions" className="block text-sm font-medium leading-5 text-gray-700">Conditions:</label>
+                            <textarea
+                                id="conditions"
+                                value={conditions}
+                                onChange={(e) => setCondition(e.target.value)}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium leading-5 text-gray-700">Current Image:</label>
+                            {existingImage ? (
+                                <div className="mb-4">
+                                    <img
+                                        src={`http://localhost:8076/${existingImage}`} 
+                                        alt="Current package" 
+                                        className="w-32 h-32 object-cover mb-4"
+                                        />
+                                </div>
+                            ) : (
+                                <p>No image uploaded.</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Update Image:</label>
+                            <input
+                                type="file"
+                                id="image"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            />
+                        </div>
+
+                         {/* Submit Button */}
+        <div className="col-span-2">
+        <span className="block w-40 rounded-md shadow-sm">
+        <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
                 >
-                    Update Package
+                  {loading ? <Spinner /> : "Update Package"}
                 </button>
-            </form>
+              </span>
+            </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 };

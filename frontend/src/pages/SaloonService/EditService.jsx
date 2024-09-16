@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const subCategories = {
   Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
@@ -15,9 +17,10 @@ const EditService = () => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null); // For uploading a new image
   const [existingImage, setExistingImage] = useState(''); // For displaying the existing image
-  const [duration, setDuration] = useState('');
+  const [hours, setHours] = useState('');
+  const [minutes, setMinutes] = useState('');
   const [price, setPrice] = useState('');
-  const [available, setAvailable] = useState('');
+  const [available, setAvailable] = useState('Yes');
   const [error, setError] = useState('');
   const [priceError, setPriceError] = useState('');
   const [durationError, setDurationError] = useState('');
@@ -32,7 +35,15 @@ const EditService = () => {
         setCategory(service.category);
         setSubCategory(service.subCategory);
         setDescription(service.description);
-        setDuration(service.duration);
+
+        // Split duration into hours and minutes
+        const [serviceHours, serviceMinutes] = service.duration
+          .split(' ')
+          .map((part) => part.replace(/\D/g, '')); // Remove non-numeric characters
+
+        setHours(serviceHours || '');
+        setMinutes(serviceMinutes || '');
+
         setPrice(service.price);
         setAvailable(service.available);
         setExistingImage(service.image); // Set the existing image URL
@@ -57,10 +68,14 @@ const EditService = () => {
       return;
     }
 
-    if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
-      setDurationError('Please enter a valid whole number for duration.');
+    // Validate duration input (hours and minutes)
+    if ((!hours && !minutes) || isNaN(hours) || isNaN(minutes)) {
+      setDurationError('Please enter valid numbers for hours and/or minutes.');
       return;
     }
+
+    // Combine hours and minutes into a single duration string
+    const duration = `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}min` : ''}`.trim();
 
     const formData = new FormData();
     formData.append('category', category);
@@ -95,16 +110,6 @@ const EditService = () => {
     }
   };
 
-  const handleDurationChange = (e) => {
-    const value = e.target.value;
-    if (/^\d+$/.test(value)) {
-      setDuration(value);
-      setDurationError('');
-    } else {
-      setDurationError('Please enter a valid whole number.');
-    }
-  };
-
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
@@ -113,24 +118,64 @@ const EditService = () => {
     return <p>Loading service details...</p>;
   }
 
+   // Handle numeric input for hours
+   const handleHoursChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setHours(value);
+      setDurationError(''); // Clear error message if valid
+    } else {
+      setDurationError('Please enter a valid number for hours.');
+    }
+  };
+
+  // Handle numeric input for minutes
+  const handleMinutesChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value) && value <= 59) { // Ensuring minutes are less than or equal to 59
+      setMinutes(value);
+      setDurationError(''); // Clear error message if valid
+    } else {
+      setDurationError('Please enter a valid number for minutes (0-59).');
+    }
+  };
+
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
   return (
-    <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
-      <h1 className="text-3xl font-bold mb-6">Edit Service</h1>
-      {error && <p className="text-red-600">{error}</p>}
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Edit Service</h2>
+      </div>
+
+    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      {error && <p className="text-red-600 text-center mb-4">{error}</p>}
       <form 
         onSubmit={handleSubmit} 
-        className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
+        className='space-y-4 '
       >
          <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+          <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Category:</label>
           <select
+          id="category"
             value={category}
             onChange={(e) => {
               setCategory(e.target.value);
               setSubCategory(''); // Reset subcategory when category changes
             }}
             required
-            className="border px-2 py-1 w-full max-w-xs"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
           >
             <option value="">Select Category</option>
             <option value="Hair">Hair</option>
@@ -141,12 +186,14 @@ const EditService = () => {
 
         {category && (
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">Sub Category:</label>
+            <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Sub Category:</label>
             <select
+             id="subCategory"
               value={subCategory}
               onChange={(e) => setSubCategory(e.target.value)}
               required
-              className="border px-2 py-1 w-full max-w-xs"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              
             >
               <option value="">Select Sub Category</option>
               {subCategories[category].map((sub) => (
@@ -159,44 +206,56 @@ const EditService = () => {
         )}
 
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
+          <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description:</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="border px-2 py-1 w-full"
-            rows="3"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                rows="3"
           />
         </div>
+
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Duration: (min)</label>
-          <input
-            type="text"
-            value={duration}
-            onChange={handleDurationChange}
-            placeholder="e.g. 60min"
-            required
-            className="border px-2 py-1 w-full max-w-xs"
-          />
-          {durationError && <p className="text-red-600">{durationError}</p>} {/* Display duration error */}
+          <label htmlFor="duration" className="block text-sm font-medium leading-5 text-gray-700">Duration:</label>
+          <div className="flex space-x-4">
+            <input
+              type="text"
+              value={hours}
+              onChange={handleHoursChange}
+              placeholder="Hours"
+               className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+            />
+            <input
+              type="text"
+              value={minutes}
+              onChange={handleMinutesChange}
+              placeholder="Minutes"
+               className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+            />
+          </div>
+          {durationError && <p className="text-red-600 mt-2">{durationError}</p>}
         </div>
+
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Price: (Rs)</label>
+          <label htmlFor="price" className="block text-sm font-medium leading-5 text-gray-700">Price: (Rs)</label>
           <input
             type="text"
             value={price}
             onChange={handlePriceChange}
             required
-            className="border px-2 py-1 w-full max-w-xs"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
           />
-          {priceError && <p className="text-red-600">{priceError}</p>} {/* Display price error */}
+          {priceError && <p className="text-red-600 mt-2">{priceError}</p>} {/* Display price error */}
         </div>
+
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Available:</label>
+          <label htmlFor="available" className="block text-sm font-medium leading-5 text-gray-700">Available:</label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
+                value="Yes"
                 checked={available === 'Yes'}
                 onChange={() => setAvailable('Yes')}
                 className="mr-2"
@@ -205,7 +264,8 @@ const EditService = () => {
             </label>
             <label className="flex items-center">
               <input
-                type="checkbox"
+                type="radio"
+                value="No"
                 checked={available === 'No'}
                 onChange={() => setAvailable('No')}
                 className="mr-2"
@@ -216,7 +276,7 @@ const EditService = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
+          <label className="block text-sm font-medium leading-5 text-gray-700">Current Image:</label>
           {existingImage ? (
             <img 
               src={`http://localhost:8076/${existingImage}`} 
@@ -229,21 +289,30 @@ const EditService = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Select New Image (optional)</label>
+          <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Select New Image (optional)</label>
           <input 
             type="file" 
             onChange={handleImageChange}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
           />
           {image && <p>New image selected: {image.name}</p>}
         </div>
 
+        {/* Submit Button */}
+        <div className="col-span-2">
+        <span className="block w-40 rounded-md shadow-sm">
         <button
-          type="submit"
-          className="p-2 bg-violet-300 rounded text-white"
-        >
-          Update Service
-        </button>
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+                >
+                  {loading ? <Spinner /> : "Update Service"}
+                </button>
+              </span>
+            </div>
+
       </form>
+    </div>
+    </div>
     </div>
   );
 };

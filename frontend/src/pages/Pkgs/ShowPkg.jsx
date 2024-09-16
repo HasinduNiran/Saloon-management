@@ -5,6 +5,8 @@ import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { BsInfoCircle } from 'react-icons/bs';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import Nav from '../../components/Dashborad/DashNav';
+import SideBar from '../../components/Dashborad/Sidebar';
 
 const ShowPkg = () => {
   const [pkg, setPkg] = useState([]);
@@ -162,38 +164,51 @@ const ShowPkg = () => {
     const filteredPackages = pkg.filter(applySearchFilter);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex items-center justify-between my-6">
-        <h1 className="text-3xl font-semibold text-gray-800">Packages List</h1>
-        <FaPlus 
-          className="text-3xl cursor-pointer text-blue-500 hover:text-blue-700"
-          onClick={handleAddClick}
-          title="Add New Package"
-        />
-      </div>
+    <div className='flex flex-col min-h-screen '>
+            <Nav />
+            <SideBar />
 
-      <div className="flex items-center space-x-4 mb-6">
-      <input
+            <div className="flex-grow p-6 ml-[18%] mt-[4%]">
+            <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center justify-between my-6 ">
+      <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">Packages <span class="text-pink-600 dark:text-pink-500">List</span> </h1>
+      <div className="flex items-center gap-4 mx-12">
+       <input
           type="text"
           name="searchQuery"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search here..."
-          className="mr-2 border border-gray-400 p-2 rounded"
+           className="border border-gray-300 p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
         />
-        <button
+         <button
           onClick={handleSearch}
-          className="bg-violet-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
+          className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
         >
-          Search
+          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+              Search
+              </span>
         </button>  
 
         <button 
           onClick={generatePDF} 
-          className="bg-violet-500 text-white px-4 py-2 rounded-lg shadow hover:bg-slate-700 transition duration-150 ease-in-out"
+          className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
         >
-          Generate PDF
+         <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+              Generate PDF
+              </span>
         </button>
+
+        <button
+          className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
+          onClick={handleAddClick}
+        >
+          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+                Add
+              </span>
+            </button>
+      </div>
+      </div>
       </div> 
       {noDataMessage && (
         <p className="text-red-500 text-center">{noDataMessage}</p>
@@ -201,43 +216,45 @@ const ShowPkg = () => {
       {error && <p className="text-red-600">{error}</p>}
 
       <div className="overflow-x-auto">
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      <div className="max-h-[400px] overflow-y-auto">
         <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-          <thead className="bg-violet-300 text-white">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Package ID</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Service Category</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Service Type</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Package Name</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Package Type</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Description</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Base Price (Rs)</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Discount Rate (%)</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Final Price (Rs)</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Start Date</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">End Date</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Conditions</th>
-              <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Image</th>
-              <th className="text-left px-6 text-sm font-medium uppercase tracking-wider">Actions</th>
+              <th className="px-4 py-2 text-left font-semibold">Package ID</th>
+              <th className="px-4 py-2 text-left font-semibold">Service Category</th>
+              <th className="px-4 py-2 text-left font-semibold">Service Type</th>
+              <th className="px-4 py-2 text-left font-semibold">Package Name</th>
+              <th className="px-4 py-2 text-left font-semibold">Package Type</th>
+              <th className="px-4 py-2 text-left font-semibold">Description</th>
+              <th className="px-4 py-2 text-left font-semibold">Base Price (Rs)</th>
+              <th className="px-4 py-2 text-left font-semibold">Discount Rate (%)</th>
+              <th className="px-4 py-2 text-left font-semibold">Final Price (Rs)</th>
+              <th className="px-4 py-2 text-left font-semibold">Start Date</th>
+              <th className="px-4 py-2 text-left font-semibold">End Date</th>
+              <th className="px-4 py-2 text-left font-semibold">Conditions</th>
+              <th className="px-4 py-2 text-left font-semibold">Image</th>
+              <th className="px-4 py-2 text-left font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredPackages.map((pkg) => (
               <tr key={pkg._id} className="hover:bg-gray-100 transition duration-150 ease-in-out">
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.ID}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.category}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.subCategory}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.p_name}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.package_type}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.description}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.base_price}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.discount_rate}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.final_price}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.start_date}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.end_date}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{pkg.conditions}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.ID}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.category}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.subCategory}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.p_name}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.package_type}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.description}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.base_price}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.discount_rate}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.final_price}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.start_date}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.end_date}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.conditions}</td>
 
-                <td className="px-6 py-4 text-sm text-gray-700">
-              <img src={`http://localhost:8076/${pkg.image}`}  className='w-full h-32 object-cover rounded-t-lg' />
+                <td className="px-4 py-2 text-gray-700">
+              <img src={`http://localhost:8076/${pkg.image}`}  alt="Package" className='w-24 h-24 object-cover rounded-full' />
                   {console.log(`http://localhost:8076/${pkg.image}`)}
               </td> 
 
@@ -260,7 +277,10 @@ const ShowPkg = () => {
             ))}
           </tbody>
         </table>
+        </div>
+        </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '../../components/Spinner'; // Make sure to import Spinner
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const subCategories = {
   Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
@@ -12,39 +15,38 @@ const CreateService = () => {
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null); // Initialize image as null
-  const [duration, setDuration] = useState('');
+  const [image, setImage] = useState(null);
+  const [hours, setHours] = useState('');
+  const [minutes, setMinutes] = useState('');
   const [price, setPrice] = useState('');
-  const [available, setAvailable] = useState('Yes'); // Default to "Yes"
+  const [available, setAvailable] = useState('');
   const [error, setError] = useState('');
   const [priceError, setPriceError] = useState('');
   const [durationError, setDurationError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setPriceError('');
     setDurationError('');
-    setLoading(true); // Set loading state
+    setLoading(true);
 
-    // Validate price input
     if (!price || isNaN(price)) {
       setPriceError('Please enter a valid number for price.');
       setLoading(false);
       return;
     }
 
-    // Validate duration input (only whole numbers)
-    if (!duration || isNaN(duration) || !Number.isInteger(parseFloat(duration))) {
-      setDurationError('Please enter a valid whole number for duration.');
+    if ((!hours && !minutes) || isNaN(hours) || isNaN(minutes)) {
+      setDurationError('Please enter valid numbers for hours and/or minutes.');
       setLoading(false);
       return;
     }
 
-    // Prepare form data
+    const duration = `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}min` : ''}`.trim();
+
     const formData = new FormData();
     formData.append('category', category);
     formData.append('subCategory', subCategory);
@@ -52,164 +54,202 @@ const CreateService = () => {
     formData.append('duration', duration);
     formData.append('price', price);
     formData.append('available', available);
-    formData.append('image', image); // Send image as file
+    formData.append('image', image);
 
-    // Send POST request to backend
     try {
       await axios.post('http://localhost:8076/services', formData);
       setLoading(false);
-      navigate('/services/allService'); // Redirect to services list on success
+      navigate('/services/allService');
     } catch (error) {
       console.error(error);
       setError('Failed to create the service. Please try again.');
-      setLoading(false); // Stop loading state on error
+      setLoading(false);
     }
   };
 
-  // Handle price input change
-  const handlePriceChange = (e) => {
+  const handleHoursChange = (e) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
-      setPrice(value);
-      setPriceError(''); // Clear error message if valid
+    if (/^\d*$/.test(value)) {
+      setHours(value);
+      setDurationError('');
     } else {
-      setPriceError('Please enter a valid number.');
+      setDurationError('Please enter a valid number for hours.');
     }
   };
 
-  // Handle duration input change
-  const handleDurationChange = (e) => {
+  const handleMinutesChange = (e) => {
     const value = e.target.value;
-    if (/^\d+$/.test(value)) {
-      setDuration(value);
-      setDurationError(''); // Clear error message if valid
+    if (/^\d*$/.test(value) && value <= 59) {
+      setMinutes(value);
+      setDurationError('');
     } else {
-      setDurationError('Please enter a valid whole number.');
+      setDurationError('Please enter a valid number for minutes (0-59).');
     }
+  };
+
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
   };
 
   return (
-    <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
-      <h1 className="text-3xl font-bold mb-6">Create New Service</h1>
-      {error && <p className="text-red-600">{error}</p>}
-      <form 
-        onSubmit={handleSubmit} 
-        className='space-y-4 border border-gray-300 p-4 rounded shadow-md'
-      >
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
-          <select
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setSubCategory(''); // Reset subcategory when category changes
-            }}
-            required
-            className="border px-2 py-1 w-full max-w-xs"
-          >
-            <option value="">Select Category</option>
-            <option value="Hair">Hair</option>
-            <option value="Skin Care">Skin Care</option>
-            <option value="Nail">Nail</option>
-          </select>
-        </div>
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create New Service</h2>
+      </div>
 
-        {category && (
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">Sub Category:</label>
-            <select
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              required
-              className="border px-2 py-1 w-full max-w-xs"
-            >
-              <option value="">Select Sub Category</option>
-              {subCategories[category].map((sub) => (
-                <option key={sub} value={sub}>
-                  {sub}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+          <form onSubmit={handleSubmit} className="space-y-4 ">
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Category</label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setSubCategory('');
+                }}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              >
+                <option value="">Select Category</option>
+                <option value="Hair">Hair</option>
+                <option value="Skin Care">Skin Care</option>
+                <option value="Nail">Nail</option>
+              </select>
+            </div>
 
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="border px-2 py-1 w-full"
-            rows="3"
-          />
-        </div>
+            {category && (
+              <div>
+                <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Sub Category</label>
+                <select
+                  id="subCategory"
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                >
+                  <option value="">Select Sub Category</option>
+                  {subCategories[category].map((sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Duration: (min)</label>
-          <input
-            type="text"
-            value={duration}
-            onChange={handleDurationChange}
-            placeholder="e.g. 60min"
-            required
-            className="border px-2 py-1 w-full max-w-xs"
-          />
-          {durationError && <p className="text-red-600">{durationError}</p>}
-        </div>
-
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Price: (Rs)</label>
-          <input
-            type="text"
-            value={price}
-            onChange={handlePriceChange}
-            required
-            className="border px-2 py-1 w-full max-w-xs"
-          />
-          {priceError && <p className="text-red-600">{priceError}</p>}
-        </div>
-
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Available:</label>
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                checked={available === 'Yes'}
-                onChange={() => setAvailable('Yes')}
-                className="mr-2"
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                rows="3"
               />
-              Yes
-            </label>
-            <label className="flex items-center">
+            </div>
+
+            <div>
+              <label htmlFor="duration" className="block text-sm font-medium leading-5 text-gray-700">Duration</label>
+              <div className="flex space-x-4">
+                <input
+                  id="hours"
+                  type="text"
+                  value={hours}
+                  onChange={handleHoursChange}
+                  placeholder="Hours"
+                  className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                />
+                <input
+                  id="minutes"
+                  type="text"
+                  value={minutes}
+                  onChange={handleMinutesChange}
+                  placeholder="Minutes"
+                  className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                />
+              </div>
+              {durationError && <p className="text-red-600 mt-2">{durationError}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium leading-5 text-gray-700">Price (Rs)</label>
               <input
-                type="radio"
-                checked={available === 'No'}
-                onChange={() => setAvailable('No')}
-                className="mr-2"
+                id="price"
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
-              No
-            </label>
-          </div>
-        </div>
+              {priceError && <p className="text-red-600 mt-2">{priceError}</p>}
+            </div>
 
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Select Image</label>
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="border px-2 py-1"
-          />
-        </div>
+            <div>
+              <label htmlFor="available" className="block text-sm font-medium leading-5 text-gray-700">Available</label>
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    id="availableYes"
+                    name="available"
+                    checked={available === 'Yes'}
+                    onChange={() => setAvailable('Yes')}
+                    className="mr-2"
+                  />
+                  Yes
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    id="availableNo"
+                    name="available"
+                    checked={available === 'No'}
+                    onChange={() => setAvailable('No')}
+                    className="mr-2"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
 
-        <button
-          type="submit"
-          className="p-2 bg-violet-500 rounded text-white"
-          disabled={loading}
-        >
-          {loading ? 'Creating Service...' : 'Create Service'}
-        </button>
-      </form>
+            <div>
+              <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Select Image</label>
+              <input
+                id="image"
+                type="file"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div className="col-span-2">
+              <span className="block w-40 rounded-md shadow-sm">
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+                >
+                  {loading ? <Spinner /> : "Create account"}
+                </button>
+              </span>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

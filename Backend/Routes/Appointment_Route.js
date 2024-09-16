@@ -11,10 +11,11 @@ const validateFields = (req, res, next) => {
         "client_email",
         "client_phone",
         "stylist",
-        "service",
         "customize_package",
         "appoi_date",
-        "appoi_time"
+        "appoi_time",
+        "services",
+        "packages"
     ];
 
     for (const field of requiredFields) {
@@ -33,7 +34,8 @@ router.post('/', validateFields, async (req, res) => {
             client_email: req.body.client_email,
             client_phone: req.body.client_phone,
             stylist: req.body.stylist,
-            service: req.body.service,
+            services: req.body.services,
+            packages: req.body.packages,
             customize_package: req.body.customize_package,
             appoi_date: req.body.appoi_date,
             appoi_time: req.body.appoi_time,
@@ -74,15 +76,16 @@ router.get('/:id', async (req, res) => {
 // Route to update an appointment by ID
 router.put('/:id', validateFields, async (req, res) => {
     try {
-        const appointment = await Appointment.findByIdAndUpdate(request.params.id, request.body, {new: true});
+        const appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-        if (!appointment) return response.status(404).send('Appointment not found');
+        if (!appointment) return res.status(404).send('Appointment not found');
 
-        response.send(appointment);
+        res.send(appointment);
     } catch (error) {
-        response.status(400).send(error);
+        res.status(400).send(error);
     }
 });
+
 
 // Route to delete an appointment by ID
 router.delete('/:id', async (request, response) => {
@@ -109,7 +112,6 @@ router.get("searchappointment", function (req, res) {
            { client_email: { $regex: search, $options: "i" } },
             { client_phone: { $regex: search, $options: "i" } },
             { stylist: { $regex: search, $options: "i"} },
-         { service: { $regex: search, $options: "i"} },
           { appoi_date: { $regex: search, $options: "i"} },
             { appoi_time: { $regex: search, $options: "i"} },
             { services: { $regex: search, $options: "i"} },

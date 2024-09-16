@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import backgroundImage from "../../images/logobg.jpg";
+import tableImage from '../../images/tablebg.jpg';
+import Spinner from '../../components/Spinner'; // Assuming you have a Spinner component
 
 const DetailsAppointment = () => {
-  const { id } = useParams(); // Get the appointment ID from the URL parameters
+  const { id } = useParams();
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // State for handling errors
-  const navigate = useNavigate(); // For navigating to the previous page
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Fetch appointment details on component mount
   useEffect(() => {
     axios
       .get(`http://localhost:8076/appointments/${id}`)
@@ -24,13 +26,22 @@ const DetailsAppointment = () => {
       });
   }, [id]);
 
-  // Handle going back to the previous page
   const handleBack = () => {
-    navigate('/appointments/allAppointment'); // Navigate to appointments list
+    navigate('/appointments/allAppointment');
+  };
+
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    height: '100vh',
+    padding: '1rem'
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   if (error) {
@@ -42,62 +53,77 @@ const DetailsAppointment = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="bg-white shadow-md rounded-lg p-6" style={{ boxShadow: '0 4px 8px rgba(100, 100, 255, 0.8)' }}>
-        <h1 className="text-4xl font-bold mb-6">Appointment Details</h1>
+    <div style={containerStyle}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden"
+          style={{
+            backgroundImage: `url(${tableImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            padding: '1.5rem'
+          }}
+        >
+          <h1 className="text-4xl font-bold text-center my-6 text-gray-800">
+            Appointment Details
+          </h1>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Appointment ID</h2>
-            <p className="text-lg">{appointment.appoi_ID}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Appointment ID</h2>
+              <p className="text-lg">{appointment.appoi_ID}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Name with initials</h2>
+              <p className="text-lg">{appointment.client_name}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">E-mail</h2>
+              <p className="text-lg">{appointment.client_email}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Contact Number</h2>
+              <p className="text-lg">{appointment.client_phone}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Preferred Stylist</h2>
+              <p className="text-lg">{appointment.stylist}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Service Category</h2>
+              <p className="text-lg">{appointment.service}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Customized Package Details</h2>
+              <p className="text-lg">{appointment.customize_package || 'N/A'}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Appointment Date</h2>
+              <p className="text-lg">{appointment.appoi_date}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Appointment Time</h2>
+              <p className="text-lg">{appointment.appoi_time}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Name with initials</h2>
-            <p className="text-lg">{appointment.client_name}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">E-mail</h2>
-            <p className="text-lg">{appointment.client_email}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Contact Number</h2>
-            <p className="text-lg">{appointment.client_phone}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Preferred Stylist</h2>
-            <p className="text-lg">{appointment.stylist}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Service Category</h2>
-            <p className="text-lg">{appointment.service}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Customized Package Details</h2>
-            <p className="text-lg">{appointment.customize_package || 'N/A'}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Appointment Date</h2>
-            <p className="text-lg">{appointment.appoi_date}</p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Appointment Time</h2>
-            <p className="text-lg">{appointment.appoi_time}</p>
-          </div>
-        </div>
 
-        <div className="mt-6 flex items-center">
-          <button
-            className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded mr-4"
-            onClick={handleBack}
-          >
-            Back to Appointments
-          </button>
-          <Link
-            to={`/appointments/edit/${appointment.appoi_ID}`} // Ensure the correct ID is used
-            className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded"
-          >
-            Edit Appointment
-          </Link>
+          <div className="mt-6 flex justify-center space-x-4">
+            <button
+              className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-blue-900 to-blue-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200"
+              onClick={handleBack}
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                Back to Appointments
+              </span>
+            </button>
+            <Link
+              to={`/appointments/edit/${appointment.appoi_ID}`}
+              className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-green-900 to-green-500 group-hover:to-green-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-200"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                Edit Appointment
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

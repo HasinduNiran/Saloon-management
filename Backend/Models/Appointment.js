@@ -32,10 +32,6 @@ const appointmentSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        service: {
-            type: String,
-            required: true
-        },
         customize_package: {
             type: String,
             required: true
