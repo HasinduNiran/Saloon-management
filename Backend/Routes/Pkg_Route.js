@@ -77,7 +77,6 @@ router.post('/', uploads, validateFields, async (req, res) => {
     }
 });
 
-
 // Route to get all packages
 router.get('/', async (req, res) => {
     try {
@@ -93,7 +92,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const foundPackage = await Pkg.findById(id); // Query by custom ID field
+        const foundPackage = await Pkg.findById(id);
 
         if (!foundPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -106,8 +105,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-
-// Route to update a package by custom ID field
+// Route to update a package
 router.put('/:id', uploads, validateFields, async (req, res) => {
     try {
         const { id } = req.params;
@@ -118,7 +116,7 @@ router.put('/:id', uploads, validateFields, async (req, res) => {
             ...(image && { image }) // Only update image if a new file is uploaded
         };
 
-        const updatedPackage = await Pkg.findOneAndUpdate( id, updatedData, { new: true }); // Query by custom ID
+        const updatedPackage = await Pkg.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!updatedPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -130,8 +128,6 @@ router.put('/:id', uploads, validateFields, async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
-
-
 
 // Route to delete a package
 router.delete('/:id', async (req, res) => {
@@ -151,35 +147,30 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-//GET search bar
-router.get("searchpkg", function (req, res) {
-    var search = req.query.search;
-    console.log(search);
-    Pkg.find({
-        $or: [
-            
-            { ID: { $regex: search, $options: "i" } },
-            { p_name: { $regex: search, $options: "i" } },
-           { base_price: { $regex: search, $options: "i" } },
-            { discount_rate: { $regex: search, $options: "i" } },
-            { final_price: { $regex: search, $options: "i"} },
-         { start_date: { $regex: search, $options: "i"} },
-          { end_date: { $regex: search, $options: "i"} },
-            { package_type: { $regex: search, $options: "i"} },
-            { category: { $regex: search, $options: "i"} },
-            { subCategory: { $regex: search, $options: "i"} }
-           
-        ]
-    }, function (err, result) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            res.json(result);
-        }
-    });
-});
-  
+// GET route for search functionality
+router.get('/searchpkg', async (req, res) => {
+    try {
+        const search = req.query.search;
+        const results = await Pkg.find({
+            $or: [
+                { ID: { $regex: search, $options: 'i' } },
+                { p_name: { $regex: search, $options: 'i' } },
+                { base_price: { $regex: search, $options: 'i' } },
+                { discount_rate: { $regex: search, $options: 'i' } },
+                { final_price: { $regex: search, $options: 'i' } },
+                { start_date: { $regex: search, $options: 'i' } },
+                { end_date: { $regex: search, $options: 'i' } },
+                { package_type: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } },
+                { subCategory: { $regex: search, $options: 'i' } }
+            ]
+        });
 
+        res.json(results);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
 
 export default router;

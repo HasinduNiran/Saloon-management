@@ -20,10 +20,10 @@ const EditPkg = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [subCategoryOptions, setSubCategoryOptions] = useState([]);
     const [image, setImage] = useState(null);
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
     const [existingImage, setExistingImage] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     // Fetch the package details when the component mounts
     useEffect(() => {
@@ -69,7 +69,6 @@ const EditPkg = () => {
             try {
                 const response = await axios.get('http://localhost:8076/services');
                 const services = response.data;
-
                 const uniqueCategories = [...new Set(services.map(service => service.category))];
                 setCategoryOptions(uniqueCategories);
             } catch (error) {
@@ -88,7 +87,6 @@ const EditPkg = () => {
         axios.get('http://localhost:8076/services').then((response) => {
             const services = response.data;
             const filteredServices = services.filter(service => service.category === selectedCategory);
-
             const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
             setSubCategoryOptions(uniqueSubCategories);
         }).catch(error => {
@@ -130,7 +128,7 @@ const EditPkg = () => {
 
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
-      };
+    };
 
     return (
         <div className="container mx-auto p-6" style={{ maxWidth: '600px' }}>
@@ -265,9 +263,10 @@ const EditPkg = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
                     <DatePicker
                         selected={start_date}
-                        onChange={(date) => setStartDate(date)}
+                        onChange={date => setStartDate(date)}
                         dateFormat="yyyy-MM-dd"
                         className="border rounded w-full py-2 px-3 text-gray-700"
+                        required
                     />
                 </div>
 
@@ -276,9 +275,10 @@ const EditPkg = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
                     <DatePicker
                         selected={end_date}
-                        onChange={(date) => setEndDate(date)}
+                        onChange={date => setEndDate(date)}
                         dateFormat="yyyy-MM-dd"
                         className="border rounded w-full py-2 px-3 text-gray-700"
+                        required
                     />
                 </div>
 
@@ -289,33 +289,32 @@ const EditPkg = () => {
                         name="conditions"
                         value={conditions}
                         onChange={(e) => setCondition(e.target.value)}
-                        required
                         className="border rounded w-full py-2 px-3 text-gray-700"
                     />
                 </div>
 
-                {/* Image */}
+                {/* Current Image */}
                 <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
-          {existingImage ? (
-            <img 
-              src={`http://localhost:8076/${existingImage}`} 
-              alt="Package Image" 
-              className="w-32 h-32 object-cover mb-4"
-            />
-          ) : (
-            <p>No image available.</p>
-          )}
-        </div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Current Image:</label>
+                    {existingImage ? (
+                        <div className="mb-4">
+                            <img src={existingImage} alt="Current package" className="mb-2" style={{ maxWidth: '100%', height: 'auto' }} />
+                        </div>
+                    ) : (
+                        <p>No image uploaded.</p>
+                    )}
+                </div>
 
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Select New Image (optional)</label>
-          <input 
-            type="file" 
-            onChange={handleImageChange}
-          />
-          {image && <p>New image selected: {image.name}</p>}
-        </div>
+                {/* Update Image */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Update Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="border rounded w-full py-2 px-3 text-gray-700"
+                    />
+                </div>
 
                 <button
                     type="submit"
