@@ -58,7 +58,7 @@ const ServicePage = () => {
             <div className="p-6">
               <h3 className="text-2xl font-bold text-text mb-2">{service.service_ID}</h3>
               <p className="text-text mb-2">{service.category} - {service.subCategory}</p>
-              <p className="text-text mb-2">Duration: {service.duration} min</p>
+              <p className="text-text mb-2">Duration: {service.duration} </p>
               <p className="text-text mb-2">Price: Rs {service.price}</p>
               <p className="text-text mb-2">Available: {service.available ? 'Yes' : 'No'}</p>
               <p className="text-text">{service.description}</p>

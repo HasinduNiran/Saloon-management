@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import backgroundImage from "../../images/logobg.jpg";
+import tableImage from '../../images/tablebg.jpg';
+import Spinner from '../../components/Spinner'; // Assuming you have a Spinner component
 
 const ReadOnePkg = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [pkg, setPkg] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,47 +25,63 @@ const ReadOnePkg = () => {
     fetchPkg();
   }, [id]);
 
-  
   const handleBack = () => {
-    navigate('/pkg/allPkg'); 
+    navigate('/pkg/allPkg');
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    height: '100vh',
+    padding: '1rem'
+  };
+
+  if (!pkg) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="p-6">
-      {error && <p className="text-red-600">{error}</p>}
-      {pkg ? (
-       <div className="bg-white shadow-md rounded-lg p-6" style={{ boxShadow: '0 4px 8px rgba(100, 100, 255, 0.8)' }}>
-          <h1 className="text-4xl font-bold mb-6">Package Details</h1>
+    <div style={containerStyle}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden"
+          style={{
+            backgroundImage: `url(${tableImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            padding: '1.5rem'
+          }}
+        >
+          <h1 className="text-4xl font-bold text-center my-6 text-gray-800">
+            Package Details
+          </h1>
 
-          <div className="grid grid-cols-2 gap-6">
-
-          <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
               <h2 className="text-2xl font-semibold mb-2">Package ID</h2>
               <p className="text-lg">{pkg.ID}</p>
             </div>
-
             <div>
               <h2 className="text-2xl font-semibold mb-2">Service Category</h2>
               <p className="text-lg">{pkg.category}</p>
             </div>
-
             <div>
               <h2 className="text-2xl font-semibold mb-2">Service Type</h2>
               <p className="text-lg">{pkg.subCategory}</p>
             </div>
-
             <div>
               <h2 className="text-2xl font-semibold mb-2">Package Name</h2>
               <p className="text-lg">{pkg.p_name}</p>
             </div>
-
             <div>
               <h2 className="text-2xl font-semibold mb-2">Package Type</h2>
               <p className="text-lg">{pkg.package_type ? 'Standard' : 'Promotional'}</p>
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Description</h2>
-              <p className="text-lg">{pkg.description} </p>
+              <p className="text-lg">{pkg.description}</p>
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Base Price (Rs)</h2>
@@ -70,7 +89,7 @@ const ReadOnePkg = () => {
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Discount Rate (%)</h2>
-              <p className="text-lg">{pkg.base_price}</p>
+              <p className="text-lg">{pkg.discount_rate}</p>
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Final Price (Rs)</h2>
@@ -89,31 +108,31 @@ const ReadOnePkg = () => {
               <p className="text-lg">{pkg.conditions}</p>
             </div>
             <div>
-            <h2 className="text-2xl font-semibold mb-2"> Image </h2>
-            <img src={`http://localhost:8076/${pkg.image}`} alt="Package Image" style={{ width: '200px', height: '200px' }} />
+              <h2 className="text-2xl font-semibold mb-2">Image</h2>
+              <img src={`http://localhost:8076/${pkg.image}`} alt="Package Image" style={{ width: '200px', height: '200px' }} />
             </div>
-        
           </div>
 
-
-          <div className="mt-6 flex items-center">
+          <div className="mt-6 flex justify-center space-x-4">
             <button
-              className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded mr-4"
+              className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-blue-900 to-blue-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200"
               onClick={handleBack}
             >
-              Back to Packages
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                Back to Packages
+              </span>
             </button>
             <Link
               to={`/pkg/edit/${pkg._id}`}
-              className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded"
+              className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-green-900 to-green-500 group-hover:to-green-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-200"
             >
-              Edit Package
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                Edit Package
+              </span>
             </Link>
           </div>
         </div>
-      ) : (
-        <p className="text-lg">Loading...</p>
-      )}
+      </div>
     </div>
   );
 };

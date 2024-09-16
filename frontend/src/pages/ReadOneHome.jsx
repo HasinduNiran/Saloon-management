@@ -98,7 +98,7 @@ const ReadOneHome = () => {
   // Navigation button handlers
   const handleAppointmentClick = () => {
     if (customer) {
-      navigate(`/appointments/create/${customer.email}`);
+      navigate(`/appointments/create`);
     }
   };
 

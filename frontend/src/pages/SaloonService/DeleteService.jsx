@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Spinner from "../../components/Spinner";
-
+import Swal from 'sweetalert2';
+import Spinner from '../../components/Spinner';
 import axios from 'axios';
 
 const DeleteService = () => {
@@ -9,39 +9,60 @@ const DeleteService = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Function to handle the Service deletion
+  // Function to handle the service deletion
   const handleDeleteService = () => {
     setLoading(true);
-    // Sending a DELETE request to the server to delete the Service by ID
     axios
       .delete(`http://localhost:8076/services/${id}`)
       .then(() => {
-        // If the deletion is successful, update the state and navigate to the home page
         setLoading(false);
-        navigate('/services/allService');
+        // Trigger the SweetAlert notification on success
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Service has been deleted successfully!',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+
+        // After the alert, navigate to the list of all services
+        setTimeout(() => {
+          navigate('/services/allService');
+        }, 2000); // Delay to allow the alert to be displayed
       })
       .catch((error) => {
-        // If an error occurs, update the state, show an alert, and log the error to the console
         setLoading(false);
-        alert(`An error happened: ${error.response ? error.response.data : error.message}`);
+        // Error notification using SweetAlert2
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: `An error occurred: ${error.response ? error.response.data : error.message}`,
+        });
         console.error(error);
       });
   };
 
   return (
-    <div className='p-4'>
+    <div className='p-6 min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-pink-200 via-purple-300 to-indigo-200'>
+      <div className='bg-white shadow-lg rounded-lg w-[500px] p-8 border-t-8 border-red-600'>
+        <h1 className='text-4xl font-bold text-gray-800 text-center mb-6'>Delete Service</h1>
+        {loading ? <Spinner /> : null}
 
-      <h1 className='text-3xl my-4'>Delete Service</h1>
-      {/* Display a spinner while the delete operation is in progress */}
-      {loading ? <Spinner /> : ''}
-      <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl w-[600px] p-8 mx-auto'>
-        <h3 className='text-2xl'>Are you sure you want to Delete your Service?</h3>
+        <p className='text-xl text-gray-600 text-center mb-8'>
+          Are you sure you want to delete this service? This action cannot be undone.
+        </p>
 
-        {/* Button to initiate the Employee deletion */}
         <button
-          className='p-4 bg-red-600 text-white m-8 w-full'
-          onClick={handleDeleteService}>
+          className='w-full py-3 bg-red-600 hover:bg-red-700 text-white text-lg font-semibold rounded-md transition-colors duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300'
+          onClick={handleDeleteService}
+        >
           Delete
+        </button>
+        <button
+          className='w-full mt-4 py-3 bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg font-semibold rounded-md transition-colors duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200'
+          onClick={() => navigate('/services/allService')}
+        >
+          Cancel
         </button>
       </div>
     </div>

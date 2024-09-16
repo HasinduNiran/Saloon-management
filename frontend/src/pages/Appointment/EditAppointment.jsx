@@ -1,31 +1,31 @@
-// Importing necessary dependencies
 import { useState, useEffect } from "react";
 import React from "react";
 import Spinner from "../../components/Spinner";
-import DatePicker from "react-datepicker"; // Importing DatePicker
-import "react-datepicker/dist/react-datepicker.css"; // Importing DatePicker styles
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
-// Functional component for editing an appointment
 const EditAppointment = () => {
-  const { id } = useParams(); // Get appointment ID from the URL
+  const { id } = useParams();
   const [client_name, setName] = useState("");
   const [client_email, setEmail] = useState("");
   const [client_phone, setPhone] = useState("");
   const [stylist, setStylist] = useState("");
-  const [service, setService] = useState("");
+  const [services, setServices] = useState("");
+  const [packages, setPackages] = useState("");
   const [customize_package, setPackage] = useState("");
   const [appoi_date, setDate] = useState(null);
   const [appoi_time, setTime] = useState(null);
+  const [serviceOp, setServiceOp] = useState([]);
+  const [packageOp, setPackageOp] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Dummy data for dropdown options
-  const stylists = ["Stylist 1", "Stylist 2", "Stylist 3"];
-  const services = ["Haircut", "Nail", "Skin Care"];
+  const stylists = ["Stylist 1", "Stylist 2", "Stylist 3"];  
   const timeIntervals = [
     "08:00 AM", "08:15 AM", "08:30 AM", "08:45 AM",
     "09:00 AM", "09:15 AM", "09:30 AM", "09:45 AM",
@@ -41,7 +41,6 @@ const EditAppointment = () => {
     "07:00 PM", "07:15 PM", "07:30 PM", "07:45 PM",
   ];
 
-  // Fetch appointment data for editing
   useEffect(() => {
     setLoading(true);
     axios
@@ -52,10 +51,11 @@ const EditAppointment = () => {
         setEmail(appointment.client_email);
         setPhone(appointment.client_phone);
         setStylist(appointment.stylist);
-        setService(appointment.service);
-        setPackage(appointment.customize_package);
+        setServices(appointment.services);
+        setPackages(appointment.packages);
         setDate(new Date(appointment.appoi_date));
-        setTime(new Date(appointment.appoi_time));
+        setTime(appointment.appoi_time);
+        setPackage(appointment.customize_package);
         setLoading(false);
       })
       .catch((error) => {
@@ -65,26 +65,48 @@ const EditAppointment = () => {
       });
   }, [id]);
 
-  // Event handler for updating the appointment
+  useEffect(() => {
+    const fetchServicesAndPackages = async () => {
+      try {
+        const servicesResponse = await axios.get("http://localhost:8076/services");
+        const packagesResponse = await axios.get("http://localhost:8076/pkg");
+
+        setServiceOp(servicesResponse.data);
+        setPackageOp(packagesResponse.data);
+      } catch (error) {
+        console.error("Error fetching services and packages:", error.message);
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+          console.error("Response headers:", error.response.headers);
+        } else if (error.request) {
+          console.error("Request data:", error.request);
+        } else {
+          console.error("Error message:", error.message);
+        }
+      }
+    };
+
+    fetchServicesAndPackages();
+  }, []);
+
   const handleEditAppointment = () => {
-    // Creating data object from form inputs
     const data = {
       client_name,
       client_email,
       client_phone,
       stylist,
-      service,
+      services,
+      packages,
       customize_package,
       appoi_date: appoi_date ? appoi_date.toISOString().split("T")[0] : "",
       appoi_time,
     };
     setLoading(true);
 
-    // Making a PUT request to update the appointment data
     axios
       .put(`http://localhost:8076/appointments/${id}`, data)
       .then(() => {
-        // Resetting loading state and navigating to the appointments page
         setLoading(false);
         navigate("/appointments/allAppointment");
       })
@@ -95,109 +117,147 @@ const EditAppointment = () => {
       });
   };
 
-  // JSX for rendering the edit appointment form
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-3xl my-4">Edit Appointment</h1>
-      {loading ? <Spinner /> : ""}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Name with initials</label>
-          <input
-            type="text"
-            value={client_name}
-            onChange={(e) => setName(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Edit Service</h2>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {loading ? <Spinner /> : null}
+          <form className="space-y-4">
+            <div>
+              <label htmlFor="client_name" className="block text-sm font-medium text-gray-700">Name with Initials:</label>
+              <input
+                type="text"
+                id="client_name"
+                value={client_name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="client_email" className="block text-sm font-medium text-gray-700">Email:</label>
+              <input
+                type="email"
+                id="client_email"
+                value={client_email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="client_phone" className="block text-sm font-medium text-gray-700">Contact Number:</label>
+              <input
+                type="tel"
+                id="client_phone"
+                value={client_phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="stylist" className="block text-sm font-medium text-gray-700">Preferred Stylist:</label>
+              <select
+                id="stylist"
+                value={stylist}
+                onChange={(e) => setStylist(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              >
+                <option value="">Select Stylist</option>
+                {stylists.map((stylist) => (
+                  <option key={stylist} value={stylist}>{stylist}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="services" className="block text-sm font-medium text-gray-700">Choose Service(s):</label>
+              <select
+                id="services"
+                value={services}
+                onChange={(e) => setServices(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              >
+                <option value="">Select Service</option>
+                {serviceOp.map((ser) => (
+                  <option key={ser._id} value={ser.service_ID}>
+                  {ser.category} - {ser.subCategory}
+                </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="packages" className="block text-sm font-medium text-gray-700">Customize Package (Optional):</label>
+              <select
+                type="text"
+                id="packages"
+                value={packages}
+                onChange={(e) => setPackages(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              >
+                <option value="">Select Package</option>
+                {packageOp.map((pkg) => (
+                  <option key={pkg._id} value={pkg.ID}>
+                    {pkg.p_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="appoi_date" className="block text-sm font-medium text-gray-700">Appointment Date:</label>
+              <DatePicker
+                selected={appoi_date}
+                onChange={(date) => setDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="appoi_time" className="block text-sm font-medium text-gray-700">Appointment Time:</label>
+              <select
+                id="appoi_time"
+                value={appoi_time}
+                onChange={(e) => setTime(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              >
+                <option value="">Select Time</option>
+                {timeIntervals.map((time) => (
+                  <option key={time} value={time}>{time}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-span-2">
+             <span className="block w-40 rounded-md shadow-sm"> 
+              <button
+                type="button"
+                onClick={handleEditAppointment}
+                className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+              >
+                Update Appointment
+              </button>
+            </span>
+            </div>
+
+          </form>
         </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Email</label>
-          <input
-            type="text"
-            value={client_email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Contact Number</label>
-          <input
-            type="number"
-            value={client_phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Preferred Stylist</label>
-          <select
-            value={stylist}
-            onChange={(e) => setStylist(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          >
-            <option value="">Select Stylist</option>
-            {stylists.map((stylist) => (
-              <option key={stylist} value={stylist}>
-                {stylist}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Choose Service(s)</label>
-          <select
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          >
-            <option value="">Select Service</option>
-            {services.map((service) => (
-              <option key={service} value={service}>
-                {service}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Customize Package (Optional)</label>
-          <input
-            type="text"
-            value={customize_package}
-            onChange={(e) => setPackage(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Appointment Date</label>
-          <DatePicker
-            selected={appoi_date}
-            onChange={(date) => setDate(date)}
-            dateFormat="yyyy-MM-dd"
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          />
-        </div>
-        <div className="my-4">
-          <label className="text-xl mr-4 text-gray-500">Appointment Time</label>
-          <select
-            value={appoi_time}
-            onChange={(e) => setTime(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full"
-          >
-            <option value="">Select Time</option>
-            {timeIntervals.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button className="p-2 bg-sky-300 m-8" onClick={handleEditAppointment}>
-          Update
-        </button>
       </div>
     </div>
   );
 };
 
-// Exporting the EditAppointment component
 export default EditAppointment;

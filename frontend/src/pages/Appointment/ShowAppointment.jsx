@@ -6,6 +6,8 @@ import { BsInfoCircle } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import Nav from '../../components/Dashborad/DashNav';
+import SideBar from '../../components/Dashborad/Sidebar';
 
 const ShowAppointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -177,75 +179,85 @@ const generatePDF = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex items-center justify-between my-6">
-        <h1 className="text-3xl font-semibold text-gray-800">Appointments</h1>
-        <FaPlus 
-          className="text-2xl cursor-pointer text-blue-500 hover:text-blue-700"
-          onClick={handleAddClick}
-          title='Add New Appointment'
-        />
-      </div>
+    <div className='flex flex-col min-h-screen '>
+            <Nav />
+            <SideBar />
 
-       {/* Search bar and PDF button container */}
-  <div className="flex items-center space-x-4 mb-6">
-  <input
-          type="text"
-          name="searchQuery"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search here..."
-          className="mr-2 border border-gray-400 p-2 rounded"
-        />
-        <button
-          onClick={handleSearch}
-          className="bg-violet-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Search
-        </button>  
+    <div className="flex-grow p-6 ml-[18%] mt-[4%]">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">Appointments <span className="text-pink-600 dark:text-pink-500">List</span></h1>
+          <div className="flex items-center gap-4">
 
-    {/* PDF Button */}
-    <button 
-      onClick={generatePDF} 
-      className="bg-violet-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition duration-150 ease-in-out"
-    >
-      Generate PDF
-    </button>
-  </div>
+          <input
+              type="text"
+              placeholder="Search here.."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          <button
+              onClick={handleSearch}
+              className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+              Search
+              </span>
+            </button>
+            <button 
+              onClick={generatePDF} 
+              className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+              Generate PDF
+              </span>
+            </button>
+            <button 
+              onClick={handleAddClick} 
+              className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+                Add
+              </span>
+            </button>
+            </div>
+        </div>
+
   {noDataMessage && (
         <p className="text-red-500 text-center">{noDataMessage}</p>
       )} 
   <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-        <thead className="bg-violet-300 text-white">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="max-h-[400px] overflow-y-auto">
+        <table className="min-w-full border-collapse divide-y divide-gray-200">
+        <thead className="bg-gray-100">
           <tr>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Appointment ID</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Name</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Email</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Phone</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Stylist</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Service</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Package</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Date</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Time</th>
-            <th className="text-left px-6  text-sm font-medium uppercase tracking-wider">Actions</th>
+            <th className="px-4 py-2 text-left font-semibold">Appointment ID</th>
+            <th className="px-4 py-2 text-left font-semibold">Name</th>
+            <th className="px-4 py-2 text-left font-semibold">Email</th>
+            <th className="px-4 py-2 text-left font-semibold">Phone</th>
+            <th className="px-4 py-2 text-left font-semibold">Stylist</th>
+            <th className="px-4 py-2 text-left font-semibold">Service</th>
+            <th className="px-4 py-2 text-left font-semibold">Package</th>
+            <th className="px-4 py-2 text-left font-semibold">Date</th>
+            <th className="px-4 py-2 text-left font-semibold">Time</th>
+            <th className="px-4 py-2 text-left font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {filteredAppoointments.map((appointment) => (
             <tr key={appointment.appoi_ID} className="hover:bg-gray-100 transition duration-150 ease-in-out">
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.appoi_ID}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.client_name}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.client_email}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.client_phone}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.stylist}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.service}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_ID}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_name}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_email}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_phone}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.stylist}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.service}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">
                 {appointment.customize_package || "N/A"}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.appoi_date}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{appointment.appoi_time}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 flex items-center space-x-4">
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_date}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_time}</td>
+              <td className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4">
                 <Link
                   to={`/appointments/details/${appointment._id}`}
                   className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
@@ -272,8 +284,11 @@ const generatePDF = () => {
           ))}
         </tbody>
       </table>
+      </div>
+      </div>
     </div>
     </div>
+  </div>
   );
 };
 
