@@ -68,6 +68,7 @@ const EditPkg = () => {
             try {
                 const response = await axios.get('http://localhost:8076/services');
                 const services = response.data;
+
                 const uniqueCategories = [...new Set(services.map(service => service.category))];
                 setCategoryOptions(uniqueCategories);
             } catch (error) {
@@ -86,6 +87,7 @@ const EditPkg = () => {
         axios.get('http://localhost:8076/services').then((response) => {
             const services = response.data;
             const filteredServices = services.filter(service => service.category === selectedCategory);
+
             const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
             setSubCategoryOptions(uniqueSubCategories);
         }).catch(error => {
@@ -171,8 +173,8 @@ const EditPkg = () => {
                                 ))}
                             </select>
                         </div>
-
-                        {category && (
+                        {/* Subcategory */}
+                        {category && subCategoryOptions.length > 0 &&  (
                             <div>
                                 <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Sub Category:</label>
                                 <select
@@ -182,7 +184,7 @@ const EditPkg = () => {
                                     required
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                                 >
-                                    <option value="">Select Sub Category</option>
+                                    <option value="" disabled>Select Sub Category</option>
                                     {subCategoryOptions.map((sub, index) => (
                                         <option key={index} value={sub}>{sub}</option>
                                     ))}
