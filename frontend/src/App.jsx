@@ -22,6 +22,7 @@ import CreatePkg from './pages/Pkgs/CreatePkg';
 import DeletePkg from './pages/Pkgs/DeletePkg';
 import EditPkg from './pages/Pkgs/EditPkg';
 import ReadOnePkg from './pages/Pkgs/ReadOnePkg';
+import PkgPage from './pages/Pkgs/PkgPage';
 
 
 import ShowEmployee from './pages/Employee/ShowEmployee';
@@ -121,6 +122,7 @@ const App = () => {
       <Route path='/pkg/delete/:id' element={<DeletePkg />}></Route>
       <Route path='/pkg/edit/:id' element={<EditPkg />}></Route>
       <Route path='/pkg/details/:id' element={<ReadOnePkg />}></Route>
+      <Route path='/pkg/pkgPage' element={<PkgPage />}></Route>
   
 
 
