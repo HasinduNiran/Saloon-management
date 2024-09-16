@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import servicePC from '../../images/service.jpg';
 
 const ServicePage = () => {
   const [services, setServices] = useState([]);
@@ -28,7 +29,7 @@ const ServicePage = () => {
   return (
     <div className="p-6 min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative bg-cover bg-center h-64" style={{ backgroundImage: 'url(/service.jpg)' }}>
+      <div className="relative bg-cover bg-center h-64" style={{ backgroundImage: `url(${servicePC})` }}>
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 flex items-center justify-center h-full">
           <h1 className="text-4xl font-bold text-white text-center">Experience the Best in Beauty</h1>
@@ -36,7 +37,7 @@ const ServicePage = () => {
       </div>
 
       <div className="flex items-center justify-center my-6">
-        <h2 className="text-3xl font-semibold text-primary">Our Services</h2>
+        <h2 className="text-3xl font-semibold text-pink-500 ">Our Services</h2>
       </div>
 
       {error && <p className="text-error text-center mb-6">{error}</p>}
