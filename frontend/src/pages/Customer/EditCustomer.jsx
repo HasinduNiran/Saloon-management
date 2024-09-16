@@ -23,7 +23,8 @@ const EditCustomer = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  
+  const [imagePreview, setImagePreview] = useState('');
+
   const storage = getStorage(app);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -35,6 +36,9 @@ const EditCustomer = () => {
       .then((response) => {
         setCustomer(response.data);
         setLoading(false);
+        if (response.data.image) {
+          setImagePreview(response.data.image);
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -89,6 +93,7 @@ const EditCustomer = () => {
         ...prevState,
         image: imageFile,
       }));
+      setImagePreview(URL.createObjectURL(imageFile));
     }
   };
 
@@ -179,6 +184,8 @@ const EditCustomer = () => {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* First Name */}
               <div>
                 <label htmlFor="FirstName" className="block text-sm font-medium leading-5 text-gray-700">First Name</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -196,6 +203,7 @@ const EditCustomer = () => {
                 </div>
               </div>
 
+              {/* Last Name */}
               <div>
                 <label htmlFor="LastName" className="block text-sm font-medium leading-5 text-gray-700">Last Name</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -213,19 +221,7 @@ const EditCustomer = () => {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Profile Image</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="image"
-                    name="image"
-                    type="file"
-                    onChange={handleImageChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
-
+              {/* Age */}
               <div>
                 <label htmlFor="Age" className="block text-sm font-medium leading-5 text-gray-700">Age</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -233,7 +229,6 @@ const EditCustomer = () => {
                     id="Age"
                     name="Age"
                     type="number"
-                    placeholder="25"
                     value={customer.Age}
                     onChange={handleChange}
                     required
@@ -243,33 +238,31 @@ const EditCustomer = () => {
                 </div>
               </div>
 
+              {/* Gender */}
               <div>
                 <label htmlFor="Gender" className="block text-sm font-medium leading-5 text-gray-700">Gender</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <select
-                    id="Gender"
-                    name="Gender"
-                    value={customer.Gender}
-                    onChange={handleChange}
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+                <select
+                  id="Gender"
+                  name="Gender"
+                  value={customer.Gender}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
+              {/* Contact Number */}
               <div>
-                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact No</label>
+                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact Number</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <input
                     id="ContactNo"
                     name="ContactNo"
                     type="text"
-                    placeholder="0712345678"
                     value={customer.ContactNo}
                     onChange={handleChange}
                     required
@@ -279,6 +272,7 @@ const EditCustomer = () => {
                 </div>
               </div>
 
+              {/* Email */}
               <div>
                 <label htmlFor="Email" className="block text-sm font-medium leading-5 text-gray-700">Email</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -286,15 +280,16 @@ const EditCustomer = () => {
                     id="Email"
                     name="Email"
                     type="email"
-                    placeholder="example@example.com"
                     value={customer.Email}
                     onChange={handleChange}
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                   />
+                  {errors.Email && <p className="text-red-500 text-xs">{errors.Email}</p>}
                 </div>
               </div>
 
+              {/* Password */}
               <div>
                 <label htmlFor="Password" className="block text-sm font-medium leading-5 text-gray-700">Password</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -302,7 +297,6 @@ const EditCustomer = () => {
                     id="Password"
                     name="Password"
                     type="password"
-                    placeholder="********"
                     value={customer.Password}
                     onChange={handleChange}
                     required
@@ -311,27 +305,50 @@ const EditCustomer = () => {
                 </div>
               </div>
 
+              {/* Re-Enter Password */}
               <div>
-                <label htmlFor="reEnteredPassword" className="block text-sm font-medium leading-5 text-gray-700">Re-enter Password</label>
+                <label htmlFor="reEnteredPassword" className="block text-sm font-medium leading-5 text-gray-700">Re-Enter Password</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <input
                     id="reEnteredPassword"
                     name="reEnteredPassword"
                     type="password"
-                    placeholder="********"
                     value={customer.reEnteredPassword}
                     onChange={handleChange}
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                   />
-                  {customer.Password !== customer.reEnteredPassword && <p className="text-red-500 text-xs">Passwords do not match.</p>}
+                  {errors.reEnteredPassword && <p className="text-red-500 text-xs">{errors.reEnteredPassword}</p>}
                 </div>
               </div>
 
-              <div className="col-span-2 flex justify-center">
+              {/* Image Upload */}
+              <div className="md:col-span-2">
+                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Upload Image</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="image"
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mt-2 h-32 w-32 object-cover rounded-full"
+                  />
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition duration-150 ease-in-out"
+                  className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-pink active:bg-pink-700 transition duration-150 ease-in-out"
                 >
                   {loading ? <Spinner /> : 'Update Customer'}
                 </button>
