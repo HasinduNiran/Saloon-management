@@ -88,6 +88,10 @@ const ReadOnePkg = () => {
               <h2 className="text-2xl font-semibold mb-2">Conditions</h2>
               <p className="text-lg">{pkg.conditions}</p>
             </div>
+            <div>
+            <h2 className="text-2xl font-semibold mb-2"> Image </h2>
+            <img src={`http://localhost:8076/${pkg.image}`} alt="Package Image" style={{ width: '200px', height: '200px' }} />
+            </div>
         
           </div>
 

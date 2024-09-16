@@ -89,11 +89,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Route to get a package by ID
+// Route to get a package by custom ID field (not _id)
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const foundPackage = await Pkg.findById(id);
+        const foundPackage = await Pkg.findById(id); // Query by custom ID field
 
         if (!foundPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -101,12 +101,13 @@ router.get('/:id', async (req, res) => {
 
         return res.status(200).json(foundPackage);
     } catch (error) {
-        console.log(error.message); // Debugging: Log the error
+        console.log(error.message);
         res.status(500).send({ message: error.message });
     }
 });
 
-// Route to update a package
+
+// Route to update a package by custom ID field
 router.put('/:id', uploads, validateFields, async (req, res) => {
     try {
         const { id } = req.params;
@@ -117,7 +118,7 @@ router.put('/:id', uploads, validateFields, async (req, res) => {
             ...(image && { image }) // Only update image if a new file is uploaded
         };
 
-        const updatedPackage = await Pkg.findByIdAndUpdate(id, updatedData, { new: true });
+        const updatedPackage = await Pkg.findOneAndUpdate( id, updatedData, { new: true }); // Query by custom ID
 
         if (!updatedPackage) {
             return res.status(404).json({ message: 'Package not found' });
@@ -129,6 +130,7 @@ router.put('/:id', uploads, validateFields, async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+
 
 
 // Route to delete a package

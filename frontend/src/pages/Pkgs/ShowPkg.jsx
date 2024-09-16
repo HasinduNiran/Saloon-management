@@ -32,10 +32,6 @@ const ShowPkg = () => {
     fetchPkg();
   }, []);
 
-  const handleViewDetails = (ID) => {
-    navigate(`/pkg/${ID}`);
-  };
-
   const generatePDF = () => {
     const doc = new jsPDF();
 
@@ -246,15 +242,17 @@ const ShowPkg = () => {
               </td> 
 
                 <td className="px-6 py-4 text-sm text-gray-700 flex space-x-2">
-                  <BsInfoCircle 
-                    className="text-blue-500 cursor-pointer hover:text-blue-700"
-                    onClick={() => handleViewDetails(pkg.ID)}
+                  <Link 
+                    className="text-green-600  hover:text-green-800 transition duration-150 ease-in-out"
+                    to={`/pkg/details/${pkg._id}`}
                     title="View Details"
-                  />
-                  <Link to={`/pkg/edit/${pkg.ID}`}>
+                  >
+                    <BsInfoCircle size={20} />
+                    </Link>
+                  <Link to={`/pkg/edit/${pkg._id}`}>
                     <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" title="Edit" />
                   </Link>
-                  <Link to={`/pkg/delete/${pkg.ID}`}>
+                  <Link to={`/pkg/delete/${pkg._id}`}>
                     <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" title="Delete" />
                   </Link>
                 </td>
