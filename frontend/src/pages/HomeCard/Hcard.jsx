@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaCartArrowDown } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
 
-const Hcard = () => {
+const Hcard = ({ CusID }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,8 +36,8 @@ const Hcard = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
       {data.map((item) => (
-        <div
-          key={item.id}
+        <Link
+         to={`/itemdis/${item.ItemNo}/${CusID}`} key={item.id}
           className="w-72 shadow-lg rounded-lg bg-neutral-50 p-4 transform transition-transform duration-300 hover:-translate-y-2"
         >
           <img
@@ -58,7 +59,7 @@ const Hcard = () => {
               <FaCartArrowDown size={24} />
             </button>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

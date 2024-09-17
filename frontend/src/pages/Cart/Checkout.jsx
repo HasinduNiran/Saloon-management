@@ -1,3 +1,4 @@
+// src/components/Checkout.js
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +7,8 @@ import Swal from "sweetalert2";
 const Checkout = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { items, userId: CusID, total } = location.state || {};
+
     const [store, setStore] = useState([]);
     const [loading, setLoading] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({
@@ -26,26 +29,28 @@ const Checkout = () => {
     });
 
     useEffect(() => {
-        setLoading(true);
-        axios.get('http://localhost:8076/store')
-            .then((response) => {
-                const data = response.data;
-                if (Array.isArray(data)) {
-                    setStore(data);
-                } else {
-                    console.warn('Data is not an array:', data);
-                    setStore([]);
-                }
+        const fetchCustomerInfo = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`http://localhost:8076/customers/${CusID}`);
+                const { FirstName, Email, ContactNo } = response.data;
+                setCustomerInfo({
+                    FirstName: FirstName || "",
+                    Email: Email || "",
+                    ContactNo: ContactNo || ""
+                });
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching store data:', error);
-                setStore([]);
+            } catch (error) {
+                console.error("Error fetching customer information:", error);
+                Swal.fire("Error", "Failed to fetch customer information", "error");
                 setLoading(false);
-            });
-    }, []);
+            }
+        };
 
-    const { items, CusID, total } = location.state || {};
+        if (CusID) {
+            fetchCustomerInfo();
+        }
+    }, [CusID]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -57,22 +62,26 @@ const Checkout = () => {
         setDeliveryInfo((prevState) => ({ ...prevState, [name]: value }));
     };
 
-    const handleCardChange = (e) => {
+    const handlePaymentChange = (e) => {
+        setPaymentMethod(e.target.value);
+    };
+
+    const handleCardInfoChange = (e) => {
         const { name, value } = e.target;
         setCardInfo((prevState) => ({ ...prevState, [name]: value }));
     };
 
     const validateForm = () => {
         if (!customerInfo.FirstName || !customerInfo.Email || !customerInfo.ContactNo) {
-            Swal.fire("Validation Error", "Please fill in all customer details.", "error");
+            Swal.fire('Error', 'Please fill in all customer information fields.', 'error');
             return false;
         }
         if (!deliveryInfo.address || !deliveryInfo.city || !deliveryInfo.postalCode) {
-            Swal.fire("Validation Error", "Please fill in all delivery details.", "error");
+            Swal.fire('Error', 'Please fill in all delivery information fields.', 'error');
             return false;
         }
-        if (paymentMethod === "Card" && (!cardInfo.cardNumber || !cardInfo.expiryDate || !cardInfo.cvv)) {
-            Swal.fire("Validation Error", "Please fill in all card details.", "error");
+        if (paymentMethod === 'Card' && (!cardInfo.cardNumber || !cardInfo.expiryDate || !cardInfo.cvv)) {
+            Swal.fire('Error', 'Please fill in all card information fields.', 'error');
             return false;
         }
         return true;
@@ -97,7 +106,7 @@ const Checkout = () => {
             setLoading(false);
             Swal.fire("Success", `Order placed successfully! Order ID: ${response.data.orderId}`, "success")
                 .then(() => {
-                    navigate("/my-orders");
+                    navigate(`/my-orders/${CusID}`);  // Navigate to My Orders page with CusID
                 });
         } catch (error) {
             setLoading(false);
@@ -105,52 +114,23 @@ const Checkout = () => {
         }
     };
 
-    return (
-        <div className="min-h-screen p-8 flex flex-col items-center">
-            <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10">
-                {/* Left Side: Order Summary */}
-                <div className="w-full lg:w-1/2 space-y-6">
-                    <h1 className="text-3xl font-semibold mb-4">Order Summary</h1>
-                    {items && items.length > 0 ? (
-                        items.map((item) => (
-                            <div key={item.ItemNo} className="flex justify-between items-center p-4 border-b">
-                                <div className="flex gap-2 items-center">
-                                    <img src={item.image} alt={item.ItemName} className="w-16 h-16 object-cover rounded" />
-                                    <span className="font-medium">{item.ItemName}</span>
-                                </div>
-                                <span>Qty: {item.quantity !== undefined ? item.quantity : "N/A"}</span>
-                                <span>
-                                    ${item.SPrice && item.quantity
-                                        ? (Number(item.SPrice) * Number(item.quantity)).toFixed(2)
-                                        : "N/A"}
-                                </span>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No items to display</p>
-                    )}
-                    <div className="flex justify-between mt-4 font-semibold">
-                        <span>Subtotal:</span>
-                        <span>${total?.toFixed(2) || 0}</span>
-                    </div>
-                    <button
-                        onClick={() => navigate("/cart")}
-                        className="mt-4 w-full bg-gray-300 text-black py-2 rounded-full hover:bg-gray-400 transition duration-300"
-                    >
-                        Back to Cart
-                    </button>
-                </div>
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-                {/* Right Side: Customer Information */}
-                <div className="w-full lg:w-1/2 p-6 bg-gray-100 rounded-lg space-y-4">
-                    <h2 className="text-2xl font-semibold mb-4">Customer Information</h2>
+    return (
+        <div className="p-8 flex flex-col items-center">
+            <div className="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-lg">
+                <h1 className="text-3xl font-semibold mb-4">Checkout</h1>
+                <div className="mb-4">
+                    <h2 className="text-2xl font-semibold mb-2">Customer Information</h2>
                     <input
                         type="text"
                         name="FirstName"
-                        placeholder="Name"
+                        placeholder="First Name"
                         value={customerInfo.FirstName}
                         onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
                     <input
                         type="email"
@@ -158,26 +138,26 @@ const Checkout = () => {
                         placeholder="Email"
                         value={customerInfo.Email}
                         onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
                     <input
                         type="text"
                         name="ContactNo"
-                        placeholder="Mobile No."
+                        placeholder="Contact Number"
                         value={customerInfo.ContactNo}
                         onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
-
-                    {/* Delivery Info Section */}
-                    <h2 className="text-xl font-semibold mt-4 mb-2">Delivery Information</h2>
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-2xl font-semibold mb-2">Delivery Information</h2>
                     <input
                         type="text"
                         name="address"
                         placeholder="Address"
                         value={deliveryInfo.address}
                         onChange={handleDeliveryChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
                     <input
                         type="text"
@@ -185,7 +165,7 @@ const Checkout = () => {
                         placeholder="City"
                         value={deliveryInfo.city}
                         onChange={handleDeliveryChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
                     <input
                         type="text"
@@ -193,65 +173,57 @@ const Checkout = () => {
                         placeholder="Postal Code"
                         value={deliveryInfo.postalCode}
                         onChange={handleDeliveryChange}
-                        className="w-full p-2 border rounded"
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     />
-
-                    {/* Payment Info Section */}
-                    <h2 className="text-xl font-semibold mt-4 mb-2">Payment Information</h2>
+                </div>
+                <div className="mb-4">
+                    <h2 className="text-2xl font-semibold mb-2">Payment Method</h2>
                     <select
-                        name="paymentMethod"
                         value={paymentMethod}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        onChange={handlePaymentChange}
+                        className="block w-full mb-2 p-2 border border-gray-300 rounded"
                     >
                         <option value="Cash">Cash</option>
                         <option value="Card">Card</option>
                     </select>
-
-                    {/* Card Info Section (Only if Card is selected) */}
-                    {paymentMethod === "Card" && (
-                        <>
+                    {paymentMethod === 'Card' && (
+                        <div>
                             <input
                                 type="text"
                                 name="cardNumber"
                                 placeholder="Card Number"
                                 value={cardInfo.cardNumber}
-                                onChange={handleCardChange}
-                                className="w-full p-2 border rounded mt-2"
+                                onChange={handleCardInfoChange}
+                                className="block w-full mb-2 p-2 border border-gray-300 rounded"
                             />
                             <input
                                 type="text"
                                 name="expiryDate"
                                 placeholder="Expiry Date"
                                 value={cardInfo.expiryDate}
-                                onChange={handleCardChange}
-                                className="w-full p-2 border rounded mt-2"
+                                onChange={handleCardInfoChange}
+                                className="block w-full mb-2 p-2 border border-gray-300 rounded"
                             />
                             <input
                                 type="text"
                                 name="cvv"
                                 placeholder="CVV"
                                 value={cardInfo.cvv}
-                                onChange={handleCardChange}
-                                className="w-full p-2 border rounded mt-2"
+                                onChange={handleCardInfoChange}
+                                className="block w-full mb-2 p-2 border border-gray-300 rounded"
                             />
-                        </>
+                        </div>
                     )}
-
-                    {/* Place Order Button */}
-                    <button
-    onClick={handlePlaceOrder}
-    className="mt-4 w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
-    disabled={loading}
->
-    {loading ? "Placing Order..." : "Place Order"}
-</button>
-
                 </div>
+                <button
+                    onClick={handlePlaceOrder}
+                    className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-blue-600 transition duration-300"
+                >
+                    Place Order
+                </button>
             </div>
         </div>
     );
 };
 
 export default Checkout;
-

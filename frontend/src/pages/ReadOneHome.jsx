@@ -173,18 +173,27 @@ const ReadOneHome = () => {
           <h2 className="text-pink-500 text-6xl font-light tracking-wide">BASHI BRIDAL BEAUTY SALON</h2>
         </div>
 
-        {/* About section */}
-        <div id="about" className="relative bg-white py-16 px-8 md:px-16 min-h-screen">
-          {/* About section content */}
+        <div id="about" className="relative bg-white py-16 px-8 md:px-16 min-h-screen animate-fadeIn">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2">
+              <h3 className="text-3xl font-light mb-4 text-black animate-fadeIn">Who We <span className="text-pink-500">Are;</span></h3>
+              <p className="text-pink-500 italic font-bold mb-4 animate-fadeIn"> Bridal dressing, offering hair treatments, threading, hair coloring, and make-up services. We also provide gold facials, normal facials, and clean-up treatments to enhance your beauty.</p>
+              <p className="text-lg mb-4 text-black animate-fadeIn">Our hair care services include straightening, perming, rebonding, and haircuts for ladies and babies. We also offer manicures, pedicures, and relaxing treatments to complete your look.</p>
+              <p className="text-lg text-black animate-fadeIn">Owned by P.K. Damayanthi, Salon Bashi is located at No. 119/11/1, 2nd Lane, Niyadagala, Pannipitiya. For appointments, call us at 071 99 30 835</p>
+            </div>
+            <div className="md:w-1/2 flex justify-center mt-8 md:mt-0">
+              <img className="rounded-full animate-zoomIn" src="https://img.freepik.com/free-photo/blonde-girl-getting-her-hair-done_23-2148108815.jpg?t=st=1726182810~exp=1726186410~hmac=f44fb3f0190e661fa27c18e1f8c9a4a211bd6616141045056d2393d89d818416&w=996" alt="Team" />
+            </div>
+          </div>
         </div>
-
+        
         {/* Products section */}
         <div id="products" className="bg-gray-200 py-16 px-8 md:px-16 min-h-screen w-[100%] rounded-t-[20%]">
           <h3 className="text-3xl font-light text-center mb-8 text-black">
             Products <span className="text-pink-500">&rhard;</span>
           </h3>
           <div className="flex flex-col md:flex-row justify-center space-y-8 md:space-y-0 md:space-x-8">
-            <Card />
+          <Card CusID={CusID} />
           </div>
         </div>
       </div>

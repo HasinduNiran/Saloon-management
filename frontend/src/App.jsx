@@ -169,11 +169,11 @@ const App = () => {
 
      <Route path='/itemcard/create' element={<ItemCard />}></Route>
      <Route path='/cart/main' element={<Main />}></Route>
-     <Route path='/itemdis/:id' element={<ItemDis />}></Route>
-      <Route path='/cart' element={<Cart />}></Route>
-    <Route path='/checkout' element={<Checkout />}></Route>
+     <Route path="/itemdis/:ItemNo/:CusID" element={<ItemDis />} />
+     <Route path='/cart/:CusID' element={<Cart />} />
+    <Route path='/checkout/:CusID' element={<Checkout />}></Route>
 
-    <Route path='/my-orders' element={<MyOrder />}></Route>
+    <Route path='/my-orders/:CusID' element={<MyOrder />}></Route>
     <Route path='/allorders' element={<AllOrders />}></Route>
 <Route path='/deleteorder' element={<DeleteOrder />}></Route>
 

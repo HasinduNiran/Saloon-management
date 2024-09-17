@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import ItemCard from './ItemCard';
+import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Hcard from '../HomeCard/Hcard';
 
 const ItemDis = () => {
-    const { id } = useParams();  // Extract id from URL
+    const { ItemNo, CusID } = useParams();  // Extract ItemNo and CusID from URL
+    const navigate = useNavigate();  // Initialize useNavigate
     const [store, setStore] = useState([]);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -29,13 +30,8 @@ const ItemDis = () => {
             });
     }, []);
 
-    const itemdis = store.find((item) => item.ItemNo.toString() === id);  // Ensure matching string types
-    const recommendedItems = store.filter((item) => item.ItemNo.toString() !== id);  // Filter out current item
-
-    console.log('ID:', id);
-    console.log('Store:', store);
-    console.log('Item Details:', itemdis);
-    console.log('Recommended Items:', recommendedItems);
+    const itemdis = store.find((item) => item.ItemNo.toString() === ItemNo);  // Ensure matching string types
+    const recommendedItems = store.filter((item) => item.ItemNo.toString() !== ItemNo);  // Filter out current item
 
     const handleIncrease = () => setQuantity(quantity + 1);
     const handleDecrease = () => {
@@ -53,19 +49,20 @@ const ItemDis = () => {
                 });
                 return;
             }
-
+    
             const cartItem = {
-                userId: 'user001',
+                userId: CusID,  // Pass CusID from URL
                 ItemNo: itemdis.ItemNo,
                 ItemName: itemdis.ItemName,
                 image: itemdis.image,
                 SPrice: itemdis.SPrice,
                 quantity,
             };
+    
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart.push(cartItem);
             localStorage.setItem('cart', JSON.stringify(cart));
-
+    
             Swal.fire({
                 title: 'Item added to cart successfully!',
                 text: 'Would you like to view your cart or add more items?',
@@ -75,7 +72,8 @@ const ItemDis = () => {
                 cancelButtonText: 'Add More',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/cart';
+                    // Navigate to cart page with CusID
+                    window.location.href = `/cart/${CusID}`;
                 }
             });
         } catch (error) {
@@ -87,7 +85,7 @@ const ItemDis = () => {
             });
         }
     };
-
+    
     const handleBuyNow = () => {
         // Logic to buy the item immediately
     };
@@ -153,7 +151,7 @@ const ItemDis = () => {
                         {recommendedItems.length > 0 ? (
                             <div className="flex flex-wrap gap-8 justify-center">
                                 {recommendedItems.map((item) => (
-                                    <ItemCard
+                                    <Hcard
                                         key={item.ItemNo}
                                         ItemNo={item.ItemNo}
                                         image={item.image}
