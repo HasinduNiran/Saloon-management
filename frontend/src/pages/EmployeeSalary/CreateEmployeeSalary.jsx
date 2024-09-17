@@ -5,6 +5,8 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const CreateEmployeeSalary = () => {
   const [EmpID, setEmpID] = useState('');
@@ -167,117 +169,177 @@ const CreateEmployeeSalary = () => {
       });
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="p-4">
-      <BackButton destination='/employeesalary/allEmployeeSalary' />
-      <h1 className="text-3xl my-4">Create Employee Salary</h1>
-      {loading && <Spinner />}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Employee ID</label>
-          <select
-            value={EmpID}
-            onChange={handleEmpIDChange}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Employee ID</option>
-            {employeeOptions.map(emp => (
-              <option key={emp.value} value={emp.value}>{emp.value}</option>
-            ))}
-          </select>
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <BackButton destination='/employeeSalary/allEmployeeSalary' />
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h1 className="text-center text-3xl leading-9 font-extrabold text-gray-900 mt-6">
+          Create Employee Salary
+        </h1>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {loading && <Spinner />}
+          <div className="flex flex-col gap-4">
+            <div>
+              <label htmlFor="empID" className="block text-sm font-medium leading-5 text-gray-700">Employee ID</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <select
+                  id="empID"
+                  value={EmpID}
+                  onChange={handleEmpIDChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                >
+                  <option value="" disabled>Select Employee ID</option>
+                  {employeeOptions.map(emp => (
+                    <option key={emp.value} value={emp.value}>{emp.value}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="employeeName" className="block text-sm font-medium leading-5 text-gray-700">Employee Name</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="employeeName"
+                  type="text"
+                  value={employeeName}
+                  readOnly
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="fromDate" className="block text-sm font-medium leading-5 text-gray-700">From Date</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="fromDate"
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="toDate" className="block text-sm font-medium leading-5 text-gray-700">To Date</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="toDate"
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalOThours" className="block text-sm font-medium leading-5 text-gray-700">Total Overtime Hours</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="totalOThours"
+                  type="number"
+                  value={totalOThours}
+                  onChange={(e) => setTotalOThours(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalOTpay" className="block text-sm font-medium leading-5 text-gray-700">Total Overtime Pay</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="totalOTpay"
+                  type="text"
+                  value={totalOTpay}
+                  readOnly
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalWorkedhours" className="block text-sm font-medium leading-5 text-gray-700">Total Worked Hours</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="totalWorkedhours"
+                  type="number"
+                  value={totalWorkedhours}
+                  onChange={(e) => setTotalWorkedhours(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalWorkedpay" className="block text-sm font-medium leading-5 text-gray-700">Total Worked Pay</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="totalWorkedpay"
+                  type="text"
+                  value={totalWorkedpay}
+                  readOnly
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalSalary" className="block text-sm font-medium leading-5 text-gray-700">Total Salary</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="totalSalary"
+                  type="text"
+                  value={TotalSalary}
+                  readOnly
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="includeEPF" className="block text-sm font-medium leading-5 text-gray-700">Include EPF</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="includeEPF"
+                  type="checkbox"
+                  checked={includeEPF}
+                  onChange={() => setIncludeEPF(!includeEPF)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={handleSaveEmployeeSalary}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Employee Name</label>
-          <input
-            type="text"
-            value={employeeName}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>From Date</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>To Date</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Total Overtime Hours</label>
-          <input
-            type="number"
-            value={totalOThours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-            placeholder="Total OT hours"
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Total Overtime Pay</label>
-          <input
-            type="number"
-            value={totalOTpay}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-            placeholder="Total OT pay"
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Total Worked Hours</label>
-          <input
-            type="number"
-            value={totalWorkedhours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-            placeholder="Total worked hours"
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Total Worked Pay</label>
-          <input
-            type="number"
-            value={totalWorkedpay}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-            placeholder="Total worked pay"
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Total Salary</label>
-          <input
-            type="number"
-            value={TotalSalary}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-            placeholder="Total salary"
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>EPF</label>
-          <button
-            onClick={() => setIncludeEPF(!includeEPF)}
-            className={`border-2 px-4 py-2 w-full ${includeEPF ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
-          >
-            {includeEPF ? 'EPF Included' : 'EPF Excluded'}
-          </button>
-        </div>
-        <button
-          onClick={handleSaveEmployeeSalary}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        >
-          Save Salary
-        </button>
       </div>
     </div>
   );

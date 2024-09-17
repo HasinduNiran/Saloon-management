@@ -79,7 +79,6 @@ import ShowEmployeeAttendence from './pages/EmployeeAttendence/ShowEmployeeAtten
  
 import CreateEmployeeSalary from './pages/EmployeeSalary/CreateEmployeeSalary';
 import DeleteEmployeeSalary from './pages/EmployeeSalary/DeleteEmployeeSalary';
-import EditEmployeeSalary from './pages/EmployeeSalary/EditEmployeeSalary';
 import ShowEmployeeSalary from './pages/EmployeeSalary/ShowEmployeeSalary';
 
 
@@ -186,7 +185,6 @@ const App = () => {
 
       <Route path='/employeesalary/create' element={<CreateEmployeeSalary />}></Route>
       <Route path='/employeesalary/delete/:id' element={<DeleteEmployeeSalary />}></Route>
-      <Route path='/employeesalary/edit/:id' element={<EditEmployeeSalary />}></Route>
       <Route path='/employeesalary/allEmployeeSalary' element={<ShowEmployeeSalary />}></Route>
 
 
