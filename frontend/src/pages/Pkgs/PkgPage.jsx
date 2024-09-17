@@ -56,18 +56,30 @@ const PkgPage = () => {
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-text mb-2">{pkgs.service_ID}</h3>
-              <p className="text-text mb-2">{pkgs.category} - {pkgs.subCategory}</p>
-              <p className="text-text mb-2">Package Name: {pkgs.p_name} min</p>
+              <h3 className="text-2xl font-bold text-yellow-400 text-text mb-2">{pkgs.p_name}</h3>
+              <p className="text-text  text-yellow-600">{pkgs.description}</p>
+              <p className="text-text mb-2 font-bold">{pkgs.category}</p>
               <p className="text-text mb-2">Package Type: {pkgs.package_type}</p>
-              <p className="text-text mb-2">Base Price: Rs {pkgs.base_price}</p>
+              <p className="text-text mb-2">Base Price: $ {pkgs.base_price}</p>
               <p className="text-text mb-2">Discount:  {pkgs.discount_rate} %</p>
-              <p className="text-text mb-2">Final Price: Rs {pkgs.final_price}</p>
-              <p className="text-text mb-2">Duration {pkgs.start_date} to {pkgs.end_date}</p>
-              <p className="text-text">{pkgs.description}</p>
+              <p className="text-text mb-2">Final Price: $ {pkgs.final_price}</p>
+              <p className="text-text mb-2">
+              Time Diuration : {pkgs.start_date.slice(0, 10)} to {pkgs.end_date.slice(0, 10)}
+            </p>              
             </div>
           </div>
         ))}
+      </div>
+
+        {/* Call to Action */}
+        <div className="flex justify-center mt-12">
+        <button 
+          onClick={() => navigate('/appointments/create')} 
+          className="bg-pink-500 text-white py-3 px-6 rounded-lg shadow-custom hover:bg-violet-600 transition-colors"
+          style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
+        >
+          Book an Appointment
+        </button>
       </div>
 
       {/* Testimonials */}
@@ -78,7 +90,6 @@ const PkgPage = () => {
             <p className="text-text">"Amazing service! The staff was very professional and my experience was top-notch."</p>
             <p className="mt-4 font-semibold">- Jane Doe</p>
           </div>
-          {/* Add more testimonials as needed */}
         </div>
       </div>
     </div>

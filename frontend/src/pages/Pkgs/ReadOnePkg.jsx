@@ -68,10 +68,6 @@ const ReadOnePkg = () => {
               <p className="text-lg">{pkg.category}</p>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Service Type</h2>
-              <p className="text-lg">{pkg.subCategory}</p>
-            </div>
-            <div>
               <h2 className="text-2xl font-semibold mb-2">Package Name</h2>
               <p className="text-lg">{pkg.p_name}</p>
             </div>
@@ -84,7 +80,7 @@ const ReadOnePkg = () => {
               <p className="text-lg">{pkg.description}</p>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Base Price (Rs)</h2>
+              <h2 className="text-2xl font-semibold mb-2">Base Price ($)</h2>
               <p className="text-lg">Rs. {pkg.base_price}</p>
             </div>
             <div>
@@ -92,7 +88,7 @@ const ReadOnePkg = () => {
               <p className="text-lg">{pkg.discount_rate}</p>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Final Price (Rs)</h2>
+              <h2 className="text-2xl font-semibold mb-2">Final Price ($)</h2>
               <p className="text-lg">Rs. {pkg.final_price}</p>
             </div>
             <div>

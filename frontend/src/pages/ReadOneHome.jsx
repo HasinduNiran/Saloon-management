@@ -112,12 +112,7 @@ const ReadOneHome = () => {
   };
 
   // Navigation button handlers
-  const handleAppointmentClick = () => {
-    if (customer) {
-      navigate(`/appointments/create`);
-    }
-  };
-
+  const handleAppointmentClick = () => navigate('/appointments/create');
   const handlePackageClick = () => navigate('/pkg/pkgPage');
   const handleServiceClick = () => navigate('/services/servicePage');
 
