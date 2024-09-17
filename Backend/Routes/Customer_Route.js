@@ -22,7 +22,7 @@ router.post('/', async (request, response) => {
             Gender: request.body.Gender,
             ContactNo: request.body.ContactNo,
             Email: request.body.Email,
-            UserName: request.body.UserName,
+           // UserName: request.body.UserName,
             Password: request.body.Password
         });
 
@@ -52,18 +52,47 @@ router.get('/', async (request, response) => {
 
 // Route for Fetching a Single Customer
 
-router.get('/:id', async (request, response) => {
+// router.get('/:CusID', async (request, response) => {
+//     try {
+//         const customer = await Customer.findById(request.params.CusID);
+
+//         if (!customer) return response.status(404).send('Customer not found');
+
+//         response.send(customer);
+//     } catch (error) {
+//         response.status(500).send(error);
+//     }
+// });
+router.get('/:identifier', async (request, response) => {
     try {
-        const customer = await Customer.findById(request.params.id);
+        // Extracting the identifier from the request parameters
+        const { identifier } = request.params;
 
-        if (!customer) return response.status(404).send('Customer not found');
+        // Checking if the provided identifier is a valid MongoDB ObjectId
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            // Fetching a vehicle from the database based on the ID
+            const cuByID = await Customer.findById(identifier);
+            if (cuByID) {
+                // Sending the fetched vehicle as a JSON response if found by ID
+                return response.status(200).json(cuByID);
+            }
+        }
 
-        response.send(customer);
+        // If the provided identifier is not a valid ObjectId, try searching by register number
+        const customerByCUSID = await Customer.findOne({ CusID: identifier });
+        if (customerByCUSID) {
+            // Sending the fetched vehicle as a JSON response if found by register number
+            return response.status(200).json(customerByCUSID);
+        }
+
+        // If no vehicle found by either ID or register number, send a 404 Not Found response
+        return response.status(404).json({ message: 'Customer not found' });
     } catch (error) {
-        response.status(500).send(error);
+        // Handling errors and sending an error response with detailed error message
+        console.error(error);
+        response.status(500).send({ message: 'Error fetching Customer: ' + error.message });
     }
 });
-
 // Route for Updating a Customer
 
 router.patch('/:id', async (request, response) => {

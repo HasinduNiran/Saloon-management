@@ -132,7 +132,7 @@ const ShowAllCustomers = () => {
                                                     <td className="px-4 py-2">{customer.ContactNo}</td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex justify-center gap-x-4">
-                                                            <Link to={`/customers/${customer._id}`} title="View Details">
+                                                            <Link to={`/customers/get/${customer._id}`} title="View Details">
                                                                 <BsInfoCircle className="text-xl text-green-600 hover:text-green-800 transition-colors" />
                                                             </Link>
                                                             <Link to={`/customers/edit/${customer._id}`} title="Edit">

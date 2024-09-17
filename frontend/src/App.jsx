@@ -148,7 +148,7 @@ const App = () => {
       <Route path='/customers/create' element={<CreateCustomer />}></Route>
       <Route path='/customers/delete/:id' element={<DeleteCustomer />}></Route>
       <Route path='/customers/edit/:id' element={<EditCustomer />}></Route>
-      <Route path='/customers/:id' element={<ReadOneCustomer />}></Route>
+      <Route path='/customers/get/:id' element={<ReadOneCustomer />}></Route>
       <Route path='/customers/' element={<ShowAllCustomers />}></Route>
 
 
@@ -156,7 +156,7 @@ const App = () => {
 
 
       <Route path='/cLogin' element={<CLogin />}></Route>'
-      <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
+      <Route path='/ReadOneHome/:CusID' element={<ReadOneHome />}></Route> 
       <Route path='/card/create' element={<CreateCard />}></Route>
 
 

@@ -9,13 +9,13 @@ import backgroundImage from "../../images/logobg.jpg";
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
   const [loading, setLoading] = useState(false);
-  const { id } = useParams();
+  const { id:CusID } = useParams();
 
   useEffect(() => {
     const fetchCustomerData = async () => {
       setLoading(true);
       try {
-        const customerResponse = await axios.get(`http://localhost:8076/customers/${id}`);
+        const customerResponse = await axios.get(`http://localhost:8076/customers/${CusID}`);
         setCustomer(customerResponse.data);
       } catch (error) {
         console.error(error);
@@ -25,7 +25,7 @@ const ReadOneCustomer = () => {
     };
 
     fetchCustomerData();
-  }, [id]);
+  }, [CusID]);
   const containerStyle = {
    
     backgroundImage: `url(${backgroundImage})`,
