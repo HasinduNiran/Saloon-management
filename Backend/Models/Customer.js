@@ -34,10 +34,11 @@ const customerSchema = mongoose.Schema(
         type: String,
         required: true,
     },
-    UserName: {
-        type: String,
-        required: true,
-    },Password: {
+    // UserName: {
+    //     type: String,
+    //     required: true,
+    // },
+    Password: {
         type: String,
         required: true,
     }

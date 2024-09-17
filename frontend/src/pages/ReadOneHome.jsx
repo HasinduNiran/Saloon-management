@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import homebg from '../images/home1.jpg';
+import { Link, useParams } from 'react-router-dom';
 import './Home.css';
 import Card from './HomeCard/Hcard';
 import Footer from './footer/Footer';
@@ -13,25 +14,40 @@ const ReadOneHome = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState('');
   const [buttonPressed, setButtonPressed] = useState(false);
-  const [customer, setCustomer] = useState(null); // Initialized to null
-  const { email } = useParams(); // Use lowercase for email
+ // const [customer, setCustomer] = useState(null); // Initialized to null
+  //const { email } = useParams(); // Use lowercase for email
   const navigate = useNavigate();
+  const { CusID } = useParams();
+  const [userData, setUserData] = useState({});
 
   // Fetch customer data
+  // useEffect(() => {
+  //   if (email) {
+  //     axios
+  //       .get(`http://localhost:8076/customers/${email}`)
+  //       .then((res) => {
+  //         setCustomer(res.data.data);
+  //         console.log(res.data.data);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   }
+  // }, [email]);
   useEffect(() => {
-    if (email) {
-      axios
-        .get(`http://localhost:8076/customers/${email}`)
-        .then((res) => {
-          setCustomer(res.data.data);
-          console.log(res.data.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    if (CusID) {
+      fetchData();
     }
-  }, [email]);
+  }, [CusID]);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8076/customers/${CusID}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
   // Handle scroll event for navigation highlighting
   useEffect(() => {
     const handleScroll = () => {
@@ -139,6 +155,10 @@ const ReadOneHome = () => {
           <button onClick={handleAppointmentClick} className="text-pink-500 font-semibold hover:bg-pink-200">
             Make Appointment
           </button>
+          <button onClick={() => navigate(`/customers/get/${userData.CusID}`)} className="text-pink-500 font-semibold hover:bg-pink-200">
+  My Profile
+</button>
+
 
           <a href="#" onClick={handleLogout} className="text-pink-500 font-semibold hover:underline ml-4">
             Logout

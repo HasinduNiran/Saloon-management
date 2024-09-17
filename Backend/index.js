@@ -28,6 +28,7 @@ import Order_Route from './Routes/Order_Route.js';
 import EmployeeAttendence_Route from "./Routes/EmployeeAttendence_Route.js";
 import EmployeeSalary_Route from "./Routes/EmployeeSalary_Route.js";
 
+import { ReadOneHome_Route } from "./Routes/ReadOneHome_Route.js";
 
 
 
@@ -65,6 +66,7 @@ app.use('/card',Card_Route);
 
 app.use('/feedback', Feedback_Route);
 
+app.use('/Home', ReadOneHome_Route);
 
 
 
