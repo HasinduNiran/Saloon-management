@@ -4,6 +4,8 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 const EditInventory = () => {
   const [ItemNo, setItemNo] = useState('');
@@ -18,10 +20,9 @@ const EditInventory = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Fetch supplier data and inventory details when component mounts
   useEffect(() => {
     setLoading(true);
-    
+
     // Fetch suppliers
     axios.get('http://localhost:8076/suppliers')
       .then((response) => {
@@ -59,7 +60,6 @@ const EditInventory = () => {
       });
   }, [id]);
 
-  // Event handler for editing the Inventory
   const handleEditInventory = () => {
     const data = {
       ItemName,
@@ -94,7 +94,6 @@ const EditInventory = () => {
       });
   };
 
-  // Event handler for selecting supplier and setting email automatically
   const handleSupplierChange = (e) => {
     const selectedSupplierName = e.target.value;
     setSupplierName(selectedSupplierName);
@@ -103,84 +102,153 @@ const EditInventory = () => {
     setSupplierEmail(selectedSupplier ? selectedSupplier.Email : '');
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="p-4">
-      <BackButton destination='/inventories/allInventory'/>
-      <h1 className="text-3xl my-4">Edit Inventory</h1>
-      {loading && <Spinner />}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>ItemNo</label>
-          <input
-            type="text"
-            value={ItemNo}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+    <div style={containerStyle}>
+      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <BackButton destination='/inventories/allInventory'/>
+        <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+          <img className="mx-auto h-10 w-auto" src={Logo} alt="logo" style={{ width: '50px', height: '50px', marginRight: '400px'}} />
+          <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+            Edit Inventory
+          </h2>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>ItemName</label>
-          <input
-            type="text"
-            value={ItemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {loading && <Spinner />}
+            <form onSubmit={(e) => { e.preventDefault(); handleEditInventory(); }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Item No */}
+              <div>
+                <label htmlFor="ItemNo" className="block text-sm font-medium leading-5 text-gray-700">Item No</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="ItemNo"
+                    name="ItemNo"
+                    type="text"
+                    value={ItemNo}
+                    readOnly
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Item Name */}
+              <div>
+                <label htmlFor="ItemName" className="block text-sm font-medium leading-5 text-gray-700">Item Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="ItemName"
+                    name="ItemName"
+                    type="text"
+                    value={ItemName}
+                    onChange={(e) => setItemName(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Category */}
+              <div>
+                <label htmlFor="Category" className="block text-sm font-medium leading-5 text-gray-700">Category</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Category"
+                    name="Category"
+                    type="text"
+                    value={Category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Quantity */}
+              <div>
+                <label htmlFor="Quantity" className="block text-sm font-medium leading-5 text-gray-700">Quantity</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Quantity"
+                    name="Quantity"
+                    type="number"
+                    value={Quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Price */}
+              <div>
+                <label htmlFor="Price" className="block text-sm font-medium leading-5 text-gray-700">Price</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="Price"
+                    name="Price"
+                    type="number"
+                    value={Price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Supplier Name */}
+              <div>
+                <label htmlFor="SupplierName" className="block text-sm font-medium leading-5 text-gray-700">Supplier Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <select
+                    id="SupplierName"
+                    name="SupplierName"
+                    value={SupplierName}
+                    onChange={handleSupplierChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >
+                    <option value="" disabled>Select Supplier</option>
+                    {suppliers.map((supplier) => (
+                      <option key={supplier.SupplierID} value={supplier.SupplierName}>
+                        {supplier.SupplierName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Supplier Email */}
+              <div>
+                <label htmlFor="SupplierEmail" className="block text-sm font-medium leading-5 text-gray-700">Supplier Email</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="SupplierEmail"
+                    name="SupplierEmail"
+                    type="email"
+                    value={SupplierEmail}
+                    readOnly
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:border-pink-700 focus:shadow-outline-blue active:bg-pink-700 transition duration-150 ease-in-out"
+                >
+                  Update Inventory
+                </button>
+              </div>
+
+            </form>
+          </div>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Category</label>
-          <input
-            type="text"
-            value={Category}
-            onChange={(e) => setCategory(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Quantity</label>
-          <input
-            type='number'
-            value={Quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Price</label>
-          <input
-            type="number"
-            value={Price}
-            onChange={(e) => setPrice(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>SupplierName</label>
-          <select
-            value={SupplierName}
-            onChange={handleSupplierChange}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Supplier</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.SupplierID} value={supplier.SupplierName}>
-                {supplier.SupplierName}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>SupplierEmail</label>
-          <input
-            type="text"
-            value={SupplierEmail}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <button className='p-2 bg-sky-300 m-8' onClick={handleEditInventory}>
-          Save
-        </button>
       </div>
     </div>
   );

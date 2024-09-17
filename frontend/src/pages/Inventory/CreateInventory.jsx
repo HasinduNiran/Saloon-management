@@ -4,6 +4,8 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
 // Functional component for creating inventories
 const CreateInventories = () => {
@@ -36,7 +38,6 @@ const CreateInventories = () => {
         setLoading(false);
       });
   }, []);
-  
 
   // Event handler for saving the Inventory
   const handleSaveInventory = () => {
@@ -86,86 +87,150 @@ const CreateInventories = () => {
   const handleSupplierChange = (e) => {
     const selectedSupplierName = e.target.value;
     setSupplierName(selectedSupplierName);
-    
+
     const selectedSupplier = suppliers.find(supplier => supplier.SupplierName === selectedSupplierName);
     setSupplierEmail(selectedSupplier ? selectedSupplier.Email : '');
   };
 
-  return (
-    <div className="p-4">
-      <BackButton destination='/inventories/allInventory'/>
-      <h1 className="text-3xl my-4">Create Inventory</h1>
-      {loading && <Spinner />}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Item Name</label>
-          <input
-            type="text"
-            value={ItemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Category</label>
-          <select
-            value={Category}
-            onChange={(e) => setCategory(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Category</option>
-            <option value="Hair">Hair</option>
-            <option value="Nails">Nails</option>
-            <option value="Makeup">Makeup</option>
-          </select>
-        </div>
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
 
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Quantity</label>
-          <input
-            type='number'
-            value={Quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Price</label>
-          <input
-            type="number"
-            value={Price}
-            onChange={(e) => setPrice(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Supplier Name</label>
-          <select
-            value={SupplierName}
-            onChange={handleSupplierChange}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Supplier</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.SupplierID} value={supplier.SupplierName}>
-                {supplier.SupplierName}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Supplier Email</label>
-          <input
-            type="text"
-            value={SupplierEmail}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <button className='p-2 bg-sky-300 m-8' onClick={handleSaveInventory}>
-          Save
-        </button>
+  return (
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <BackButton destination='/inventories/allInventory'/>
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h1 className="text-center text-3xl leading-9 font-extrabold text-gray-900 mt-6">
+          Create Inventory
+        </h1>
       </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form onSubmit={(e) => { e.preventDefault(); handleSaveInventory(); }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="itemName" className="block text-sm font-medium leading-5 text-gray-700">Item Name</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="itemName"
+                  name="itemName"
+                  type="text"
+                  value={ItemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Category</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <select
+                  id="category"
+                  name="category"
+                  value={Category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                >
+                  <option value="" disabled>Select Category</option>
+                  <option value="Hair">Hair</option>
+                  <option value="Nails">Nails</option>
+                  <option value="Makeup">Makeup</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="quantity" className="block text-sm font-medium leading-5 text-gray-700">Quantity</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  value={Quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium leading-5 text-gray-700">Price</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={Price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="supplierName" className="block text-sm font-medium leading-5 text-gray-700">Supplier Name</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <select
+                  id="supplierName"
+                  name="supplierName"
+                  value={SupplierName}
+                  onChange={handleSupplierChange}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                >
+                  <option value="" disabled>Select Supplier</option>
+                  {suppliers.map((supplier) => (
+                    <option key={supplier.SupplierID} value={supplier.SupplierName}>
+                      {supplier.SupplierName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="supplierEmail" className="block text-sm font-medium leading-5 text-gray-700">Supplier Email</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="supplierEmail"
+                  name="supplierEmail"
+                  type="text"
+                  value={SupplierEmail}
+                  readOnly
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div className="col-span-2">
+              <span className="block w-40 rounded-md shadow-sm">
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:border-pink-700 focus:shadow-outline-blue active:bg-pink-700 transition duration-150 ease-in-out"
+                >
+                  Save Inventory
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {loading && <Spinner />}
     </div>
   );
 };

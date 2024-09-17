@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/Spinner";
+import tableImage from '../../images/tablebg.jpg';
+import backgroundImage from "../../images/logobg.jpg";
 
 const ShowInventory = () => {
   const [inventory, setInventory] = useState({});
@@ -71,50 +73,62 @@ const ShowInventory = () => {
     }
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',  // Full viewport width
+    height: '100vh',
+  };
+
+  const detailsStyle = {
+    backgroundImage: `url(${tableImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  };
+
   return (
-    <div className="show-Inventory-container p-4">
-      <BackButton destination='/inventories/allInventory'/>
-      <h1 className="show-Inventory-title text-3xl my-4">Show Inventory</h1>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <div className="inventory-details-container border-2 border-sky-400 rounded-xl w-fit p-4">
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">ItemNo</label>
-            <span>{inventory.ItemNo}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">ItemName</label>
-            <span>{inventory.ItemName}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">Category</label>
-            <span>{inventory.Category}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">Quantity</label>
-            <span>{inventory.Quantity}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">Price</label>
-            <span>{inventory.Price}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">SupplierName</label>
-            <span>{inventory.SupplierName}</span>
-          </div>
-          <div className="detail-item my-4">
-            <label className="detail-label text-xl mr-4 text-gray-500">SupplierEmail</label>
-            <span>{inventory.SupplierEmail}</span>
-          </div>
-          <button 
-            onClick={() => setShowModal(true)} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Update Quantity
-          </button>
+    <div style={containerStyle}>
+      <div className="container mx-auto px-4">
+        <BackButton destination='/inventories/allInventory' />
+        <div className="text-center my-8">
+          <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
+            Inventory <span className="text-pink-600 dark:text-pink-500">Details</span>
+          </h1>
         </div>
-      )}
+
+        {loading ? (
+          <Spinner />
+        ) : (
+          <div className="max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden" style={detailsStyle}>
+            <div className="p-6">
+              <div className="text-center md:text-left">
+                <h2 className="text-2xl font-bold text-gray-800">{inventory.ItemName}</h2>
+                <div className="text-gray-800 mt-4">
+                  <p><strong>ItemNo:</strong> {inventory.ItemNo}</p>
+                  <p><strong>Category:</strong> {inventory.Category}</p>
+                  <p><strong>Quantity:</strong> {inventory.Quantity}</p>
+                  <p><strong>Price:</strong> {inventory.Price}</p>
+                  <p><strong>SupplierName:</strong> {inventory.SupplierName}</p>
+                  <p><strong>SupplierEmail:</strong> {inventory.SupplierEmail}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center p-6 border-t">
+              <button
+                onClick={() => setShowModal(true)}
+                className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
+              >
+                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
+                  Update Quantity
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Modal for updating quantity */}
       {showModal && (

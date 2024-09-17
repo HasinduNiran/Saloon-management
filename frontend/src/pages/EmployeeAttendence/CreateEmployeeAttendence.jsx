@@ -5,6 +5,10 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
+
+const buttonStyle = 'py-2 px-4 text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out';
 
 const CreateEmployeeAttendance = () => {
   const [EmpID, setEmpID] = useState('');
@@ -32,11 +36,23 @@ const CreateEmployeeAttendance = () => {
           setEmployeeOptions(options);
         } else {
           console.error("Unexpected response format:", responseData);
-          Swal.fire("Error", "Unexpected response format from the server.", "error");
+          Swal.fire({
+            title: 'Error',
+            text: 'Unexpected response format from the server.',
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
         }
       } catch (error) {
         console.error("Error fetching employee data:", error);
-        Swal.fire("Error", "Unable to fetch employee data. Please try again.", "error");
+        Swal.fire({
+          title: 'Error',
+          text: 'Unable to fetch employee data. Please try again.',
+          icon: 'error',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        });
       }
     };
 
@@ -99,11 +115,23 @@ const CreateEmployeeAttendance = () => {
 
   const validateForm = () => {
     if (!EmpID || !date || !InTime || !OutTime) {
-      Swal.fire("Validation Error", "Please fill out all required fields.", "warning");
+      Swal.fire({
+        title: 'Validation Error',
+        text: 'Please fill out all required fields.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
       return false;
     }
     if (InTime >= OutTime) {
-      Swal.fire("Validation Error", "Out Time must be later than In Time.", "warning");
+      Swal.fire({
+        title: 'Validation Error',
+        text: 'Out Time must be later than In Time.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
       return false;
     }
     return true;
@@ -128,108 +156,155 @@ const CreateEmployeeAttendance = () => {
       .post('http://localhost:8076/employeeAttendence', data)
       .then(() => {
         setLoading(false);
-        Swal.fire("Success", "Attendance saved successfully.", "success")
-          .then(() => navigate('/employeeattendence/allEmployeeAttendence'));
+        Swal.fire({
+          title: 'Success',
+          text: 'Attendance saved successfully.',
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        }).then(() => navigate('/employeeattendence/allEmployeeAttendence'));
       })
       .catch((error) => {
         setLoading(false);
-        Swal.fire("Error", "An error occurred. Please check the console.", "error");
+        Swal.fire({
+          title: 'Error',
+          text: 'An error occurred. Please check the console.',
+          icon: 'error',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        });
         console.log(error);
       });
   };
 
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="p-4">
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <BackButton destination='/employeeattendence/allEmployeeAttendence' />
-      <h1 className="text-3xl my-4">Create Employee Attendance</h1>
-      {loading && <Spinner />}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>EmpID</label>
-          <select
-            value={EmpID}
-            onChange={handleEmpIDChange}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Employee ID</option>
-            {employeeOptions.map((emp) => (
-              <option key={emp.value} value={emp.value}>{emp.value}</option>
-            ))}
-          </select>
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Employee Name</label>
-          <input
-            type="text"
-            value={employeeName}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>In Time</label>
-          <div className="flex items-center">
-            <input
-              type="time"
-              value={InTime}
-              onChange={handleInTimeChange}
-              className='border-2 border-gray-500 px-4 py-2 w-full'
-            />
-            <button
-              className="ml-2 bg-sky-300 p-2"
-              onClick={handleSetCurrentInTime}
-            >
-              Set Current Time
-            </button>
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h1 className="text-center text-3xl leading-9 font-extrabold text-gray-900 mt-6">
+          Create Employee Attendance
+        </h1>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="grid grid-cols-1 gap-6">
+            <div>
+              <label htmlFor="empID" className="block text-sm font-medium leading-5 text-gray-700">Employee ID</label>
+              <select
+                id="empID"
+                value={EmpID}
+                onChange={handleEmpIDChange}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              >
+                <option value="" disabled>Select Employee ID</option>
+                {employeeOptions.map((emp) => (
+                  <option key={emp.value} value={emp.value}>{emp.value}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="employeeName" className="block text-sm font-medium leading-5 text-gray-700">Employee Name</label>
+              <input
+                id="employeeName"
+                type="text"
+                value={employeeName}
+                readOnly
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
+            <div>
+              <label htmlFor="date" className="block text-sm font-medium leading-5 text-gray-700">Date</label>
+              <input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
+            <div>
+              <label htmlFor="inTime" className="block text-sm font-medium leading-5 text-gray-700">In Time</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="inTime"
+                  type="time"
+                  value={InTime}
+                  onChange={handleInTimeChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+                <button
+                  type="button"
+                  onClick={handleSetCurrentInTime}
+                  className="absolute inset-y-0 right-0 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-100 text-gray-500"
+                >
+                  Now
+                </button>
+              </div>
+
+            <div>
+              <label htmlFor="outTime" className="block text-sm font-medium leading-5 text-gray-700">Out Time</label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  id="outTime"
+                  type="time"
+                  value={OutTime}
+                  onChange={handleOutTimeChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+                <button
+                  type="button"
+                  onClick={handleSetCurrentOutTime}
+                  className="absolute inset-y-0 right-0 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-100 text-gray-500"
+                >
+                  Now
+                </button>
+              </div>
+            </div>
+
+              <label htmlFor="workingHours" className="block text-sm font-medium leading-5 text-gray-700">Working Hours</label>
+              <input
+                id="workingHours"
+                type="text"
+                value={WorkingHours}
+                readOnly
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
+            <div>
+              <label htmlFor="oThours" className="block text-sm font-medium leading-5 text-gray-700">Overtime Hours</label>
+              <input
+                id="oThours"
+                type="text"
+                value={OThours}
+                readOnly
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleSaveAttendance}
+                className={buttonStyle}
+              >
+                Save Attendance
+              </button>
+            </div>
           </div>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Out Time</label>
-          <div className="flex items-center">
-            <input
-              type="time"
-              value={OutTime}
-              onChange={handleOutTimeChange}
-              className='border-2 border-gray-500 px-4 py-2 w-full'
-            />
-            <button
-              className="ml-2 bg-sky-300 p-2"
-              onClick={handleSetCurrentOutTime}
-            >
-              Set Current Time
-            </button>
-          </div>
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Working Hours</label>
-          <input
-            type="number"
-            value={WorkingHours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>OT Hours</label>
-          <input
-            type="number"
-            value={OThours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <button className='p-2 bg-sky-300 m-8' onClick={handleSaveAttendance}>
-          Save
-        </button>
       </div>
     </div>
   );

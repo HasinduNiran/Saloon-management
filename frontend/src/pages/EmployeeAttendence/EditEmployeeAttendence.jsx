@@ -1,15 +1,13 @@
-// Importing necessary dependencies
-import { useState, useEffect } from "react";
-import React from 'react';
-import BackButton from "../../components/BackButton";
-import Spinner from "../../components/Spinner";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
+import Spinner from "../../components/Spinner";
+import BackButton from "../../components/BackButton";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png';
 
-// Functional component for EditEmployeeAttendance
 const EditEmployeeAttendance = () => {
-  // State variables for managing form data and loading state
   const [EmpID, setEmpID] = useState('');
   const [employeeName, setEmployeeName] = useState('');
   const [date, setDate] = useState('');
@@ -22,7 +20,6 @@ const EditEmployeeAttendance = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Fetch the existing attendance record and employee data by id
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -38,7 +35,6 @@ const EditEmployeeAttendance = () => {
         setWorkingHours(attendanceData.WorkingHours);
         setOThours(attendanceData.OThours);
 
-        // Fetch employee options for dropdown
         const empResponse = await axios.get('http://localhost:8076/employees');
         const employees = empResponse.data.data;
         const options = employees.map(emp => ({
@@ -62,7 +58,6 @@ const EditEmployeeAttendance = () => {
     fetchData();
   }, [id]);
 
-  // Calculate working hours and OT hours
   const calculateHours = (inTime, outTime) => {
     if (inTime && outTime) {
       const inDate = new Date(`1970-01-01T${inTime}:00`);
@@ -77,7 +72,6 @@ const EditEmployeeAttendance = () => {
     }
   };
 
-  // Get current time
   const getCurrentTime = () => {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -85,7 +79,6 @@ const EditEmployeeAttendance = () => {
     return `${hours}:${minutes}`;
   };
 
-  // Event handlers
   const handleEmpIDChange = (e) => {
     const selectedEmpID = e.target.value;
     setEmpID(selectedEmpID);
@@ -119,7 +112,6 @@ const EditEmployeeAttendance = () => {
     calculateHours(InTime, currentTime);
   };
 
-  // Validate form data
   const validateForm = () => {
     if (!EmpID || !date || !InTime || !OutTime) {
       Swal.fire({
@@ -177,103 +169,151 @@ const EditEmployeeAttendance = () => {
       });
   };
 
-  // JSX for rendering the EditEmployeeAttendance form
+  const containerStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="p-4">
-      <BackButton destination='/employeeattendence/allEmployeeAttendence' />
-      <h1 className="text-3xl my-4">Edit Employee Attendance</h1>
-      {loading ? <Spinner /> : ''}
-      <div className="flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto">
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>EmpID</label>
-          <select
-            value={EmpID}
-            onChange={handleEmpIDChange}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          >
-            <option value="" disabled>Select Employee ID</option>
-            {employeeOptions.map((emp) => (
-              <option key={emp.value} value={emp.value}>{emp.value}</option>
-            ))}
-          </select>
+    <div style={containerStyle}>
+      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <BackButton destination='/employeeattendence/allEmployeeAttendence' />
+        <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+          <img className="mx-auto h-10 w-auto" src={Logo} alt="logo" style={{ width: '50px', height: '50px', marginRight: '400px'}} />
+          <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+            Edit Employee Attendance
+          </h2>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Employee Name</label>
-          <input
-            type="text"
-            value={employeeName}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>In Time</label>
-          <div className="flex items-center">
-            <input
-              type="time"
-              value={InTime}
-              onChange={handleInTimeChange}
-              className='border-2 border-gray-500 px-4 py-2 w-full'
-            />
-            <button
-              className="ml-2 bg-sky-300 p-2"
-              onClick={handleSetCurrentInTime}
-            >
-              Set Current Time
-            </button>
+
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {loading && <Spinner />}
+            <form onSubmit={(e) => { e.preventDefault(); handleEditAttendance(); }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="EmpID" className="block text-sm font-medium leading-5 text-gray-700">Employee ID</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <select
+                    id="EmpID"
+                    value={EmpID}
+                    onChange={handleEmpIDChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >
+                    <option value="" disabled>Select Employee ID</option>
+                    {employeeOptions.map((emp) => (
+                      <option key={emp.value} value={emp.value}>{emp.value}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="employeeName" className="block text-sm font-medium leading-5 text-gray-700">Employee Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="employeeName"
+                    type="text"
+                    value={employeeName}
+                    readOnly
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium leading-5 text-gray-700">Date</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="date"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="InTime" className="block text-sm font-medium leading-5 text-gray-700">In Time</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="InTime"
+                    type="time"
+                    value={InTime}
+                    onChange={handleInTimeChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSetCurrentInTime}
+                    className="absolute inset-y-0 right-0 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-100 text-gray-500"
+                  >
+                    Now
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="OutTime" className="block text-sm font-medium leading-5 text-gray-700">Out Time</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="OutTime"
+                    type="time"
+                    value={OutTime}
+                    onChange={handleOutTimeChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSetCurrentOutTime}
+                    className="absolute inset-y-0 right-0 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-100 text-gray-500"
+                  >
+                    Now
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="WorkingHours" className="block text-sm font-medium leading-5 text-gray-700">Working Hours</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="WorkingHours"
+                    type="text"
+                    value={WorkingHours}
+                    readOnly
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="OThours" className="block text-sm font-medium leading-5 text-gray-700">Overtime Hours</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="OThours"
+                    type="text"
+                    value={OThours}
+                    readOnly
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+
+              <div className="col-span-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="inline-flex justify-center py-2 px-4 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-pink-600 shadow-sm hover:bg-pink-700 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition duration-150 ease-in-out"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Out Time</label>
-          <div className="flex items-center">
-            <input
-              type="time"
-              value={OutTime}
-              onChange={handleOutTimeChange}
-              className='border-2 border-gray-500 px-4 py-2 w-full'
-            />
-            <button
-              className="ml-2 bg-sky-300 p-2"
-              onClick={handleSetCurrentOutTime}
-            >
-              Set Current Time
-            </button>
-          </div>
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>Working Hours</label>
-          <input
-            type="number"
-            value={WorkingHours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className="my-4">
-          <label className='text-xl mr-4 text-gray-500'>OT Hours</label>
-          <input
-            type="number"
-            value={OThours}
-            readOnly
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <button className='p-2 bg-sky-300 m-8' onClick={handleEditAttendance}>
-          Save
-        </button>
       </div>
     </div>
   );
 };
 
-// Exporting the EditEmployeeAttendance component
 export default EditEmployeeAttendance;

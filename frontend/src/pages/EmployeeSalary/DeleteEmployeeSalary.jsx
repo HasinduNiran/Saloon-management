@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/Spinner";
-
 import axios from 'axios';
 
 const DeleteEmployeeSalary = () => {
@@ -30,22 +29,24 @@ const DeleteEmployeeSalary = () => {
   };
 
   return (
-    <div className='p-4'>
-      {/* Back button to navigate back */}
-      <BackButton destination='/employeesalary/allEmployeeSalary' />
-      <h1 className='text-3xl my-4'>Delete Employee Salary</h1>
-      {/* Display a spinner while the delete operation is in progress */}
-      {loading ? <Spinner /> : ''}
-
-      <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl w-[600px] p-8 mx-auto'>
-        <h3 className='text-2xl'>Are you sure you want to delete this Employee Salary?</h3>
-
-        {/* Button to initiate the Employee Salary deletion */}
-        <button
-          className='p-4 bg-red-600 text-white m-8 w-full'
-          onClick={handleDeleteEmployeeSalary}>
-          Delete
-        </button>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#1f2937' }}>
+      <div style={{ padding: '2rem', maxWidth: '600px', backgroundColor: '#2d3748', borderRadius: '10px', color: '#fff' }}>
+        <BackButton destination='/employeesalary/allEmployeeSalary' />
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Delete Employee Salary</h1>
+        {loading ? <Spinner /> : null}
+        <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Are you sure you want to delete this Employee Salary?</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <button
+            onClick={handleDeleteEmployeeSalary}
+            style={{ backgroundColor: '#dc3545', color: 'white', padding: '0.8rem 2rem', borderRadius: '5px', cursor: 'pointer', border: 'none', marginRight: '1rem' }}>
+            {loading ? 'Deleting...' : 'Delete'}
+          </button>
+          <a
+            href='/employeesalary/allEmployeeSalary'
+            style={{ backgroundColor: '#007bff', color: 'white', padding: '0.8rem 2rem', borderRadius: '5px', textDecoration: 'none' }}>
+            Cancel
+          </a>
+        </div>
       </div>
     </div>
   );
