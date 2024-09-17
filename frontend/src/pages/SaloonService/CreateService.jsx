@@ -6,9 +6,10 @@ import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
 
 const subCategories = {
-  Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
-  'Skin Care': ['Facial', 'Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
+  Hair: ['Men Cut','Women Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening','Treatment'],
+  'Skin Care': ['Facial','Full Body Massage', 'Body Scrub','Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
   Nail: ['Manicure', 'Pedicure', 'Nail Art', 'Gel Nails', 'Acrylic Nails', 'Nail Repair', 'Nail Polish', 'Cuticle Care'],
+  Weddings: ['Bridal Hair','Bridal Makeup','Bridesmaids Hair','Bridesmaids Makeup','Package Deals'],
 };
 
 const CreateService = () => {
@@ -79,11 +80,11 @@ const CreateService = () => {
 
   const handleMinutesChange = (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value) && value <= 59) {
+    if (/^\d*$/.test(value) && value <= 60) {
       setMinutes(value);
       setDurationError('');
     } else {
-      setDurationError('Please enter a valid number for minutes (0-59).');
+      setDurationError('Please enter a valid number for minutes (0-60).');
     }
   };
 
@@ -126,6 +127,7 @@ const CreateService = () => {
                 <option value="Hair">Hair</option>
                 <option value="Skin Care">Skin Care</option>
                 <option value="Nail">Nail</option>
+                <option value="Weddings">Weddings</option>
               </select>
             </div>
 
@@ -185,7 +187,7 @@ const CreateService = () => {
             </div>
 
             <div>
-              <label htmlFor="price" className="block text-sm font-medium leading-5 text-gray-700">Price (Rs)</label>
+              <label htmlFor="price" className="block text-sm font-medium leading-5 text-gray-700">Price ($)</label>
               <input
                 id="price"
                 type="text"
@@ -242,7 +244,7 @@ const CreateService = () => {
                   type="submit"
                   className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
                 >
-                  {loading ? <Spinner /> : "Create account"}
+                  {loading ? <Spinner /> : "Create Service"}
                 </button>
               </span>
             </div>

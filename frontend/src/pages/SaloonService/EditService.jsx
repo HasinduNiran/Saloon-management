@@ -5,9 +5,10 @@ import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
 
 const subCategories = {
-  Hair: ['Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening'],
-  'Skin Care': ['Facial', 'Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
+  Hair: ['Men Cut','Women Cut', 'Color', 'Style', 'Blow Dry', 'Perm', 'Extensions', 'Highlights', 'Straightening','Treatment'],
+  'Skin Care': ['Facial','Full Body Massage', 'Body Scrub','Exfoliation', 'Moisturizing', 'Acne Treatment', 'Anti-Aging', 'Skin Brightening', 'Microdermabrasion'],
   Nail: ['Manicure', 'Pedicure', 'Nail Art', 'Gel Nails', 'Acrylic Nails', 'Nail Repair', 'Nail Polish', 'Cuticle Care'],
+  Weddings: ['Bridal Hair','Bridal Makeup','Bridesmaids Hair','Bridesmaids Makeup','Package Deals'],
 };
 
 const EditService = () => {
@@ -132,11 +133,11 @@ const EditService = () => {
   // Handle numeric input for minutes
   const handleMinutesChange = (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value) && value <= 59) { // Ensuring minutes are less than or equal to 59
+    if (/^\d*$/.test(value) && value <= 60) { // Ensuring minutes are less than or equal to 59
       setMinutes(value);
       setDurationError(''); // Clear error message if valid
     } else {
-      setDurationError('Please enter a valid number for minutes (0-59).');
+      setDurationError('Please enter a valid number for minutes (0-60).');
     }
   };
 

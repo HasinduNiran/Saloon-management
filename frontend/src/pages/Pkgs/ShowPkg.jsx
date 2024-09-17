@@ -144,7 +144,6 @@ const ShowPkg = () => {
       const end_date = pkg.end_date ? pkg.end_date.toLowerCase() : '';
       const package_type = pkg.package_type ? pkg.package_type.toLowerCase() : '';
       const category = pkg.category ? pkg.category.toLowerCase() : '';
-      const subCategory = pkg.subCategory ? pkg.subCategory.toLowerCase() : '';
   
       return (
         ID.includes(searchQuery.toLowerCase()) ||
@@ -155,8 +154,7 @@ const ShowPkg = () => {
         start_date.includes(searchQuery.toLowerCase()) ||
         end_date.includes(searchQuery.toLowerCase()) ||
         package_type.includes(searchQuery.toLowerCase()) ||
-        category.includes(searchQuery.toLowerCase()) ||
-        subCategory.includes(searchQuery.toLowerCase())
+        category.includes(searchQuery.toLowerCase())
       );
     };
 
@@ -223,17 +221,16 @@ const ShowPkg = () => {
             <tr>
               <th className="px-4 py-2 text-left font-semibold">Package ID</th>
               <th className="px-4 py-2 text-left font-semibold">Service Category</th>
-              <th className="px-4 py-2 text-left font-semibold">Service Type</th>
               <th className="px-4 py-2 text-left font-semibold">Package Name</th>
               <th className="px-4 py-2 text-left font-semibold">Package Type</th>
               <th className="px-4 py-2 text-left font-semibold">Description</th>
-              <th className="px-4 py-2 text-left font-semibold">Base Price (Rs)</th>
+              <th className="px-4 py-2 text-left font-semibold">Base Price ($)</th>
               <th className="px-4 py-2 text-left font-semibold">Discount Rate (%)</th>
-              <th className="px-4 py-2 text-left font-semibold">Final Price (Rs)</th>
-              <th className="px-4 py-2 text-left font-semibold">Start Date</th>
-              <th className="px-4 py-2 text-left font-semibold">End Date</th>
-              <th className="px-4 py-2 text-left font-semibold">Conditions</th>
-              <th className="px-4 py-2 text-left font-semibold">Image</th>
+              <th className="px-4 py-2 text-left font-semibold">Final Price ($)</th>
+              <th className="px-10 py-2 text-left font-semibold">Start Date</th>
+              <th className="px-10 py-2 text-left font-semibold">End Date</th>
+              <th className="px-10 py-2 text-left font-semibold">Conditions</th>
+              <th className="px-8 py-2 text-left font-semibold">Image</th>
               <th className="px-4 py-2 text-left font-semibold">Actions</th>
             </tr>
           </thead>
@@ -242,15 +239,14 @@ const ShowPkg = () => {
               <tr key={pkg._id} className="hover:bg-gray-100 transition duration-150 ease-in-out">
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.ID}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.category}</td>
-                <td className="px-4 py-2 text-sm text-gray-700">{pkg.subCategory}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.p_name}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.package_type}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.description}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.base_price}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.discount_rate}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.final_price}</td>
-                <td className="px-4 py-2 text-sm text-gray-700">{pkg.start_date}</td>
-                <td className="px-4 py-2 text-sm text-gray-700">{pkg.end_date}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.start_date.slice(0, 10)}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{pkg.end_date.slice(0, 10)}</td>
                 <td className="px-4 py-2 text-sm text-gray-700">{pkg.conditions}</td>
 
                 <td className="px-4 py-2 text-gray-700">

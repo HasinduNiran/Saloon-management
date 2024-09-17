@@ -18,9 +18,6 @@ const EditPkg = () => {
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
     const [category, setCategory] = useState('');
-    const [subCategory, setSubCategory] = useState('');
-    const [categoryOptions, setCategoryOptions] = useState([]);
-    const [subCategoryOptions, setSubCategoryOptions] = useState([]);
     const [image, setImage] = useState(null);
     const [existingImage, setExistingImage] = useState('');
     const [error, setError] = useState('');
@@ -42,7 +39,6 @@ const EditPkg = () => {
                 setType(pkg.package_type);
                 setPName(pkg.p_name);
                 setCategory(pkg.category);
-                setSubCategory(pkg.subCategory);
                 setExistingImage(pkg.image);
                 setLoading(false);
             } catch (error) {
@@ -63,39 +59,6 @@ const EditPkg = () => {
         }
     }, [base_price, discount_rate]);
 
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get('http://localhost:8076/services');
-                const services = response.data;
-
-                const uniqueCategories = [...new Set(services.map(service => service.category))];
-                setCategoryOptions(uniqueCategories);
-            } catch (error) {
-                console.error("Error fetching services:", error);
-                setError('Unable to fetch services.');
-            }
-        };
-
-        fetchServices();
-    }, []);
-
-    const handleCategoryChange = (e) => {
-        const selectedCategory = e.target.value;
-        setCategory(selectedCategory);
-
-        axios.get('http://localhost:8076/services').then((response) => {
-            const services = response.data;
-            const filteredServices = services.filter(service => service.category === selectedCategory);
-
-            const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
-            setSubCategoryOptions(uniqueSubCategories);
-        }).catch(error => {
-            console.error("Error fetching subcategories:", error);
-            setError('Unable to fetch subcategories.');
-        });
-    };
-
     const handleUpdatePackage = async (e) => {
         e.preventDefault();
         setError('');
@@ -111,7 +74,6 @@ const EditPkg = () => {
         formData.append('package_type', package_type);
         formData.append('p_name', p_name);
         formData.append('category', category);
-        formData.append('subCategory', subCategory);
         if (image) {
             formData.append('image', image);
         }
@@ -158,39 +120,61 @@ const EditPkg = () => {
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     {error && <p className="text-red-600 text-center mb-4">{error}</p>}
                     <form onSubmit={handleUpdatePackage} className='space-y-4'>
-                        <div>
-                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Category:</label>
-                            <select
-                                id="category"
-                                value={category}
-                                onChange={handleCategoryChange}
+
+                         {/* Category */}
+                         <div>
+                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
+                            <div className="flex items-center space-x-4">
+                            <label className="flex items-center">
+                            <input
+                                value="Hair"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Hair'}
+                                onChange={() => setCategory('Hair')}
+                                className="mr-2"
                                 required
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
-                            >
-                                <option value="">Select Category</option>
-                                {categoryOptions.map((cat, index) => (
-                                    <option key={index} value={cat}>{cat}</option>
-                                ))}
-                            </select>
-                        </div>
-                        {/* Subcategory */}
-                        {category && subCategoryOptions.length > 0 &&  (
-                            <div>
-                                <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Sub Category:</label>
-                                <select
-                                    id="subCategory"
-                                    value={subCategory}
-                                    onChange={(e) => setSubCategory(e.target.value)}
-                                    required
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
-                                >
-                                    <option value="" disabled>Select Sub Category</option>
-                                    {subCategoryOptions.map((sub, index) => (
-                                        <option key={index} value={sub}>{sub}</option>
-                                    ))}
-                                </select>
+                            />
+                            Hair
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                value="Weddings"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Weddings'}
+                                onChange={() => setCategory('Weddings')}
+                                className="mr-2"
+                                required
+                            />
+                            Weddings
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                value="Skin Care"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Skin Care'}
+                                onChange={() => setCategory('Skin Care')}
+                                className="mr-2"
+                                required
+                            />
+                            Skin Care
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                value="Nail"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Nail'}
+                                onChange={() => setCategory('Nail')}
+                                className="mr-2"
+                                required
+                            />
+                            Nail
+                            </label>
                             </div>
-                        )}
+                        </div>
 
                         <div>
                             <label htmlFor="p_name" className="block text-sm font-medium leading-5 text-gray-700">Package Name:</label>
@@ -243,7 +227,7 @@ const EditPkg = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="base_price" className="block text-sm font-medium leading-5 text-gray-700">Base Price:</label>
+                            <label htmlFor="base_price" className="block text-sm font-medium leading-5 text-gray-700">Base Price ($):</label>
                             <input
                                 type="number"
                                 id="base_price"
@@ -267,7 +251,7 @@ const EditPkg = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="final_price" className="block text-sm font-medium leading-5 text-gray-700">Final Price:</label>
+                            <label htmlFor="final_price" className="block text-sm font-medium leading-5 text-gray-700">Final Price ($):</label>
                             <input
                                 type="number"
                                 id="final_price"

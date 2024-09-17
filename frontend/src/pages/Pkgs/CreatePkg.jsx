@@ -16,11 +16,8 @@ const CreatePkg = () => {
     const [conditions, setCondition] = useState('');
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
-    const [category, setCategory] = useState('');
-    const [subCategory, setSubCategory] = useState('');
-    const [categoryOptions, setCategoryOptions] = useState([]);
-    const [subCategoryOptions, setSubCategoryOptions] = useState([]);
-    const [image, setImage] = useState(null); // Ensure image is handled as a file
+    const [category, setCategory] = useState([]);
+    const [image, setImage] = useState(null);
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -34,40 +31,6 @@ const CreatePkg = () => {
         }
     }, [base_price, discount_rate]);
 
-    // Fetch categories and subcategories
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get('http://localhost:8076/services');
-                const services = response.data;
-
-                const uniqueCategories = [...new Set(services.map(service => service.category))];
-                setCategoryOptions(uniqueCategories);
-            } catch (error) {
-                console.error("Error fetching services:", error);
-                setError('Unable to fetch services.');
-            }
-        };
-
-        fetchServices();
-    }, []);
-
-    const handleCategoryChange = (e) => {
-        const selectedCategory = e.target.value;
-        setCategory(selectedCategory);
-
-        axios.get('http://localhost:8076/services').then((response) => {
-            const services = response.data;
-            const filteredServices = services.filter(service => service.category === selectedCategory);
-
-            const uniqueSubCategories = [...new Set(filteredServices.map(service => service.subCategory))];
-            setSubCategoryOptions(uniqueSubCategories);
-        }).catch(error => {
-            console.error("Error fetching subcategories:", error);
-            setError('Unable to fetch subcategories.');
-        });
-    };
-
     const handleSavePackage = async (e) => {
         e.preventDefault();
         setError('');
@@ -77,20 +40,19 @@ const CreatePkg = () => {
         formData.append('base_price', base_price);
         formData.append('discount_rate', discount_rate);
         formData.append('final_price', final_price);
-        formData.append('start_date', start_date ? start_date.toISOString().split('T')[0] : null); // Convert to ISO
-        formData.append('end_date', end_date ? end_date.toISOString().split('T')[0] : null); // Convert to ISO
+        formData.append('start_date', start_date ? start_date.toISOString().split('T')[0] : null);
+        formData.append('end_date', end_date ? end_date.toISOString().split('T')[0] : null);
         formData.append('conditions', conditions);
         formData.append('package_type', package_type);
         formData.append('p_name', p_name);
-        formData.append('category', category);
-        formData.append('subCategory', subCategory);
-        formData.append('image', image); // Attach the file
+        formData.append('category',category);
+        formData.append('image', image);
 
         try {
             await axios.post('http://localhost:8076/pkg', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            navigate('/pkg/allPkg'); // Redirect on success
+            navigate('/pkg/allPkg');
         } catch (error) {
             console.error(error);
             setError('Failed to create the package. Please try again.');
@@ -119,42 +81,63 @@ const CreatePkg = () => {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     {error && <p className='text-red-600'>{error}</p>}
+
                     <form onSubmit={handleSavePackage} className='space-y-4'>
+
                         {/* Category */}
                         <div>
-                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Category</label>
-                            <select
-                                id="category"
-                                value={category}
-                                onChange={handleCategoryChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
+                            <div className="flex items-center space-x-4">
+                            <label className="flex items-center">
+                            <input
+                                id="category1"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Hair'}
+                                onChange={() => setCategory('Hair')}
+                                className="mr-2"
                                 required
-                            >
-                                <option value="" disabled>Select Service Category</option>
-                                {categoryOptions.map((category, index) => (
-                                    <option key={index} value={category}>{category}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Subcategory */}
-                        {category && subCategoryOptions.length > 0 && (
-                            <div>
-                                <label htmlFor="subCategory" className="block text-sm font-medium leading-5 text-gray-700">Service Subcategory</label>
-                                <select
-                                    id="subCategory"
-                                    value={subCategory}
-                                    onChange={(e) => setSubCategory(e.target.value)}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
-                                    required
-                                >
-                                    <option value="" disabled>Select Subcategory</option>
-                                    {subCategoryOptions.map((sub, index) => (
-                                        <option key={index} value={sub}>{sub}</option>
-                                    ))}
-                                </select>
+                            />
+                            Hair
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                id="category1"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Weddings'}
+                                onChange={() => setCategory('Weddings')}
+                                className="mr-2"
+                                required
+                            />
+                            Weddings
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                id="category1"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Skin Care'}
+                                onChange={() => setCategory('Skin Care')}
+                                className="mr-2"
+                                required
+                            />
+                            Skin Care
+                            </label>
+                            <label className="flex items-center">
+                            <input
+                                id="category1"
+                                type="radio"
+                                multiple
+                                chacked={category === 'Nail'}
+                                onChange={() => setCategory('Nail')}
+                                className="mr-2"
+                                required
+                            />
+                            Nail
+                            </label>
                             </div>
-                        )}
+                        </div>
 
                         {/* Package Name */}
                         <div>
@@ -199,7 +182,7 @@ const CreatePkg = () => {
                         {/* Description */}
                         <div>
                             <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
-                            <input
+                            <textarea
                                 id="description"
                                 type="text"
                                 value={description}
@@ -211,7 +194,7 @@ const CreatePkg = () => {
 
                         {/* Base Price */}
                         <div>
-                            <label htmlFor="base_price" className="block text-sm font-medium leading-5 text-gray-700">Base Price</label>
+                            <label htmlFor="base_price" className="block text-sm font-medium leading-5 text-gray-700">Base Price ($)</label>
                             <input
                                 id="base_price"
                                 type="number"
@@ -237,7 +220,7 @@ const CreatePkg = () => {
 
                         {/* Final Price */}
                         <div>
-                            <label className="block text-sm font-medium leading-5 text-gray-700">Final Price (Rs):</label>
+                            <label className="block text-sm font-medium leading-5 text-gray-700">Final Price ($):</label>
                             <input
                                 type="number"
                                 value={final_price}

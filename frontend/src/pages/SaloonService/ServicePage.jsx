@@ -57,7 +57,7 @@ const ServicePage = () => {
             />
             <div className="p-6">
               <h3 className="text-2xl font-bold text-text mb-2">{service.service_ID}</h3>
-              <p className="text-text mb-2">{service.category} - {service.subCategory}</p>
+              <p className="text-text mb-2">{service.category}</p>
               <p className="text-text mb-2">Duration: {service.duration} </p>
               <p className="text-text mb-2">Price: Rs {service.price}</p>
               <p className="text-text mb-2">Available: {service.available ? 'Yes' : 'No'}</p>
@@ -70,8 +70,8 @@ const ServicePage = () => {
       {/* Call to Action */}
       <div className="flex justify-center mt-12">
         <button 
-          onClick={() => navigate('/book-appointment')} 
-          className="bg-primary text-white py-3 px-6 rounded-lg shadow-custom hover:bg-violet-600 transition-colors"
+          onClick={() => navigate('/appointments/create')} 
+          className="bg-pink-500 text-white py-3 px-6 rounded-lg shadow-custom hover:bg-violet-600 transition-colors"
           style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
         >
           Book an Appointment
@@ -86,7 +86,6 @@ const ServicePage = () => {
             <p className="text-text">"Amazing service! The staff was very professional and my experience was top-notch."</p>
             <p className="mt-4 font-semibold">- Jane Doe</p>
           </div>
-          {/* Add more testimonials as needed */}
         </div>
       </div>
     </div>
