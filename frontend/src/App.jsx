@@ -55,7 +55,7 @@ import DeleteStore from './pages/StoreM/DeleteStore';
 import EditStore from './pages/StoreM/EditStore';
 import ShowStore from './pages/StoreM/ShowStore';
 
-//import CreateCard from './pages/Card/CreateCard';
+import CreateCard from './pages/Card/CreateCard';
 
 
 
@@ -157,7 +157,7 @@ const App = () => {
 
       <Route path='/cLogin' element={<CLogin />}></Route>'
       <Route path='/ReadOneHome/:id' element={<ReadOneHome />}></Route> 
-      {/* <Route path='/card/create' element={<CreateCard />}></Route> */}
+      <Route path='/card/create' element={<CreateCard />}></Route>
 
 
 
