@@ -56,12 +56,11 @@ const ServicePage = () => {
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-text mb-2">{service.service_ID}</h3>
-              <p className="text-text mb-2">{service.category}</p>
-              <p className="text-text mb-2">Duration: {service.duration} </p>
-              <p className="text-text mb-2">Price: Rs {service.price}</p>
-              <p className="text-text mb-2">Available: {service.available ? 'Yes' : 'No'}</p>
-              <p className="text-text">{service.description}</p>
+              <h3 className="text-2xl font-bold mb-2 text-yellow-400">{service.category}</h3>
+              <p className="text-text text-yellow-600">{service.description}</p>
+              <p className="text-text mb-2">Time Duration: {service.duration} </p>
+              <p className="text-text mb-2">Price: ${service.price}</p>
+              <p className="text-text mb-2">Service Available Status: {service.available ? 'Yes' : 'No'}</p>
             </div>
           </div>
         ))}
