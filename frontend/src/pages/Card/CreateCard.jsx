@@ -7,23 +7,24 @@ import { useNavigate } from "react-router-dom";
 
 const CreateCard = () => {
   const [Cardno, setCardno] = useState("");
-  const [Amount, setAmount] = useState("");
   const [expMonth, setExpMonth] = useState("mm");
   const [expYear, setExpYear] = useState("yy");
   const [cvv, setCvv] = useState("");
-  const [cardHolderName, setCardHolderName] = useState(""); // State for cardholder name
+  const [cardHolderName, setCardHolderName] = useState(""); 
   const [isCardFlipped, setIsCardFlipped] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Fix the amount to 1000
+  const Amount = 1000;
 
   // Handles form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-
     // Prepare data for submission
     const data = {
-        Amount,
+      Amount,
       Cardno,
       expMonth,
       expYear,
@@ -35,45 +36,42 @@ const CreateCard = () => {
 
     // Make the API call to create payment
     axios.post('http://localhost:8076/card', data)
-    .then(() => {
-      setLoading(false);
-      Swal.fire({
-        icon: 'success',
-        title: "Success!",
-        text: 'Payment is Successful',
-      }).then(() => {
-        navigate('/payments/allPayment'); // Redirect after showing the success alert
+      .then(() => {
+        setLoading(false);
+        Swal.fire({
+          icon: 'success',
+          title: "Success!",
+          text: 'Payment is Successful',
+        }).then(() => {
+          navigate('/ReadOneHome/:id'); // Redirect after showing the success alert
+        });
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error creating payment:", error);
+        Swal.fire({
+          icon: 'error',
+          text: `Something went wrong! Error: ${error.response?.data || error.message}`,
+        });
       });
-    })
-    .catch((error) => {
-      setLoading(false);
-      console.error("Error creating payment:", error);
-      Swal.fire({
-        icon: 'error',
-        text: `Something went wrong! Error: ${error.response?.data || error.message}`,
-      });
-    });
-    
-};
+  };
 
+  // Allow only numbers for card number input
   const handleCardNumberChange = (e) => {
-    setCardno(e.target.value);
+    const value = e.target.value.replace(/\D/g, ""); // Replace non-numeric characters
+    setCardno(value);
   };
 
-  const handleExpMonthChange = (e) => {
-    setExpMonth(e.target.value);
-  };
-
-  const handleExpYearChange = (e) => {
-    setExpYear(e.target.value);
-  };
-
-  const handleCvvChange = (e) => {
-    setCvv(e.target.value);
-  };
-
+  // Allow only letters for card holder name input
   const handleCardHolderNameChange = (e) => {
-    setCardHolderName(e.target.value);
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Replace non-letter characters
+    setCardHolderName(value);
+  };
+
+  // Allow only numbers for CVV input
+  const handleCvvChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ""); // Replace non-numeric characters
+    setCvv(value);
   };
 
   const handleCvvFocus = () => {
@@ -145,22 +143,23 @@ const CreateCard = () => {
           flex: 1 1 150px;
         }
 
-        .container form .submit-btn {
-          width: 100%;
-          background: linear-gradient(45deg, rgb(6, 97, 74), rgb(149, 215, 34));
-          margin-top: 20px;
-          padding: 10px;
-          font-size: 20px;
-          color: #fff;
-          border-radius: 10px;
-          cursor: pointer;
-          transition: 0.2s linear;
-        }
+       .container form .submit-btn {
+  width: 100%;
+  background: linear-gradient(45deg, #ff66b2, #ffb6c1); /* Dark pink to light pink gradient */
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 20px;
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s linear;
+}
 
-        .container form .submit-btn:hover {
-          letter-spacing: 2px;
-          opacity: 0.8;
-        }
+.container form .submit-btn:hover {
+  letter-spacing: 2px;
+  opacity: 0.8;
+}
+
 
         .container .card-container {
           margin-bottom: -150px;
@@ -183,18 +182,19 @@ const CreateCard = () => {
           transition: transform 0.4s ease-out;
         }
 
-        .container .card-container .front {
-          background: linear-gradient(45deg, rgb(6, 97, 74), rgb(149, 215, 34));
-          padding: 20px;
-          transform: ${isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
-        }
+       .container .card-container .front {
+  background: linear-gradient(45deg, #ff66b2, #ffb6c1); /* Dark pink to light pink gradient */
+  padding: 20px;
+  transform: ${isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
+}
 
-        .container .card-container .back {
-          background: linear-gradient(45deg, rgb(6, 97, 74), rgb(149, 215, 34));
-          padding: 20px;
-          text-align: right;
-          transform: ${isCardFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)'};
-        }
+.container .card-container .back {
+  background: linear-gradient(45deg, #ff66b2, #ffb6c1); /* Dark pink to light pink gradient */
+  padding: 20px;
+  text-align: right;
+  transform: ${isCardFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+}
+
 
         .container .card-container .front .image,
         .container .card-container .back .box {
@@ -256,7 +256,7 @@ const CreateCard = () => {
         }
       `}</style>
 
-      <div className="card-container">
+<div className="card-container">
         <div className="front">
           <div className="image">
             <img src={chip} alt="chip" className="chip" style={{ width: '50px', marginLeft: '5px' }} />
@@ -267,7 +267,7 @@ const CreateCard = () => {
           </div>
           <div className="flexbox">
             <div className="box">
-              <span>{cardHolderName || "Card Holder"}</span> {/* Display cardholder name */}
+              <span>{cardHolderName || "Card Holder"}</span>
             </div>
             <div className="box">
               <span>expires</span>
@@ -289,16 +289,6 @@ const CreateCard = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-      <div className="inputBox">
-          <span>Amount</span>
-          <input
-            type="text"
-            maxLength="6"
-            value={Amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="Amount"
-          />
-        </div>
         <div className="inputBox">
           <span>card number</span>
           <input
@@ -307,6 +297,7 @@ const CreateCard = () => {
             value={Cardno}
             onChange={handleCardNumberChange}
             className="card-number-input"
+            placeholder="Card Number"
           />
         </div>
         <div className="inputBox">
@@ -316,6 +307,7 @@ const CreateCard = () => {
             value={cardHolderName}
             onChange={handleCardHolderNameChange}
             className="card-holder-input"
+            placeholder="Card Holder Name"
           />
         </div>
         <div className="flexbox">
@@ -324,7 +316,7 @@ const CreateCard = () => {
             <select
               className="month-input"
               value={expMonth}
-              onChange={handleExpMonthChange}
+              onChange={(e) => setExpMonth(e.target.value)}
             >
               <option value="mm" disabled>
                 month
@@ -341,14 +333,14 @@ const CreateCard = () => {
             <select
               className="year-input"
               value={expYear}
-              onChange={handleExpYearChange}
+              onChange={(e) => setExpYear(e.target.value)}
             >
               <option value="yy" disabled>
                 year
               </option>
               {Array.from({ length: 10 }, (_, i) => (
                 <option key={i} value={String(2023 + i).slice(2)}>
-                  {String(2023 + i).slice(2)}
+                  {String(2025 + i).slice(2)}
                 </option>
               ))}
             </select>
@@ -363,6 +355,7 @@ const CreateCard = () => {
               onFocus={handleCvvFocus}
               onBlur={handleCvvBlur}
               className="cvv-input"
+              placeholder="CVV"
             />
           </div>
         </div>
