@@ -22,8 +22,10 @@ const ShowEmployeeAttendance = () => {
         axios
             .get('http://localhost:8076/employeeAttendence')
             .then((response) => {
-                setAttendance(response.data.data);
-                setFilteredAttendance(response.data.data);
+                // Sort the attendance data by date in descending order (latest first)
+                const sortedAttendance = response.data.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                setAttendance(sortedAttendance);
+                setFilteredAttendance(sortedAttendance);
                 setLoading(false);
             })
             .catch((error) => {
@@ -31,6 +33,7 @@ const ShowEmployeeAttendance = () => {
                 setLoading(false);
             });
     }, []);
+    
 
     useEffect(() => {
         const filterByDate = (data, date) => {

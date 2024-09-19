@@ -72,64 +72,54 @@ const CreateEmployeeSalary = () => {
       resetFields();
     }
   };
-
-  const resetFields = () => {
-    setEmployeeName('');
-    setEmployeeData(null);
-    setTotalOThours('');
-    setTotalOTpay('');
-    setTotalWorkedhours('');
-    setTotalWorkedpay('');
-    setTotalSalary('');
-  };
-
+  
   const fetchAttendanceData = async () => {
     if (!EmpID) return; // Only fetch if EmpID is provided
-
+  
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:8076/employeeAttendence');
       const attendanceData = response.data.data;
-
+  
       const filteredAttendance = attendanceData.filter(
         (attendance) =>
           attendance.EmpID === EmpID &&
           (!fromDate || new Date(attendance.date) >= new Date(fromDate)) &&
           (!toDate || new Date(attendance.date) <= new Date(toDate))
       );
-
+  
       const totalOvertimeHours = filteredAttendance.reduce(
         (total, attendance) => total + (attendance.OThours || 0),
         0
       );
-
+  
       const totalWorkedHours = filteredAttendance.reduce(
         (total, attendance) => total + (attendance.WorkingHours || 0),
         0
       );
-
+  
       const otPay = totalOvertimeHours * 585; 
       const workedPay = totalWorkedHours * 160; 
-
-      setTotalOThours(totalOvertimeHours);
-      setTotalWorkedhours(totalWorkedHours);
-      setTotalOTpay(otPay);
-      setTotalWorkedpay(workedPay);
+  
+      setTotalOThours(totalOvertimeHours.toFixed(2)); // Set to 2 decimal places
+      setTotalWorkedhours(totalWorkedHours.toFixed(2)); // Set to 2 decimal places
+      setTotalOTpay(otPay.toFixed(2)); // Set to 2 decimal places
+      setTotalWorkedpay(workedPay.toFixed(2)); // Set to 2 decimal places
       
       calculateSalary(); // Calculate salary whenever attendance data changes
-
+  
     } catch (error) {
       Swal.fire("Error", "Unable to fetch attendance data. Please try again.", "error");
     }
     setLoading(false);
   };
-
+  
   const calculateSalary = () => {
     if (employeeData) {
       const basicSalary = employeeData.BasicSalary || 0;
       const total = (parseFloat(totalOTpay) || 0) + (parseFloat(totalWorkedpay) || 0) + basicSalary;
       const finalSalary = includeEPF ? total * 0.9 : total; // Deduct EPF if included
-      setTotalSalary(finalSalary);
+      setTotalSalary(finalSalary.toFixed(2)); // Set to 2 decimal places
     }
   };
 
