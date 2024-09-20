@@ -37,7 +37,6 @@ const appointmentSchema = mongoose.Schema(
         },
         customize_package: {
             type: String,
-            required: true
         },
         appoi_date: {
             type: Date,
@@ -53,7 +52,6 @@ const appointmentSchema = mongoose.Schema(
         },
         packages: {
             type: String,
-            required: true
         },
     }
 );
