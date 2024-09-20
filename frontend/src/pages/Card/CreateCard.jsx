@@ -308,6 +308,8 @@ const CreateCard = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
+      <label className="block text-sm font-bold leading-5 text-red-500">This payment include your appointment service charge : $10</label>
+
         <div className="inputBox">
           <span>card number</span>
           <input
