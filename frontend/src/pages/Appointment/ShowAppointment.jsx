@@ -45,10 +45,9 @@ const ShowAppointment = () => {
       const client_email = appointments.client_email ? appointments.client_email.toLowerCase() : '';
       const client_phone = appointments.client_phone ? appointments.client_phone.toString() : '';
       const stylist = appointments.stylist ? appointments.stylist.toLowerCase() : ''; 
-      const service = appointments.service ? appointments.service.toLowerCase() : '';
+      const services = appointments.services ? appointments.services.toLowerCase() : '';
       const appoi_date = appointments.appoi_date ? appointments.appoi_date.toLowerCase() : '';
       const appoi_time = appointments.appoi_time ? appointments.appoi_time.toLowerCase() : '';
-      const services = appointments.services ? appointments.services.toLowerCase() : '';
       const packages = appointments.packages ? appointments.packages.toLowerCase() : '';
   
       return (
@@ -56,8 +55,7 @@ const ShowAppointment = () => {
         client_name.includes(searchQuery.toLowerCase()) ||
         client_email.includes(searchQuery.toLowerCase()) ||
         client_phone.includes(searchQuery.toLowerCase()) ||
-        stylist.includes(searchQuery.toLowerCase()) || 
-        service.includes(searchQuery.toLowerCase()) ||
+        stylist.includes(searchQuery.toLowerCase()) ||
         appoi_date.includes(searchQuery.toLowerCase()) ||
         appoi_time.includes(searchQuery.toLowerCase()) ||
         services.includes(searchQuery.toLowerCase()) ||
@@ -109,7 +107,7 @@ const generatePDF = () => {
       appointment.client_email,
       appointment.client_phone,
       appointment.stylist,
-      appointment.service,
+      appointment.services,
       appointment.customize_package || "N/A",
     ];
     tableRows.push(appointmentData);
@@ -211,14 +209,6 @@ const generatePDF = () => {
               Generate PDF
               </span>
             </button>
-            <button 
-              onClick={handleAddClick} 
-              className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
-            >
-              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
-                Add
-              </span>
-            </button>
             </div>
         </div>
 
@@ -253,10 +243,8 @@ const generatePDF = () => {
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_email}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_phone}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.stylist}</td>
-              <td className="px-4 py-2 text-sm text-gray-700">{appointment.service}</td>
-              <td className="px-4 py-2 text-sm text-gray-700">
-                {appointment.customize_package || "N/A"}
-              </td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.services}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.packages}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_date}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_time}</td>
               <td className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4">
