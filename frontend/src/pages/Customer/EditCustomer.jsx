@@ -36,6 +36,7 @@ const EditCustomer = () => {
       .then((response) => {
         setCustomer(response.data);
         setLoading(false);
+        console.log("Fetched customer data:", response.data);
         if (response.data.image) {
           setImagePreview(response.data.image);
         }
@@ -99,9 +100,9 @@ const EditCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     setLoading(true);
-    
+  
     // Check for errors before proceeding
     if (Object.values(errors).some(err => err !== "")) {
       setLoading(false);
@@ -112,42 +113,28 @@ const EditCustomer = () => {
       });
       return;
     }
-    
+  
     try {
-      let imageUrl = customer.image ? await getDownloadURL(ref(storage, `customer_images/${id}`)) : '';
+      let imageUrl = '';
 
       if (customer.image && customer.image instanceof File) {
+        // Upload the image to Firebase Storage
         const storageRef = ref(storage, `customer_images/${id}`);
-        const uploadTask = uploadBytesResumable(storageRef, customer.image);
-
-        await uploadTask;
-        imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+        const uploadTask = await uploadBytesResumable(storageRef, customer.image);
+        
+        // Get the download URL after the image is uploaded
+        imageUrl = await getDownloadURL(uploadTask.ref);
+      } else if (customer.image) {
+        // If there is an existing image, get its URL
+        imageUrl = customer.image; // Ensure you keep the existing URL if no new image is uploaded
       }
-
+  
+      // Update customer with the new image URL (or existing one)
       const updatedCustomer = { ...customer, image: imageUrl };
-      axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer)
-        .then((response) => {
-          setLoading(false);
-          if (response.status === 200) {
-            navigate(`/customers/`);
-          } else {
-            console.error('Unexpected response status:', response.status);
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Unexpected response status. Please try again later.',
-            });
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-          console.error('Error updating customer:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'An error occurred while updating the customer. Please try again later.',
-          });
-        });
+      await axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer);
+  
+      setLoading(false);
+      navigate(`/customers/`);
     } catch (error) {
       setLoading(false);
       console.error('Error updating customer:', error);
@@ -157,8 +144,9 @@ const EditCustomer = () => {
         text: 'An error occurred while updating the customer. Please try again later.',
       });
     }
-  };
+};
 
+  
   const containerStyle = {
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
@@ -251,17 +239,17 @@ const EditCustomer = () => {
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
                 </select>
               </div>
 
-              {/* Contact Number */}
+              {/* Contact No */}
               <div>
-                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact Number</label>
+                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact No</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <input
                     id="ContactNo"
                     name="ContactNo"
+                    placeholder="0712345678"
                     type="text"
                     value={customer.ContactNo}
                     onChange={handleChange}
@@ -285,7 +273,6 @@ const EditCustomer = () => {
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                   />
-                  {errors.Email && <p className="text-red-500 text-xs">{errors.Email}</p>}
                 </div>
               </div>
 
@@ -305,9 +292,9 @@ const EditCustomer = () => {
                 </div>
               </div>
 
-              {/* Re-Enter Password */}
+              {/* Re-enter Password */}
               <div>
-                <label htmlFor="reEnteredPassword" className="block text-sm font-medium leading-5 text-gray-700">Re-Enter Password</label>
+                <label htmlFor="reEnteredPassword" className="block text-sm font-medium leading-5 text-gray-700">Re-enter Password</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <input
                     id="reEnteredPassword"
@@ -318,37 +305,34 @@ const EditCustomer = () => {
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                   />
-                  {errors.reEnteredPassword && <p className="text-red-500 text-xs">{errors.reEnteredPassword}</p>}
                 </div>
               </div>
 
               {/* Image Upload */}
-              <div className="md:col-span-2">
-                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Upload Image</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="image"
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="mt-2 h-32 w-32 object-cover rounded-full"
-                  />
-                )}
-              </div>
+             {/* Image Upload */}
+<div className="col-span-2">
+  <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Profile Image</label>
+  <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
+  {customer.image ? (
+    <div className="mt-2">
+      <p className="text-sm">Preview:</p>
+      <img
+        src={imagePreview}
+        alt="Preview"
+        className="h-32 w-32 object-cover rounded-full"
+      />
+    </div>
+  ) : (
+    <p className="text-gray-500">No file chosen</p>
+  )}
+</div>
 
-              {/* Submit Button */}
-              <div className="md:col-span-2">
+
+              <div className="col-span-2">
                 <button
                   type="submit"
-                  className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-pink active:bg-pink-700 transition duration-150 ease-in-out"
+                  disabled={loading}
+                  className="w-full inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:ring focus:ring-pink-200 active:bg-pink-700 transition duration-150 ease-in-out"
                 >
                   {loading ? <Spinner /> : 'Update Customer'}
                 </button>

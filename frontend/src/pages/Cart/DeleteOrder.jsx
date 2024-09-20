@@ -10,16 +10,17 @@ const DeleteOrder = () => {
   const handleDeleteOrder = async () => {
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:8076/orders/${orderId}`);
+      const response = await axios.delete(`http://localhost:8076/order/${orderId}`);
+      console.log(response.data); // Log the response
       setLoading(false);
-      navigate('/orders');
+      navigate('/ReadOneHome/${CusID}');
     } catch (error) {
       setLoading(false);
       console.error(error);
       alert('An error occurred while deleting the order. Please check the console.');
     }
   };
-
+  
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#1f2937' }}>
       <div style={{ padding: '2rem', maxWidth: '600px', backgroundColor: '#2d3748', borderRadius: '10px', color: '#fff' }}>
