@@ -14,7 +14,6 @@ const appointmentSchema = mongoose.Schema(
     {
         CusID: {
             type: String,
-            required: true
         },
         appoi_ID: {
             type: String,

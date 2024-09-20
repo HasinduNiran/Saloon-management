@@ -59,7 +59,7 @@ const CreateCard = () => {
         });
 
       // Redirect to appointment page
-      navigate('/appointment/allAppointment');
+      navigate('/appointments/allAppointment');
     });
   })
       .catch((error) => {

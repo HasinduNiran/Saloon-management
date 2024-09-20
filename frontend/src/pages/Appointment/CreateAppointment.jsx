@@ -98,7 +98,7 @@ const CreateAppointment = () => {
       customize_package,
       appoi_date: appoi_date ? appoi_date.toISOString().split("T")[0] : "",
       appoi_time,
-      CusID,
+      CusID
     };
     setLoading(true);
 
@@ -106,7 +106,7 @@ const CreateAppointment = () => {
       .post("http://localhost:8076/appointments", data)
       .then(() => {
         setLoading(false);
-        navigate("/appointments/allAppointment");
+        navigate("/card/create");
       })
       .catch((error) => {
         setLoading(false);
