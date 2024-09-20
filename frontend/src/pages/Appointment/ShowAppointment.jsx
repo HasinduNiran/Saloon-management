@@ -255,13 +255,7 @@ const generatePDF = () => {
                 >
                   <BsInfoCircle size={20} /> 
                 </Link>
-                <Link
-                  to={`/appointments/edit/${appointment._id}`}
-                  className="text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out"
-                  title="Edit Appointment"
-                >
-                  <FaEdit size={20} /> 
-                </Link>
+                
                 <Link
                   to={`/appointments/delete/${appointment._id}`}
                   className="text-red-600 hover:text-red-800 transition duration-150 ease-in-out"
