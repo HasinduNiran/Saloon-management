@@ -36,16 +36,32 @@ const CreateCard = () => {
 
     // Make the API call to create payment
     axios.post('http://localhost:8076/card', data)
-      .then(() => {
-        setLoading(false);
-        Swal.fire({
-          icon: 'success',
-          title: "Success!",
-          text: 'Payment is Successful',
-        }).then(() => {
-          navigate('/ReadOneHome/:id'); // Redirect after showing the success alert
+    .then((response) => {
+      setLoading(false);
+      Swal.fire({
+        icon: 'success',
+        title: "Success!",
+        text: 'Payment is Successful',
+      }).then(() => {
+       // Send email to the customer
+       const emailData = {
+        email: response.data.customerEmail, // Ensure this data comes from the response
+        subject: "Payment Confirmation",
+        message: `Dear ${cardHolderName}, your payment of $${Amount} was successful.`,
+      };
+      
+      axios.post('http://localhost:8076/send-email', emailData)
+        .then(() => {
+          console.log("Email sent successfully");
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error);
         });
-      })
+
+      // Redirect to appointment page
+      navigate('/appointment/allAppointment');
+    });
+  })
       .catch((error) => {
         setLoading(false);
         console.error("Error creating payment:", error);

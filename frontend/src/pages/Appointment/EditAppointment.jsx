@@ -19,6 +19,7 @@ const EditAppointment = () => {
   const [customize_package, setPackage] = useState("");
   const [appoi_date, setDate] = useState(null);
   const [appoi_time, setTime] = useState(null);
+  const [CusID, setCusID] = useState("");
   const [serviceOp, setServiceOp] = useState([]);
   const [packageOp, setPackageOp] = useState([]);
 
@@ -56,6 +57,7 @@ const EditAppointment = () => {
         setDate(new Date(appointment.appoi_date));
         setTime(appointment.appoi_time);
         setPackage(appointment.customize_package);
+        setCusID(appointment.CusID);
         setLoading(false);
       })
       .catch((error) => {
@@ -101,6 +103,7 @@ const EditAppointment = () => {
       customize_package,
       appoi_date: appoi_date ? appoi_date.toISOString().split("T")[0] : "",
       appoi_time,
+      CusID,
     };
     setLoading(true);
 
@@ -140,12 +143,24 @@ const EditAppointment = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {loading ? <Spinner /> : null}
           <form className="space-y-4">
+          <div>
+              <label htmlFor="client_name" className="block text-sm font-medium text-gray-700">Customer ID:</label>
+              <input
+                type="text"
+                id="client_name"
+                value={CusID}
+                readOnly
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
             <div>
               <label htmlFor="client_name" className="block text-sm font-medium text-gray-700">Name with Initials:</label>
               <input
                 type="text"
                 id="client_name"
                 value={client_name}
+                readOnly
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
@@ -156,6 +171,7 @@ const EditAppointment = () => {
                 type="email"
                 id="client_email"
                 value={client_email}
+                readOnly
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
@@ -166,6 +182,7 @@ const EditAppointment = () => {
                 type="tel"
                 id="client_phone"
                 value={client_phone}
+                readOnly
                 onChange={(e) => setPhone(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />

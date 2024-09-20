@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import homebg from '../images/home1.jpg';
 import Card from './HomeCard/Hcard';
 import Footer from './footer/Footer';
@@ -97,7 +97,7 @@ const ReadOneHome = () => {
   };
 
   // Navigation button handlers
-  const handleAppointmentClick = () => navigate('/appointments/create');
+ 
   const handlePackageClick = () => navigate('/pkg/pkgPage');
   const handleServiceClick = () => navigate('/services/servicePage');
   const handleProfileClick = () => navigate(`/customers/get/${CusID}`);
@@ -133,9 +133,9 @@ const ReadOneHome = () => {
             Our Services
           </button>
 
-          <button onClick={handleAppointmentClick} className="text-pink-500 font-semibold hover:bg-pink-200">
+          <Link to={`/appointments/create/${userData.CusID}`} className="text-pink-500 font-semibold hover:bg-pink-200">
             Make Appointment
-          </button>
+          </Link>
 
           <button onClick={handleProfileClick} className="text-pink-500 font-semibold hover:bg-pink-200">
             My Profile

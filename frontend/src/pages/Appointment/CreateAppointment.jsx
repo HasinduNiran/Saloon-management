@@ -29,14 +29,14 @@ const CreateAppointment = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:8076/customer/${CusID}`)
+    axios.get(`http://localhost:8076/customers/${CusID}`)
         .then((response) => {
             const data = response.data;
             setUserData(response.data);
             setcussID(data.CusID);
-            setPhone(data.phone);
-            setEmail(data.email);
-            setName(`${data.firstName} ${data.lastName}`);
+            setPhone(data.ContactNo);
+            setEmail(data.Email);
+            setName(`${data.FirstName} ${data.LastName}`);
             setLoading(false);
         })
         .catch((error) => {
@@ -145,6 +145,7 @@ const CreateAppointment = () => {
               <input
                 type="text"
                 value={cussID}
+                readOnly
                 onChange={(e) => setcussID(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
@@ -157,6 +158,7 @@ const CreateAppointment = () => {
                 id="client_name"
                 type="text"
                 value={client_name}
+                readOnly
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
@@ -169,6 +171,7 @@ const CreateAppointment = () => {
                 id="client_email"
                 type="email"
                 value={client_email}
+                readOnly
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
@@ -181,6 +184,7 @@ const CreateAppointment = () => {
                 id="client_phone"
                 type="text"
                 value={client_phone}
+                readOnly
                 onChange={(e) => setPhone(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />

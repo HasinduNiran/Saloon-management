@@ -66,17 +66,6 @@ const ServicePage = () => {
         ))}
       </div>
 
-      {/* Call to Action */}
-      <div className="flex justify-center mt-12">
-        <button 
-          onClick={() => navigate('/appointments/create')} 
-          className="bg-pink-500 text-white py-3 px-6 rounded-lg shadow-custom hover:bg-violet-600 transition-colors"
-          style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
-        >
-          Book an Appointment
-        </button>
-      </div>
-
       {/* Testimonials */}
       <div className="my-12">
         <h2 className="text-3xl font-bold text-center mb-6">What Our Clients Say</h2>
