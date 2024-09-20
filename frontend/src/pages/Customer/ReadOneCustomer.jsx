@@ -134,6 +134,19 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600">Stylist: {appointment.stylist}</p>
                     <p className="text-gray-600">Service: {appointment.service}</p>
                     <p className="text-gray-600">Package: {appointment.customize_package || 'N/A'}</p>
+                    <Link 
+                    className="text-green-600  hover:text-green-800 transition duration-150 ease-in-out"
+                    to={`/pkg/details/${pkg._id}`}
+                    title="View Details"
+                  >
+                    <BsInfoCircle size={20} />
+                    </Link>
+                  <Link to={`/pkg/edit/${pkg._id}`}>
+                    <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" title="Edit" />
+                  </Link>
+                  <Link to={`/pkg/delete/${pkg._id}`}>
+                    <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" title="Delete" />
+                  </Link>
                   </div>
                 ))
               ) : (
