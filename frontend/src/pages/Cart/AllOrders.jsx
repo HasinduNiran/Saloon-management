@@ -121,7 +121,7 @@ const AllOrders = () => {
                                         <ul className="list-disc pl-5 mb-2">
                                             {order.items.map((item) => (
                                                 <li key={item.ItemNo} className="text-gray-700">
-                                                   Price: ${(item.SPrice).toFixed(2)}
+                                                   Price: Rs.{(item.SPrice).toFixed(2)}
                                                   
                                                 </li>
                                             ))}
