@@ -11,11 +11,10 @@ const validateFields = (req, res, next) => {
         "client_email",
         "client_phone",
         "stylist",
-        "customize_package",
         "appoi_date",
         "appoi_time",
         "services",
-        "packages"
+        "CusID",
     ];
 
     for (const field of requiredFields) {
