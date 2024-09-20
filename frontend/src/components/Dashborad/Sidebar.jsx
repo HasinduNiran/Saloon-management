@@ -38,7 +38,7 @@ const Sidebar = () => {
         alt="logo" 
         style={{ width: '30px', height: '30px', borderRadius: '50%' }} 
       />
-          <span className=" text-white self-center text-xl font-bold whitespace-nowrap dark:text-">Bashi</span>
+          <span className=" text-black self-center text-xl font-bold whitespace-nowrap dark:text-">Bashi</span>
         </a>
           <ul className="space-y-2 font-medium mt-10">
             <li>
