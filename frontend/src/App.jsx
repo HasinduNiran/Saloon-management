@@ -55,13 +55,6 @@ import ShowStore from "./pages/StoreM/ShowStore";
 
 import CreateCard from "./pages/Card/CreateCard";
 
-// import ItemCard from './pages/Cart/ItemCard';
-// import Main from './pages/Cart/Main';
-// import ItemDis from './pages/Cart/ItemDis';
-// import Cart from './pages/Cart/Cart';
-// import Checkout from './pages/Cart/Checkout';
-// import MyOrder from './pages/Cart/MyOrder';
-
 import CreateEmployeeAttendance from "./pages/EmployeeAttendence/CreateEmployeeAttendence";
 import DeleteEmployeeAttendance from "./pages/EmployeeAttendence/DeleteEmployeeAttendence";
 import EditEmployeeAttendance from "./pages/EmployeeAttendence/EditEmployeeAttendence";
@@ -84,125 +77,76 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route
-        path="/appointments/allAppointment"
-        element={<ShowAppointment />}
-      ></Route>
-      <Route
-        path="/appointments/create"
-        element={<CreateAppointment />}
-      ></Route>
-      <Route
-        path="/appointments/delete/:id"
-        element={<DeleteAppointment />}
-      ></Route>
-      <Route
-        path="/appointments/edit/:id"
-        element={<EditAppointment />}
-      ></Route>
-      <Route
-        path="/appointments/details/:id"
-        element={<ReadOneAppointment />}
-      ></Route>
-      <Route path="/services/allService" element={<ShowService />}></Route>
-      <Route path="/services/create" element={<CreateService />}></Route>
-      <Route path="/services/delete/:id" element={<DeleteService />}></Route>
-      <Route path="/services/edit/:id" element={<EditService />}></Route>
-      <Route path="/services/details/:id" element={<ReadOneService />}></Route>
-      <Route path="/services/servicePage" element={<ServicePage />}></Route>
+      <Route path="/appointments/allAppointment" element={<ShowAppointment />} />
+      <Route path="/appointments/create" element={<CreateAppointment />} />
+      <Route path="/appointments/delete/:id" element={<DeleteAppointment />} />
+      <Route path="/appointments/edit/:id" element={<EditAppointment />} />
+      <Route path="/appointments/details/:id" element={<ReadOneAppointment />} />
 
-      <Route path="/pkg/allPkg" element={<ShowPkg />}></Route>
-      <Route path="/pkg/create" element={<CreatePkg />}></Route>
-      <Route path="/pkg/delete/:id" element={<DeletePkg />}></Route>
-      <Route path="/pkg/edit/:id" element={<EditPkg />}></Route>
-      <Route path="/pkg/details/:id" element={<ReadOnePkg />}></Route>
-      <Route path="/pkg/pkgPage" element={<PkgPage />}></Route>
+      <Route path="/services/allService" element={<ShowService />} />
+      <Route path="/services/create" element={<CreateService />} />
+      <Route path="/services/delete/:id" element={<DeleteService />} />
+      <Route path="/services/edit/:id" element={<EditService />} />
+      <Route path="/services/details/:id" element={<ReadOneService />} />
+      <Route path="/services/servicePage" element={<ServicePage />} />
 
-      <Route path="/employees/allEmployee" element={<ShowEmployee />}></Route>
-      <Route path="/employees/create" element={<CreateEmployee />}></Route>
-      <Route path="/employees/delete/:id" element={<DeleteEmployee />}></Route>
-      <Route path="/employees/edit/:id" element={<EditEmployee />}></Route>
-      <Route
-        path="/employees/details/:id"
-        element={<ReadOneEmployee />}
-      ></Route>
+      <Route path="/pkg/allPkg" element={<ShowPkg />} />
+      <Route path="/pkg/create" element={<CreatePkg />} />
+      <Route path="/pkg/delete/:id" element={<DeletePkg />} />
+      <Route path="/pkg/edit/:id" element={<EditPkg />} />
+      <Route path="/pkg/details/:id" element={<ReadOnePkg />} />
+      <Route path="/pkg/pkgPage" element={<PkgPage />} />
 
-      <Route path="/suppliers/allSupplier" element={<ShowSupplier />}></Route>
-      <Route path="/suppliers/create" element={<CreateSupplier />}></Route>
-      <Route path="/suppliers/delete/:id" element={<DeleteSupplier />}></Route>
-      <Route path="/suppliers/edit/:id" element={<EditSupplier />}></Route>
-      <Route
-        path="/suppliers/details/:id"
-        element={<ReadOneSupplier />}
-      ></Route>
-      <Route
-        path="/inventories/allInventory"
-        element={<ShowInventory />}
-      ></Route>
-      <Route path="/inventories/create" element={<CreateInventory />}></Route>
-      <Route
-        path="/inventories/delete/:id"
-        element={<DeleteInventory />}
-      ></Route>
-      <Route path="/inventories/edit/:id" element={<EditInventory />}></Route>
-      <Route
-        path="/inventories/details/:id"
-        element={<ReadOneInventory />}
-      ></Route>
-      
-      <Route path="/customers/create" element={<CreateCustomer />}></Route>
-      <Route path="/customers/delete/:id" element={<DeleteCustomer />}></Route>
-      <Route path="/customers/edit/:id" element={<EditCustomer />}></Route>
-      {/* <Route path="/customers/edit/:id" element={<EditCustomer />}></Route> */}
-      <Route path="/customers/get/:id" element={<ReadOneCustomer />}></Route>
-      <Route path="/customers/" element={<ShowAllCustomers />}></Route>
+      <Route path="/employees/allEmployee" element={<ShowEmployee />} />
+      <Route path="/employees/create" element={<CreateEmployee />} />
+      <Route path="/employees/delete/:id" element={<DeleteEmployee />} />
+      <Route path="/employees/edit/:id" element={<EditEmployee />} />
+      <Route path="/employees/details/:id" element={<ReadOneEmployee />} />
 
-      {/* <Route path='/card' element={<CreateCard />}></Route> */}
-      <Route path="/cLogin" element={<CLogin />}></Route>'
-      <Route path="/ReadOneHome/:CusID" element={<ReadOneHome />}></Route>
+      <Route path="/suppliers/allSupplier" element={<ShowSupplier />} />
+      <Route path="/suppliers/create" element={<CreateSupplier />} />
+      <Route path="/suppliers/delete/:id" element={<DeleteSupplier />} />
+      <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+      <Route path="/suppliers/details/:id" element={<ReadOneSupplier />} />
 
-      <Route path="/card/create" element={<CreateCard />}></Route>
-      <Route path="/store/create" element={<CreateStore />}></Route>
-      <Route path="/store/delete/:id" element={<DeleteStore />}></Route>
-      <Route path="/store/edit/:id" element={<EditStore />}></Route>
-      <Route path="/store/" element={<ShowStore />}></Route>
-      
-      <Route path="/itemcard/create" element={<ItemCard />}></Route>
-      <Route path="/cart/main" element={<Main />}></Route>
+      <Route path="/inventories/allInventory" element={<ShowInventory />} />
+      <Route path="/inventories/create" element={<CreateInventory />} />
+      <Route path="/inventories/delete/:id" element={<DeleteInventory />} />
+      <Route path="/inventories/edit/:id" element={<EditInventory />} />
+      <Route path="/inventories/details/:id" element={<ReadOneInventory />} />
+
+      <Route path="/customers/create" element={<CreateCustomer />} />
+      <Route path="/customers/delete/:id" element={<DeleteCustomer />} />
+      <Route path="/customers/edit/:id" element={<EditCustomer />} />
+      <Route path="/customers/get/:id" element={<ReadOneCustomer />} />
+      <Route path="/customers" element={<ShowAllCustomers />} />
+
+      <Route path="/cLogin" element={<CLogin />} />
+      <Route path="/ReadOneHome/:CusID" element={<ReadOneHome />} />
+
+      <Route path="/card/create" element={<CreateCard />} />
+      <Route path="/store/create" element={<CreateStore />} />
+      <Route path="/store/delete/:id" element={<DeleteStore />} />
+      <Route path="/store/edit/:id" element={<EditStore />} />
+      <Route path="/store" element={<ShowStore />} />
+
+      <Route path="/itemcard/create" element={<ItemCard />} />
+      <Route path="/cart/main" element={<Main />} />
       <Route path="/itemdis/:ItemNo/:CusID" element={<ItemDis />} />
       <Route path="/cart/:CusID" element={<Cart />} />
-      <Route path="/checkout/:CusID" element={<Checkout />}></Route>
-      <Route path="/my-orders/:CusID" element={<MyOrder />}></Route>
-      <Route path="/allorders" element={<AllOrders />}></Route>
-      <Route path="/deleteorder/:orderId" element={<DeleteOrder />}></Route>
-      <Route
-        path="/employeeattendence/create"
-        element={<CreateEmployeeAttendance />}
-      ></Route>
-      <Route
-        path="/employeeattendence/delete/:id"
-        element={<DeleteEmployeeAttendance />}
-      ></Route>
-      <Route
-        path="/employeeattendence/edit/:id"
-        element={<EditEmployeeAttendance />}
-      ></Route>
-      <Route
-        path="/employeeattendence/allEmployeeAttendence"
-        element={<ShowEmployeeAttendence />}
-      ></Route>
-      <Route
-        path="/employeesalary/create"
-        element={<CreateEmployeeSalary />}
-      ></Route>
-      <Route
-        path="/employeesalary/delete/:id"
-        element={<DeleteEmployeeSalary />}
-      ></Route>
-      <Route
-        path="/employeesalary/allEmployeeSalary"
-        element={<ShowEmployeeSalary />}
-      ></Route>
+      <Route path="/checkout/:CusID" element={<Checkout />} />
+      <Route path="/my-orders/:CusID" element={<MyOrder />} />
+      <Route path="/allorders" element={<AllOrders />} />
+      <Route path="/deleteorder/:orderId" element={<DeleteOrder />} />
+
+      <Route path="/employeeattendence/create" element={<CreateEmployeeAttendance />} />
+      <Route path="/employeeattendence/delete/:id" element={<DeleteEmployeeAttendance />} />
+      <Route path="/employeeattendence/edit/:id" element={<EditEmployeeAttendance />} />
+      <Route path="/employeeattendence/allEmployeeAttendence" element={<ShowEmployeeAttendence />} />
+
+      <Route path="/employeesalary/create" element={<CreateEmployeeSalary />} />
+      <Route path="/employeesalary/delete/:id" element={<DeleteEmployeeSalary />} />
+      <Route path="/employeesalary/allEmployeeSalary" element={<ShowEmployeeSalary />} />
     </Routes>
   );
 };
