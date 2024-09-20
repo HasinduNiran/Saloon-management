@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
+import BackButton from "../../components/BackButton";
 
 const AllOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -84,6 +85,7 @@ const AllOrders = () => {
 
     return (
         <div className="min-h-screen p-8 w-full lg:w-3/4 mx-auto">
+            {/* <BackButton navigate='/store/' /> */}
             <h1 className="text-3xl font-bold mb-6">All Orders</h1>
             {loading ? (
                 <Spinner />
@@ -109,12 +111,7 @@ const AllOrders = () => {
                                 </div>
                             ))}
                         </div>
-                        <p className="text-right text-gray-800 font-semibold mt-4">
-                            Total Cost: $
-                            {order.items
-                                .reduce((Total, item) => Total + item.SPrice * item.Quantity, 0)
-                                .toFixed(2)}
-                        </p>
+                        
 
                         {expandedOrders[order._id] && (
                             <div className="mt-4">
@@ -124,8 +121,8 @@ const AllOrders = () => {
                                         <ul className="list-disc pl-5 mb-2">
                                             {order.items.map((item) => (
                                                 <li key={item.ItemNo} className="text-gray-700">
-                                                    {item.ItemName} - Qty: {item.Quantity} - Price: $
-                                                    {(item.SPrice * item.Quantity).toFixed(2)}
+                                                   Price: ${(item.SPrice).toFixed(2)}
+                                                  
                                                 </li>
                                             ))}
                                         </ul>

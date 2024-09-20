@@ -36,8 +36,7 @@ const Hcard = ({ CusID }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
       {data.map((item) => (
-        <Link
-         to={`/itemdis/${item.ItemNo}/${CusID}`} key={item.id}
+          <Link to={`/itemdis/${item.ItemNo}/${CusID}`} 
           className="w-72 shadow-lg rounded-lg bg-neutral-50 p-4 transform transition-transform duration-300 hover:-translate-y-2"
         >
           <img
@@ -54,7 +53,7 @@ const Hcard = ({ CusID }) => {
             </p>
           </div>
           <div className="mt-4 flex justify-between items-center">
-            <span className="text-lg font-semibold text-pink-500">{`$${item.SPrice}`}</span>
+            <span className="text-lg font-semibold text-pink-500">{`RS.${item.SPrice}`}</span>
             <button className="bg-primary rounded-md text-pink-500 py-2 px-4">
               <FaCartArrowDown size={24} />
             </button>

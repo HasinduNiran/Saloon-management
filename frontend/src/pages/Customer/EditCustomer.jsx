@@ -134,7 +134,7 @@ const EditCustomer = () => {
       await axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer);
   
       setLoading(false);
-      navigate(`/customers/`);
+      navigate(`/customers/get/${id}`);
     } catch (error) {
       setLoading(false);
       console.error('Error updating customer:', error);

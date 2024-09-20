@@ -166,6 +166,7 @@ const App = () => {
       <Route path="/store/delete/:id" element={<DeleteStore />}></Route>
       <Route path="/store/edit/:id" element={<EditStore />}></Route>
       <Route path="/store/" element={<ShowStore />}></Route>
+      
       <Route path="/itemcard/create" element={<ItemCard />}></Route>
       <Route path="/cart/main" element={<Main />}></Route>
       <Route path="/itemdis/:ItemNo/:CusID" element={<ItemDis />} />
