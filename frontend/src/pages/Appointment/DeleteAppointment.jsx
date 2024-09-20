@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Spinner from '../../components/Spinner';
@@ -8,6 +8,23 @@ const DeleteAppointment = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
+  const { CusID } = useParams(); 
+
+  // Fetch customer data based on CusID
+  useEffect(() => {
+    if (CusID) {
+      fetchData();
+    }
+  }, [CusID]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8076/customers/${CusID}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   // Function to handle the appointment deletion
   const handleDeleteAppointment = () => {
@@ -27,7 +44,7 @@ const DeleteAppointment = () => {
 
         // Redirect after showing the success alert
         setTimeout(() => {
-          navigate('/appointments/allAppointment');
+          navigate(`/customers/get/${CusID}`);
         }, 2000); // 2-second delay to allow the alert to display
       })
       .catch((error) => {

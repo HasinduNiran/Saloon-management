@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import React from "react";
+import Swal from 'sweetalert2';
 import Spinner from "../../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -111,8 +112,17 @@ const EditAppointment = () => {
       .put(`http://localhost:8076/appointments/${id}`, data)
       .then(() => {
         setLoading(false);
-        navigate("/appointments/allAppointment");
-      })
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Appointment has been edited successfully!',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        setTimeout(() => {
+        navigate(`/customers/get/${CusID}`);
+      },2000);
+    })
       .catch((error) => {
         setLoading(false);
         alert("An error occurred. Please check console");

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import Spinner from '../../components/Spinner';
 import BackButton from '../../components/BackButton';
 import tableImage from '../../images/tablebg.jpg';
@@ -8,6 +9,8 @@ import backgroundImage from "../../images/logobg.jpg";
 import Swal from "sweetalert2";
 import Nav from '../../components/Dashborad/DashNav';
 import SideBar from '../../components/Dashborad/Sidebar';
+import { BsInfoCircle } from 'react-icons/bs';
+import { FaEdit, FaTrash } from "react-icons/fa"; 
 
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
@@ -128,25 +131,30 @@ const ReadOneCustomer = () => {
               {appointments.length > 0 ? (
                 appointments.map((appointment) => (
                   <div key={appointment.appoi_ID} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold mb-2">Appointment ID: {appointment.appoi_ID}</h3>
-                    <p className="text-gray-600">Date: {appointment.appoi_date}</p>
-                    <p className="text-gray-600">Time: {appointment.appoi_time}</p>
-                    <p className="text-gray-600">Stylist: {appointment.stylist}</p>
-                    <p className="text-gray-600">Service: {appointment.service}</p>
-                    <p className="text-gray-600">Package: {appointment.customize_package || 'N/A'}</p>
-                    <Link 
-                    className="text-green-600  hover:text-green-800 transition duration-150 ease-in-out"
-                    to={`/pkg/details/${pkg._id}`}
-                    title="View Details"
-                  >
-                    <BsInfoCircle size={20} />
-                    </Link>
-                  <Link to={`/pkg/edit/${pkg._id}`}>
-                    <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" title="Edit" />
-                  </Link>
-                  <Link to={`/pkg/delete/${pkg._id}`}>
-                    <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" title="Delete" />
-                  </Link>
+                    <h3 className="text-lg font-bold mb-2">Appointment ID: {appointment.appoi_ID}</h3>
+                    <p className="text-gray-600 font-semibold">Date: {appointment.appoi_date.slice(0, 10)}</p>
+                    <p className="text-gray-600 font-semibold">Time: {appointment.appoi_time}</p>
+                    <p className="text-gray-600 font-semibold">Stylist: {appointment.stylist}</p>
+                    <p className="text-gray-600 font-semibold">Service: {appointment.services}</p>
+                    <p className="text-gray-600 font-semibold">Package: {appointment.packages}</p>
+                    <p className="text-gray-600 font-semibold">Customize Package: {appointment.customize_package}</p>
+                    <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
+  <Link 
+    className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
+    to={`/appointments/details/${appointment._id}`}
+    title="View Details"
+  >
+    <BsInfoCircle size={24} />
+  </Link>
+  <Link to={`/appointments/edit/${appointment._id}`}>
+    <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" size={24} title="Edit" />
+  </Link>
+  <Link to={`/appointments/delete/${appointment._id}`}>
+    <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" size={24} title="Delete" />
+  </Link>
+</div>
+
+
                   </div>
                 ))
               ) : (
