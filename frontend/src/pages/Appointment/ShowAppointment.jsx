@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { FaEdit, FaTrash, FaPlus, FaFilePdf } from "react-icons/fa"; 
+import { FaEdit, FaTrash, FaPlus, FaEnvelope } from "react-icons/fa"; 
 import { BsInfoCircle } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from "jspdf";
@@ -64,9 +64,7 @@ const ShowAppointment = () => {
     };
 
      
-    const filteredAppoointments = appointments.filter(applySearchFilter);
-
-  
+    const filteredAppoointments = appointments.filter(applySearchFilter);  
 
 
   // Fetch appointments from the backend on component mount
@@ -76,7 +74,7 @@ const ShowAppointment = () => {
       .then((response) => {
         setAppointments(response.data);
         setLoading(false);
-      })
+      })  
       .catch((error) => {
         console.log(error);
         setLoading(false);
@@ -245,7 +243,7 @@ const generatePDF = () => {
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.stylist}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.services}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.packages}</td>
-              <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_date}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_date.slice(0, 10)}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_time}</td>
               <td className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4">
                 <Link
@@ -269,6 +267,15 @@ const generatePDF = () => {
                 >
                   <FaTrash size={20} />
                 </Link>
+
+                {/* "Send Email" Button */}
+                <a
+                          href={`mailto:${appointment.client_email}?subject=Your%20Appointment%20Details&body=Dear%20${appointment.client_name},%0D%0A%0D%0AYour%20appointment%20with%20us%20is%20scheduled%20on%20${appointment.appoi_date.slice(0, 10)}%20at%20${appointment.appoi_time}.%0D%0AStylist:%20${appointment.stylist}%0D%0AService:%20${appointment.services}%0D%0AThank%20you!`}
+                          className="text-yellow-600 hover:text-yellow-800 transition duration-150 ease-in-out"
+                          title="Send Email"
+                        >
+                          <FaEnvelope size={20} />
+                        </a>
               </td>
             </tr>
           ))}
