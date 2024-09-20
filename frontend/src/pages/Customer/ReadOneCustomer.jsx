@@ -130,8 +130,9 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600 font-semibold">Date: {appointment.appoi_date.slice(0, 10)}</p>
                     <p className="text-gray-600 font-semibold">Time: {appointment.appoi_time}</p>
                     <p className="text-gray-600 font-semibold">Stylist: {appointment.stylist}</p>
-                    <p className="text-gray-600 font-semibold">Service: {appointment.service}</p>
-                    <p className="text-gray-600 font-semibold">Package: {appointment.packages || 'N/A'}</p>
+                    <p className="text-gray-600 font-semibold">Service: {appointment.services}</p>
+                    <p className="text-gray-600 font-semibold">Packages: {appointment.packages}</p>
+                    <p className="text-gray-600 font-semibold">Customize Package: {appointment.packages}</p>
 
                     <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
                       <Link
