@@ -69,10 +69,7 @@ const ShowAppointment = () => {
     const filteredAppoointments = appointments.filter(applySearchFilter);
 
   
-  // Function to handle the icon click
-  const handleAddClick = () => {
-    navigate('/appointments/create');
-  };
+
 
   // Fetch appointments from the backend on component mount
   useEffect(() => {
@@ -93,6 +90,7 @@ const generatePDF = () => {
   const doc = new jsPDF();
 
   const tableColumn = [
+    "CusID",
     "Appointment ID",
     "Name",
     "Email",
@@ -105,6 +103,7 @@ const generatePDF = () => {
 
   appointments.forEach((appointment) => {
     const appointmentData = [
+      appointment.CusID,
       appointment.appoi_ID,
       appointment.client_name,
       appointment.client_email,
@@ -164,7 +163,8 @@ const generatePDF = () => {
       3: { cellWidth: 25 }, // Phone
       4: { cellWidth: 20 }, // Stylist
       5: { cellWidth: 20 }, // Service
-      6: { cellWidth: 20 }, // Package
+      6: { cellWidth: 20 }, 
+      7: { cellWidth: 20 },
     },
   });
 
@@ -231,6 +231,7 @@ const generatePDF = () => {
         <table className="min-w-full border-collapse divide-y divide-gray-200">
         <thead className="bg-gray-100">
           <tr>
+          <th className="px-4 py-2 text-left font-semibold">Customer ID</th>
             <th className="px-4 py-2 text-left font-semibold">Appointment ID</th>
             <th className="px-4 py-2 text-left font-semibold">Name</th>
             <th className="px-4 py-2 text-left font-semibold">Email</th>
@@ -246,6 +247,7 @@ const generatePDF = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {filteredAppoointments.map((appointment) => (
             <tr key={appointment.appoi_ID} className="hover:bg-gray-100 transition duration-150 ease-in-out">
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.CusID}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_ID}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_name}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_email}</td>

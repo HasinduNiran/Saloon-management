@@ -38,7 +38,7 @@ router.post('/', validateFields, async (req, res) => {
             customize_package: req.body.customize_package,
             appoi_date: req.body.appoi_date,
             appoi_time: req.body.appoi_time,
-            CusID:request.body.CusID,
+            CusID:req.body.CusID
         };
 
         const createdAppointment = await Appointment.create(newAppointment);
