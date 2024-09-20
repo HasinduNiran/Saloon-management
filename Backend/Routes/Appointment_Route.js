@@ -61,18 +61,39 @@ router.get('/', async (req, res) => {
 });
 
 // Route to get a specific appointment by ID
-router.get('/:id', async (req, res) => {
+// router.get('/:id', async (req, res) => {
+//     try {
+//         const appointment = await Appointment.findById(req.params.id);
+//         if (!appointment) {
+//           return res.status(404).json({ message: 'Appointment not found' });
+//         }
+//         res.json(appointment);
+//       } catch (error) {
+//         res.status(500).json({ message: 'Server error' });
+//       }
+// });
+router.get('/:identifier', async (req, res) => {
     try {
-        const appointment = await Appointment.findById(req.params.id);
-        if (!appointment) {
-          return res.status(404).json({ message: 'Appointment not found' });
-        }
-        res.json(appointment);
-      } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-      }
-});
+        const { identifier } = req.params;
 
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            const appointmentByID = await Appointment.findById(identifier);
+            if (appointmentByID) {
+                return res.status(200).json(appointmentByID);
+            }
+        }
+
+        const appointmentByCusID = await Appointment.find({ CusID: identifier });
+        if (appointmentByCusID.length) {
+            return res.status(200).json(appointmentByCusID);
+        }
+
+        return res.status(404).json({ message: 'Appointment not found' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Error fetching appointment: ' + error.message });
+    }
+});
 // Route to update an appointment by ID
 router.put('/:id', validateFields, async (req, res) => {
     try {
