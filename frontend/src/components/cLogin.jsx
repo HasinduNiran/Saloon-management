@@ -27,6 +27,7 @@ function CLogin() {
       Service: "/services/allService",
       Supplier: "/suppliers/allSupplier",
       Feedback: "/Feedback/allFeedback",
+      Store: "/store",
     };
 
     if (rolePaths[CusID] && Password === `${CusID}123`) {
