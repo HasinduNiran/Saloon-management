@@ -31,7 +31,7 @@ const ItemDis = () => {
     }, []);
 
     const itemdis = store.find((item) => item.ItemNo.toString() === ItemNo);  // Ensure matching string types
-    const recommendedItems = store.filter((item) => item.ItemNo.toString() !== ItemNo);  // Filter out current item
+    //const recommendedItems = store.filter((item) => item.ItemNo.toString() !== ItemNo);  // Filter out current item
 
     const handleIncrease = () => setQuantity(quantity + 1);
     const handleDecrease = () => {
@@ -97,6 +97,7 @@ const ItemDis = () => {
     if (!itemdis) {
         return <div>Item not found</div>;  // If no matching item is found
     }
+    const recommendedItems = store.filter((item) => item.ItemNo !== parseInt(ItemNo, 5));
 
     return (
         <div className="min-h-screen p-8 flex flex-col items-center">
@@ -111,7 +112,7 @@ const ItemDis = () => {
                 <div className="w-full lg:w-1/2 space-y-6">
                     <h1 className="text-4xl font-semibold">{itemdis?.ItemName}</h1>
                     <p className="text-lg text-gray-600">{itemdis?.Description}</p>
-                    <h2 className="text-2xl font-semibold">${itemdis?.SPrice}</h2>
+                    <h2 className="text-2xl font-semibold">Rs.{itemdis?.SPrice}</h2>
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={handleDecrease}
@@ -150,15 +151,17 @@ const ItemDis = () => {
                     <div className="flex space-x-4 animate-marquee">
                         {recommendedItems.length > 0 ? (
                             <div className="flex flex-wrap gap-8 justify-center">
-                                {recommendedItems.map((item) => (
-                                    <Hcard
-                                        key={item.ItemNo}
-                                        ItemNo={item.ItemNo}
-                                        image={item.image}
-                                        ItemName={item.ItemName}
-                                        SPrice={item.SPrice}
-                                    />
-                                ))}
+                               {recommendedItems.map((item) => (
+    <Hcard
+        key={item.ItemNo}
+        ItemNo={item.ItemNo}
+        image={item.image}
+        ItemName={item.ItemName}
+        SPrice={item.SPrice}
+        CusID={CusID}  // Pass CusID to the Hcard component
+    />
+))}
+
                             </div>
                         ) : (
                             <div>No recommended items found</div>

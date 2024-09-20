@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import ItemCard from "./ItemCard";
 import Spinner from "../../components/Spinner";
+import Hcard from "../HomeCard/Hcard";
 
 const Cart = () => {
   const { CusID } = useParams(); // Extract CusID from route parameters
@@ -76,13 +77,13 @@ const Cart = () => {
 
   const handleCheckout = () => {
     const checkoutData = {
-      userId: CusID, // Use CusID from route parameters
-      items: cartItems,
-      Total: total - discount,
-      discount,
+        userId: CusID,
+        items: cartItems,
+        total: total - discount, // Ensure total is calculated correctly
     };
     navigate(`/checkout/${CusID}`, { state: checkoutData });
-  };
+};
+
 
   const handleRemoveItem = (ItemNo) => {
     const updatedCart = cartItems.filter(item => item.ItemNo !== ItemNo);
@@ -110,7 +111,7 @@ const Cart = () => {
                 <img src={item.image} alt={item.ItemName} className="w-16 rounded" />
                 <div className="flex-1 px-4">
                   <h3 className="text-xl font-semibold">{item.ItemName}</h3>
-                  <p className="text-gray-600">Price: ${item.SPrice}</p>
+                  <p className="text-gray-600">Price:Rs.{item.SPrice}</p>
                   <div className="flex items-center space-x-4">
                     <button
                       onClick={() => handleDecreaseQuantity(item.ItemNo)}
@@ -127,7 +128,7 @@ const Cart = () => {
                     </button>
                   </div>
                   <p className="text-gray-800 font-semibold">
-                    Total: ${(item.SPrice * item.Quantity).toFixed(2)}
+                    Total: Rs.{(item.SPrice * item.quantity).toFixed(2)}
                   </p>
                 </div>
                 <button
@@ -146,18 +147,18 @@ const Cart = () => {
         <div className="w-full lg:w-1/3 p-6 bg-gray-100 rounded-lg space-y-4">
           <h2 className="text-2xl font-semibold">Order Summary</h2>
           <div className="flex justify-between">
-            <span>Subtotal:</span>
-            <span>${total.toFixed(2)}</span>
+            {/* <span>Subtotal:</span>
+            <span>Rs.{total.toFixed(2)}</span> */}
           </div>
           {discount > 0 && (
             <div className="flex justify-between">
               <span>Discount:</span>
-              <span>-${discount.toFixed(2)}</span>
+              <span>Rs.{discount.toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between">
             <span>Total:</span>
-            <span>${(total - discount).toFixed(2)}</span>
+            <span>Rs.{(total).toFixed(2)}</span>
           </div>
           <input
             type="text"
@@ -181,22 +182,31 @@ const Cart = () => {
         </div>
       </div>
 
-      <div className="w-full lg:w-3/4 mt-16">
-        <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
-        <div className="overflow-x-hidden whitespace-nowrap mb-5">
-          <div className="flex space-x-4">
-            {recommendedItems.map((item) => (
-              <ItemCard
-                key={item.ItemNo}
-                ItemNo={item.ItemNo}
-                image={item.image}
-                ItemName={item.ItemName}
-                SPrice={item.SPrice}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      
+      <div className="w-full lg:w-2/3 mt-16">
+                <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
+                <div className="overflow-x-hidden whitespace-nowrap mb-5">
+                    <div className="flex space-x-4 animate-marquee">
+                        {recommendedItems.length > 0 ? (
+                            <div className="flex flex-wrap gap-8 justify-center">
+                               {recommendedItems.map((item) => (
+    <Hcard
+        key={item.ItemNo}
+        ItemNo={item.ItemNo}
+        image={item.image}
+        ItemName={item.ItemName}
+        SPrice={item.SPrice}
+        CusID={CusID}  // Pass CusID to the Hcard component
+    />
+))}
+
+                            </div>
+                        ) : (
+                            <div>No recommended items found</div>
+                        )}
+                    </div>
+                </div>
+            </div>
     </div>
   );
 };

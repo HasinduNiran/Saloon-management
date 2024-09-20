@@ -11,6 +11,8 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { app } from "../../config/firebase";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png'
 
 const CreateStore = () => {
   const [ItemNo, setItemNo] = useState('');
@@ -108,172 +110,155 @@ const CreateStore = () => {
       }
     );
   };
-
+  const containerStyle = {
+   
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    
+  };
   return (
-    <div className="container">
-      <style>{`
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 0;
-          background-color: #f4f4f4;
-        }
-  
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: #fff;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-  
-        h1 {
-          color: #333;
-          text-align: center;
-          margin-bottom: 20px;
-        }
-  
-        form {
-          display: flex;
-          flex-direction: column;
-        }
-  
-        label {
-          margin-bottom: 5px;
-          color: #555;
-          font-weight: bold;
-        }
-  
-        input[type="text"],
-        input[type="number"],
-        input[type="file"] {
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          font-size: 16px;
-          width: 100%;
-        }
-  
-        button {
-          background-color: #4CAF50;
-          color: white;
-          padding: 10px 20px;
-          margin-top: 10px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-          font-size: 16px;
-        }
-  
-        button:disabled {
-          background-color: #cccccc;
-          cursor: not-allowed;
-        }
-  
-        button:hover {
-          background-color: #45a049;
-        }
-  
-        @media screen and (max-width: 768px) {
-          .container {
-            padding: 10px;
-          }
-  
-          input[type="text"],
-          input[type="number"],
-          input[type="file"] {
-            padding: 8px;
-            font-size: 14px;
-          }
-  
-          button {
-            padding: 8px 16px;
-            font-size: 14px;
-          }
-        }
-      `}</style>
-      {loading ? <Spinner /> : ""}
-      <h1>Add Items</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            required
+    <div style={containerStyle}>
+      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+          <img
+            className="mx-auto h-10 w-auto ml-[45%]"
+            src={Logo}
+            alt="logo"
+            style={{ width: '50px', height: '50px', marginRight: '50px' }}
           />
+          <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+            Add Items
+          </h2>
+          {loading ? <Spinner /> : ""}
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
-        <div>
-          <label>ItemNo</label>
-          <input
-            type="text"
-            value={ItemNo}
-            onChange={(e) => setItemNo(e.target.value)}
-            maxLength={10}
-            required
-          />
+  
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
+              <div>
+                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Image</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImage(e.target.files[0])}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="itemNo" className="block text-sm font-medium leading-5 text-gray-700">Item No</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="itemNo"
+                    type="text"
+                    value={ItemNo}
+                    onChange={(e) => setItemNo(e.target.value)}
+                    maxLength={10}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="itemName" className="block text-sm font-medium leading-5 text-gray-700">Item Name</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="itemName"
+                    type="text"
+                    value={ItemName}
+                    onChange={(e) => setItemName(e.target.value)}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="description"
+                    type="text"
+                    value={Description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="quantity" className="block text-sm font-medium leading-5 text-gray-700">Quantity</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="quantity"
+                    type="text"
+                    value={Quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    maxLength={3}
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="cost" className="block text-sm font-medium leading-5 text-gray-700">Cost</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="cost"
+                    type="number"
+                    value={cost}
+                    onChange={(e) => setCost(e.target.value)}
+                    min="0.01"
+                    step="0.01"
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              <div>
+                <label htmlFor="sPrice" className="block text-sm font-medium leading-5 text-gray-700">Selling Price</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    id="sPrice"
+                    type="number"
+                    value={SPrice}
+                    onChange={(e) => setSPrice(e.target.value)}
+                    min="0.01"
+                    step="0.01"
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
+                </div>
+              </div>
+  
+              {/* Submit Button */}
+              <div className="col-span-2">
+                <span className="block w-40 rounded-md shadow-sm">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+                  >
+                    {loading ? "Loading..." : "Add Item"}
+                  </button>
+                </span>
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          <label>Item Name</label>
-          <input
-            type="text"
-            value={ItemName}
-            onChange={(e) => setItemName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Description</label>
-          <input
-            type="text"
-            value={Description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Quantity</label>
-          <input
-            type="text"
-            value={Quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            maxLength={3}
-            required
-          />
-        </div>
-        <div>
-          <label>Cost</label>
-          <input
-            type="number"
-            value={cost}
-            onChange={(e) => setCost(e.target.value)}
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
-        <div>
-          <label>Selling Price</label>
-          <input
-            type="number"
-            value={SPrice}
-            onChange={(e) => setSPrice(e.target.value)}
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Add Item"}
-        </button>
-      </form>
+      </div>
     </div>
   );
-};
+}
 
 export default CreateStore;

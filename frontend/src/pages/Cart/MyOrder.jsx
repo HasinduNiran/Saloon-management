@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
-import Spinner from "../../components/Spinner"; // Ensure this component exists
+import Spinner from "../../components/Spinner";
+ // Ensure this component exists
 
 const MyOrder = () => {
     const { CusID } = useParams(); // Get CusID from URL params
@@ -112,7 +113,7 @@ const MyOrder = () => {
                                             {order.items.map((item) => (
                                                 <li key={item.itemId} className="text-gray-700">
                                                     {/* {item.title} - Qty: {item.Quantity} -  */}
-                                                    Price: $ {item.SPrice}
+                                                    Price:Rs.{item.SPrice}
                                                     {/* {(item.SPrice * item.Quantity).toFixed(2)} */}
                                                 </li>
                                             ))}
@@ -164,7 +165,7 @@ const MyOrder = () => {
                                         onClick={() => handleDownloadBill(order)}
                                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                                     >
-                                        Download Bill
+                                       
                                     </button>
                                 </div>
                             </div>

@@ -245,7 +245,7 @@ const CreateCustomer = () => {
             </div>
 
             <div>
-              <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">Customer ID</label>
+              <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">User Name </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <input
                   id="cusID"

@@ -6,10 +6,13 @@ import BackButton from '../../components/BackButton';
 import tableImage from '../../images/tablebg.jpg';
 import backgroundImage from "../../images/logobg.jpg";
 import Swal from "sweetalert2";
+import Nav from '../../components/Dashborad/DashNav';
+import SideBar from '../../components/Dashborad/Sidebar';
 
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
   const [orders, setOrders] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOrders, setExpandedOrders] = useState({});
   const { id: CusID } = useParams();
@@ -25,6 +28,10 @@ const ReadOneCustomer = () => {
         // Fetch orders for this customer
         const ordersResponse = await axios.get(`http://localhost:8076/order/${CusID}`);
         setOrders(ordersResponse.data);
+
+        // Fetch appointments for this customer
+        const appointmentsResponse = await axios.get(`http://localhost:8076/appointments/${CusID}`);
+        setAppointments(appointmentsResponse.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -75,7 +82,8 @@ const ReadOneCustomer = () => {
   return (
     <div style={containerStyle}>
       <div className="container mx-auto px-4">
-        {/* <BackButton destination='/customers/' /> */}
+      <BackButton destination={`/ReadOneHome/${CusID}`} />
+
 
         <div className="text-center my-8">
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
@@ -113,6 +121,25 @@ const ReadOneCustomer = () => {
                 </div>
               </div>
             </div>
+          
+{/* Appointments Section */}
+<div className="p-6 border-t">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Appointments</h2>
+              {appointments.length > 0 ? (
+                appointments.map((appointment) => (
+                  <div key={appointment.appoi_ID} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md">
+                    <h3 className="text-lg font-semibold mb-2">Appointment ID: {appointment.appoi_ID}</h3>
+                    <p className="text-gray-600">Date: {appointment.appoi_date}</p>
+                    <p className="text-gray-600">Time: {appointment.appoi_time}</p>
+                    <p className="text-gray-600">Stylist: {appointment.stylist}</p>
+                    <p className="text-gray-600">Service: {appointment.service}</p>
+                    <p className="text-gray-600">Package: {appointment.customize_package || 'N/A'}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">No appointments found</p>
+              )}
+            </div>
 
             {/* Orders Section */}
             <div className="p-6 border-t">
@@ -123,7 +150,7 @@ const ReadOneCustomer = () => {
                     key={order._id}
                     className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative"
                   >
-                    <h3 className="text-lg font-semibold mb-2">Order ID: {order._id}</h3>
+                    <h3 className="text-lg font-semibold mb-2">Order ID: {order.orderId}</h3>
                     <p className="text-gray-600">Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
                     <div className="flex space-x-4 mt-4">
                       {order.items.map((item) => (
@@ -146,7 +173,7 @@ const ReadOneCustomer = () => {
                             <ul className="list-disc pl-5 mb-2">
                               {order.items.map((item) => (
                                 <li key={item.itemId} className="text-gray-700">
-                                  {item.title} - Price: $ {item.SPrice}
+                                  {item.title}  Price: Rs, {item.SPrice}
                                 </li>
                               ))}
                             </ul>
@@ -184,12 +211,7 @@ const ReadOneCustomer = () => {
   Delete
 </button>
 
-                          <button
-                            onClick={() => handleDownloadBill(order)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                          >
-                            Download Bill
-                          </button>
+                         
                         </div>
                       </div>
                     )}

@@ -11,6 +11,8 @@ import {
     getDownloadURL,
 } from "firebase/storage";
 import { app } from "../../config/firebase";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from '../../images/logo.png'
 
 const EditStore = () => {
     const [store, setStore] = useState({
@@ -121,180 +123,135 @@ const EditStore = () => {
             [name]: type === 'file' ? files[0] : value,
         }));
     };
-
-    return (
-        <div className="container">
-            <style>{`
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #f4f4f4;
-                }
-
-                .container {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    background-color: #fff;
-                    border-radius: 8px;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                }
-
-                h1 {
-                    color: #333;
-                    text-align: center;
-                    margin-bottom: 20px;
-                }
-
-                form {
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                label {
-                    margin-bottom: 5px;
-                    color: #555;
-                    font-weight: bold;
-                }
-
-                input[type="text"],
-                input[type="number"],
-                input[type="file"],
-                input[type="email"],
-                input[type="password"] {
-                    padding: 10px;
-                    margin-bottom: 15px;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    font-size: 16px;
-                    width: 100%;
-                }
-
-                button {
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    margin-top: 10px;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease;
-                    font-size: 16px;
-                }
-
-                button:disabled {
-                    background-color: #cccccc;
-                    cursor: not-allowed;
-                }
-
-                button:hover {
-                    background-color: #45a049;
-                }
-
-                @media screen and (max-width: 768px) {
-                    .container {
-                        padding: 10px;
-                    }
-
-                    input[type="text"],
-                    input[type="number"],
-                    input[type="file"],
-                    input[type="email"],
-                    input[type="password"] {
-                        padding: 8px;
-                        font-size: 14px;
-                    }
-
-                    button {
-                        padding: 8px 16px;
-                        font-size: 14px;
-                    }
-                }
-            `}</style>
-            {loading ? <Spinner /> : ""}
-            <h1>Edit Items</h1>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Image</label>
-                    <input
-                        type="file"
-                        name="image"
-                        onChange={handleChange}
-                    />
+    const containerStyle = {
+   
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        
+      };
+      return (
+        <div style={containerStyle}>
+            <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+                    <h1 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+                        Edit Items
+                    </h1>
+                    {loading ? <Spinner /> : ""}
+                    {error && <p style={{ color: "red" }}>{error}</p>}
                 </div>
-                <div>
-                    <label>ItemNo</label>
-                    <input
-                        type="text"
-                        name="ItemNo"
-                        value={store.ItemNo}
-                        onChange={handleChange}
-                        maxLength={10}
-                        required
-                        readOnly
-                    />
+
+                <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
+                            <div>
+                                <label htmlFor="image" className="block text-sm font-medium leading-5 text-gray-700">Image</label>
+                                <input
+                                    type="file"
+                                    name="image"
+                                    onChange={handleChange}
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="itemNo" className="block text-sm font-medium leading-5 text-gray-700">Item No</label>
+                                <input
+                                    id="itemNo"
+                                    type="text"
+                                    name="ItemNo"
+                                    value={store.ItemNo}
+                                    onChange={handleChange}
+                                    maxLength={10}
+                                    required
+                                    readOnly
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="itemName" className="block text-sm font-medium leading-5 text-gray-700">Item Name</label>
+                                <input
+                                    id="itemName"
+                                    type="text"
+                                    name="ItemName"
+                                    value={store.ItemName}
+                                    onChange={handleChange}
+                                    required
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
+                                <input
+                                    id="description"
+                                    type="text"
+                                    name="Description"
+                                    value={store.Description}
+                                    onChange={handleChange}
+                                    required
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="quantity" className="block text-sm font-medium leading-5 text-gray-700">Quantity</label>
+                                <input
+                                    id="quantity"
+                                    type="text"
+                                    name="Quantity"
+                                    value={store.Quantity}
+                                    onChange={handleChange}
+                                    maxLength={3}
+                                    required
+                                    readOnly
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="cost" className="block text-sm font-medium leading-5 text-gray-700">Cost</label>
+                                <input
+                                    id="cost"
+                                    type="number"
+                                    name="cost"
+                                    value={store.cost}
+                                    onChange={handleChange}
+                                    required
+                                    readOnly
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="sPrice" className="block text-sm font-medium leading-5 text-gray-700">Selling Price</label>
+                                <input
+                                    id="sPrice"
+                                    type="number"
+                                    name="SPrice"
+                                    value={store.SPrice}
+                                    onChange={handleChange}
+                                    required
+                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                />
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+                                >
+                                    {loading ? "Loading..." : "Item Updated"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div>
-                    <label>Item Name</label>
-                    <input
-                        type="text"
-                        name="ItemName"
-                        value={store.ItemName}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Description</label>
-                    <input
-                        type="text"
-                        name="Description"
-                        value={store.Description}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Quantity</label>
-                    <input
-                        type="text"
-                        name="Quantity"
-                        value={store.Quantity}
-                        onChange={handleChange}
-                        maxLength={3}
-                        required
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label>Cost</label>
-                    <input
-                        type="number"
-                        name="cost"
-                        value={store.cost}
-                        onChange={handleChange}
-                        required
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label>Selling Price</label>
-                    <input
-                        type="text"
-                        name="SPrice"
-                        value={store.SPrice}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <button type="submit" disabled={loading}>
-                    {loading ? "Loading..." : "Item Updated"}
-                </button>
-            </form>
+            </div>
         </div>
     );
 };
-
 export default EditStore;
