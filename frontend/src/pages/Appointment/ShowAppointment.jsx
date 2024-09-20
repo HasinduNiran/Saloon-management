@@ -45,10 +45,9 @@ const ShowAppointment = () => {
       const client_email = appointments.client_email ? appointments.client_email.toLowerCase() : '';
       const client_phone = appointments.client_phone ? appointments.client_phone.toString() : '';
       const stylist = appointments.stylist ? appointments.stylist.toLowerCase() : ''; 
-      const service = appointments.service ? appointments.service.toLowerCase() : '';
+      const services = appointments.services ? appointments.services.toLowerCase() : '';
       const appoi_date = appointments.appoi_date ? appointments.appoi_date.toLowerCase() : '';
       const appoi_time = appointments.appoi_time ? appointments.appoi_time.toLowerCase() : '';
-      const services = appointments.services ? appointments.services.toLowerCase() : '';
       const packages = appointments.packages ? appointments.packages.toLowerCase() : '';
   
       return (
@@ -56,8 +55,7 @@ const ShowAppointment = () => {
         client_name.includes(searchQuery.toLowerCase()) ||
         client_email.includes(searchQuery.toLowerCase()) ||
         client_phone.includes(searchQuery.toLowerCase()) ||
-        stylist.includes(searchQuery.toLowerCase()) || 
-        service.includes(searchQuery.toLowerCase()) ||
+        stylist.includes(searchQuery.toLowerCase()) ||
         appoi_date.includes(searchQuery.toLowerCase()) ||
         appoi_time.includes(searchQuery.toLowerCase()) ||
         services.includes(searchQuery.toLowerCase()) ||
@@ -69,10 +67,7 @@ const ShowAppointment = () => {
     const filteredAppoointments = appointments.filter(applySearchFilter);
 
   
-  // Function to handle the icon click
-  const handleAddClick = () => {
-    navigate('/appointments/create');
-  };
+
 
   // Fetch appointments from the backend on component mount
   useEffect(() => {
@@ -93,6 +88,7 @@ const generatePDF = () => {
   const doc = new jsPDF();
 
   const tableColumn = [
+    "CusID",
     "Appointment ID",
     "Name",
     "Email",
@@ -105,12 +101,13 @@ const generatePDF = () => {
 
   appointments.forEach((appointment) => {
     const appointmentData = [
+      appointment.CusID,
       appointment.appoi_ID,
       appointment.client_name,
       appointment.client_email,
       appointment.client_phone,
       appointment.stylist,
-      appointment.service,
+      appointment.services,
       appointment.customize_package || "N/A",
     ];
     tableRows.push(appointmentData);
@@ -164,7 +161,8 @@ const generatePDF = () => {
       3: { cellWidth: 25 }, // Phone
       4: { cellWidth: 20 }, // Stylist
       5: { cellWidth: 20 }, // Service
-      6: { cellWidth: 20 }, // Package
+      6: { cellWidth: 20 }, 
+      7: { cellWidth: 20 },
     },
   });
 
@@ -211,14 +209,6 @@ const generatePDF = () => {
               Generate PDF
               </span>
             </button>
-            <button 
-              onClick={handleAddClick} 
-              className="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
-            >
-              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0">
-                Add
-              </span>
-            </button>
             </div>
         </div>
 
@@ -231,6 +221,7 @@ const generatePDF = () => {
         <table className="min-w-full border-collapse divide-y divide-gray-200">
         <thead className="bg-gray-100">
           <tr>
+          <th className="px-4 py-2 text-left font-semibold">Customer ID</th>
             <th className="px-4 py-2 text-left font-semibold">Appointment ID</th>
             <th className="px-4 py-2 text-left font-semibold">Name</th>
             <th className="px-4 py-2 text-left font-semibold">Email</th>
@@ -246,15 +237,14 @@ const generatePDF = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {filteredAppoointments.map((appointment) => (
             <tr key={appointment.appoi_ID} className="hover:bg-gray-100 transition duration-150 ease-in-out">
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.CusID}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_ID}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_name}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_email}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.client_phone}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.stylist}</td>
-              <td className="px-4 py-2 text-sm text-gray-700">{appointment.service}</td>
-              <td className="px-4 py-2 text-sm text-gray-700">
-                {appointment.customize_package || "N/A"}
-              </td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.services}</td>
+              <td className="px-4 py-2 text-sm text-gray-700">{appointment.packages}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_date}</td>
               <td className="px-4 py-2 text-sm text-gray-700">{appointment.appoi_time}</td>
               <td className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4">

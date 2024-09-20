@@ -12,6 +12,9 @@ const AppoiCounter = mongoose.model('AppoiCounter', counterSchema);
 // Appointment Schema
 const appointmentSchema = mongoose.Schema(
     {
+        CusID: {
+            type: String,
+        },
         appoi_ID: {
             type: String,
             unique: true
