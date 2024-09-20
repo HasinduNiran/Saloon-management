@@ -309,7 +309,9 @@ const CreateAppointment = () => {
                 ))}
               </select>
             </div>
-            
+
+            <label className="block text-lg font-bold leading-5 text-red-500">** Please note, a $10 service fee will be applied when you complete your booking.</label>
+
             <div className="col-span-2">
             <span className="block w-40 rounded-md shadow-sm">
             <button
@@ -320,7 +322,7 @@ const CreateAppointment = () => {
               {loading ? <Spinner /> : 'Save'}
             </button>
             </span>
-            </div>
+            </div>       
 
           </form>
         </div>
