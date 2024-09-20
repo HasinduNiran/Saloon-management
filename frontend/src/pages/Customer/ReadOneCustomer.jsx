@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import { useParams, Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import Spinner from '../../components/Spinner';
 import BackButton from '../../components/BackButton';
 import tableImage from '../../images/tablebg.jpg';
 import backgroundImage from "../../images/logobg.jpg";
-import Swal from "sweetalert2";
-import Nav from '../../components/Dashborad/DashNav';
-import SideBar from '../../components/Dashborad/Sidebar';
 import { BsInfoCircle } from 'react-icons/bs';
 import { FaEdit, FaTrash } from "react-icons/fa"; 
 
 const ReadOneCustomer = () => {
-  const [customers, setCustomer] = useState({});
+  const [customer, setCustomer] = useState({});
   const [orders, setOrders] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,7 +55,6 @@ const ReadOneCustomer = () => {
       if (response.status === 200) {
         setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         Swal.fire("Success", "Order deleted successfully", "success");
-        
       } else {
         Swal.fire("Error", "Failed to delete order", "error");
       }
@@ -66,9 +62,9 @@ const ReadOneCustomer = () => {
       console.error("Error deleting order:", error);
       Swal.fire("Error", "Failed to delete order", "error");
     }
-    window.location.reload();  // refresh the page
+    window.location.reload(); // Refresh the page after deletion
   };
-  
+
   const handleDownloadBill = (order) => {
     Swal.fire("Download", "Bill download feature is not implemented yet.", "info");
   };
@@ -85,8 +81,7 @@ const ReadOneCustomer = () => {
   return (
     <div style={containerStyle}>
       <div className="container mx-auto px-4">
-      <BackButton destination={`/ReadOneHome/${CusID}`} />
-
+        <BackButton destination={`/ReadOneHome/${CusID}`} />
 
         <div className="text-center my-8">
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
@@ -106,27 +101,27 @@ const ReadOneCustomer = () => {
             <div className="flex flex-col md:flex-row items-center p-6">
               <div className="md:w-1/3 w-full flex justify-center md:justify-start">
                 <img
-                  src={customers.image || 'https://via.placeholder.com/150'}
+                  src={customer.image || 'https://via.placeholder.com/150'}
                   alt="Customer"
                   className="w-48 h-48 object-cover rounded-full border-4 border-black"
                 />
               </div>
               <div className="md:w-2/3 w-full text-center md:text-left mt-4 md:mt-0">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {customers.FirstName} {customers.LastName}
+                  {customer.FirstName} {customer.LastName}
                 </h2>
-                <p className="text-gray-800 mt-2">{customers.Email}</p>
+                <p className="text-gray-800 mt-2">{customer.Email}</p>
                 <div className="text-gray-800 mt-4">
-                  <p><strong>Username:</strong> {customers.CusID}</p>
-                  <p><strong>Age:</strong> {customers.Age}</p>
-                  <p><strong>Gender:</strong> {customers.Gender}</p>
-                  <p><strong>Contact No:</strong> {customers.ContactNo}</p>
+                  <p><strong>Username:</strong> {customer.CusID}</p>
+                  <p><strong>Age:</strong> {customer.Age}</p>
+                  <p><strong>Gender:</strong> {customer.Gender}</p>
+                  <p><strong>Contact No:</strong> {customer.ContactNo}</p>
                 </div>
               </div>
             </div>
-          
-{/* Appointments Section */}
-<div className="p-6 border-t">
+
+            {/* Appointments Section */}
+            <div className="p-6 border-t">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Appointments</h2>
               {appointments.length > 0 ? (
                 appointments.map((appointment) => (
@@ -135,26 +130,19 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600 font-semibold">Date: {appointment.appoi_date.slice(0, 10)}</p>
                     <p className="text-gray-600 font-semibold">Time: {appointment.appoi_time}</p>
                     <p className="text-gray-600 font-semibold">Stylist: {appointment.stylist}</p>
-                    <p className="text-gray-600 font-semibold">Service: {appointment.services}</p>
-                    <p className="text-gray-600 font-semibold">Package: {appointment.packages}</p>
-                    <p className="text-gray-600 font-semibold">Customize Package: {appointment.customize_package}</p>
-                    <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
-  <Link 
-    className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
-    to={`/appointments/details/${appointment._id}`}
-    title="View Details"
-  >
-    <BsInfoCircle size={24} />
-  </Link>
-  <Link to={`/appointments/edit/${appointment._id}`}>
-    <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" size={24} title="Edit" />
-  </Link>
-  <Link to={`/appointments/delete/${appointment._id}`}>
-    <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" size={24} title="Delete" />
-  </Link>
-</div>
-
-
+                    <p className="text-gray-600 font-semibold">Service: {appointment.service}</p>
+                    <p className="text-gray-600 font-semibold">Package: {appointment.customize_package || 'N/A'}</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <Link to={`/appointments/details/${appointment._id}`} title="View Details">
+                        <BsInfoCircle size={24} className="text-green-600 hover:text-green-800" />
+                      </Link>
+                      <Link to={`/appointments/edit/${appointment._id}`} title="Edit">
+                        <FaEdit size={24} className="text-yellow-500 cursor-pointer hover:text-yellow-700" />
+                      </Link>
+                      <Link to={`/appointments/delete/${appointment._id}`} title="Delete">
+                        <FaTrash size={24} className="text-red-500 cursor-pointer hover:text-red-700" />
+                      </Link>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -202,72 +190,48 @@ const ReadOneCustomer = () => {
 
                           <div className="flex-1 px-4 border-r border-gray-300">
                             <h3 className="text-lg font-semibold mb-2">Customer Information:</h3>
-                            <p>Name: {order.customerInfo.FirstName || 'N/A'}</p>
-                            <p>Email: {order.customerInfo.Email || 'N/A'}</p>
+                            <p>Name: {order.customerInfo?.FirstName || 'N/A'}</p>
+                            <p>Email: {order.customerInfo?.Email || 'N/A'}</p>
                             <p>Mobile: {order.customerInfo?.ContactNo || 'N/A'}</p>
                           </div>
 
-                          <div className="flex-1 pl-4">
-                            {order.deliveryInfo?.address ? (
-                              <div>
-                                <h3 className="text-lg font-semibold mb-2">Delivery Information:</h3>
-                                <p>Address: {order.deliveryInfo.address}</p>
-                                <p>City: {order.deliveryInfo.city}</p>
-                                <p>Postal Code: {order.deliveryInfo.postalCode}</p>
-                                <p>Delivery Method: Delivery</p>
-                              </div>
-                            ) : (
-                              <p>No delivery information provided.</p>
-                            )}
+                          <div className="flex-1 px-4">
+                            <h3 className="text-lg font-semibold mb-2">Bill:</h3>
+                            <p>Sub Total: Rs. {order.orderTotal}</p>
+                            <p>Delivery Charges: Rs. {order.DeliveryCharge}</p>
+                            <p>Discount: Rs. {order.Discount}</p>
+                            <p className="font-bold text-xl">Total: Rs. {order.totalPrice}</p>
                           </div>
-                        </div>
-
-                        <p className="text-gray-600 mt-2">Payment Method: {order.paymentMethod}</p>
-
-                        <div className="flex space-x-2 mt-4">
-                        <button
-  onClick={() => handleDeleteOrder(order.orderId)} // Ensure this matches your order structure
-  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
->
-  Delete
-</button>
-
-                         
                         </div>
                       </div>
                     )}
+                    <div className="flex items-center mt-4 space-x-4">
+                      <button
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                        onClick={() => handleToggleExpand(order._id)}
+                      >
+                        {expandedOrders[order._id] ? 'Collapse' : 'Expand'}
+                      </button>
 
-                    <button
-                      onClick={() => handleToggleExpand(order._id)}
-                      className="absolute top-4 right-4 bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
-                    >
-                      {expandedOrders[order._id] ? "Show Less" : "Show More"}
-                    </button>
+                      <button
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                        onClick={() => handleDeleteOrder(order._id)}
+                      >
+                        Delete
+                      </button>
+
+                      <button
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                        onClick={() => handleDownloadBill(order)}
+                      >
+                        Download Bill
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
                 <p className="text-center text-gray-600">No orders found</p>
               )}
-            </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-center p-6 border-t">
-          <button
-  className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
-  onClick={() => { window.location.href = `/customers/edit/${customers._id}` }}
->
-  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
-    Edit Profile
-  </span>
-</button>
-<button
-  className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
-  onClick={() => { window.location.href = `/feedback/create/${customers._id}` }}
->
-  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
-    Feedback
-  </span>
-</button>
             </div>
           </div>
         )}
