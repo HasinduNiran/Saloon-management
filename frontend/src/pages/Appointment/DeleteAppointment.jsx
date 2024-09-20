@@ -8,25 +8,9 @@ const DeleteAppointment = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
-  const { CusID } = useParams(); 
 
-  // Fetch customer data based on CusID
-  useEffect(() => {
-    if (CusID) {
-      fetchData();
-    }
-  }, [CusID]);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8076/customers/${CusID}`);
-      setUserData(response.data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  // Function to handle the appointment deletion
+   // Function to handle the appointment deletion
   const handleDeleteAppointment = () => {
     setLoading(true);
     axios
@@ -44,7 +28,7 @@ const DeleteAppointment = () => {
 
         // Redirect after showing the success alert
         setTimeout(() => {
-          navigate(`/customers/get/${CusID}`);
+          navigate('/appointments/allAppointment');
         }, 2000); // 2-second delay to allow the alert to display
       })
       .catch((error) => {

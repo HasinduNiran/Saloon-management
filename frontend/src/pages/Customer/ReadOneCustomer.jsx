@@ -62,6 +62,24 @@ const ReadOneCustomer = () => {
     window.location.reload();
   };
 
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8076/appointments/${appointmentId}`);
+      if (response.status === 200) {
+        // Remove the deleted appointment from the appointments state
+        setAppointments((prevAppointments) => 
+          prevAppointments.filter((appointment) => appointment._id !== appointmentId)
+        );
+        Swal.fire("Success", "Appointment deleted successfully", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete appointment", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      Swal.fire("Error", "Failed to delete appointment", "error");
+    }
+  };
+
   const handleDownloadBill = () => {
     Swal.fire("Download", "Bill download feature is not implemented yet.", "info");
   };
@@ -145,7 +163,7 @@ const ReadOneCustomer = () => {
                       <Link to={`/appointments/edit/${appointment._id}`}>
                         <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" size={24} title="Edit" />
                       </Link>
-                      <Link to={`/appointments/delete/${appointment._id}`}>
+                      <Link to="#" onClick={() => handleDeleteAppointment(appointment._id)}>
                         <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" size={24} title="Delete" />
                       </Link>
                     </div>
