@@ -124,7 +124,7 @@ const App = () => {
       <Route path="/cLogin" element={<CLogin />} />
       <Route path="/ReadOneHome/:CusID" element={<ReadOneHome />} />
 
-      <Route path="/card/create" element={<CreateCard />} />
+      <Route path="/card/create/:CusID" element={<CreateCard />} />
       <Route path="/store/create" element={<CreateStore />} />
       <Route path="/store/delete/:id" element={<DeleteStore />} />
       <Route path="/store/edit/:id" element={<EditStore />} />

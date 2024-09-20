@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
 const cardSchema = mongoose.Schema({
+    CusID: {
+        type: String,
+    },
     Amount: {
         type: String,
         required: true

@@ -106,7 +106,7 @@ const CreateAppointment = () => {
       .post("http://localhost:8076/appointments", data)
       .then(() => {
         setLoading(false);
-        navigate("/card/create");
+        navigate(`/card/create/${CusID}`);
       })
       .catch((error) => {
         setLoading(false);
