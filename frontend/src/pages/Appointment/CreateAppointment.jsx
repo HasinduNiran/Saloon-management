@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate,useParams} from "react-router-dom";
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
+import Swal from 'sweetalert2'; 
 
 const CreateAppointment = () => {
   const [client_name, setName] = useState("");
@@ -25,6 +26,7 @@ const CreateAppointment = () => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [dateError, setDateError] = useState("");
 
 
   useEffect(() => {
@@ -88,6 +90,17 @@ const CreateAppointment = () => {
   ];
 
   const handleSaveAppointment = () => {
+    // Validation: Check for empty fields
+    if (!client_name || !client_email || !client_phone || !stylist || !services  || !appoi_date || !appoi_time) {
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Please fill in all required fields!',
+        showConfirmButton: true,
+        timer: 2000,
+      });
+      return;
+    }
     const data = {
       client_name,
       client_email,
@@ -113,6 +126,15 @@ const CreateAppointment = () => {
         alert("An error happened. Please check console");
         console.log(error);
       });
+  };
+
+  const handleDateChange = (date) => {
+    if (date && date < new Date()) {
+      setDateError("Please select a future date.");
+    } else {
+      setDateError("");
+    }
+    setDate(date);
   };
 
   const containerStyle = {
@@ -228,7 +250,7 @@ const CreateAppointment = () => {
 
             {/* Choose Package */}
             <div>
-              <label htmlFor="packages" className="block text-sm font-medium leading-5 text-gray-700">Choose Package</label>
+              <label htmlFor="packages" className="block text-sm font-medium leading-5 text-gray-700">Choose Package (Optional)</label>
               <select
                 id="packages"
                 value={packages}
@@ -246,7 +268,7 @@ const CreateAppointment = () => {
 
              {/* customize package */}
              <div>
-              <label htmlFor="customize_package" className="block text-sm font-medium leading-5 text-gray-700">Any Customize</label>
+              <label htmlFor="customize_package" className="block text-sm font-medium leading-5 text-gray-700">Any Customize (Optional)</label>
               <input
                 id="customize_package"
                 type="text"
@@ -256,16 +278,18 @@ const CreateAppointment = () => {
               />
             </div>
 
-
-            {/* Appointment Date */}
-            <div>
+           {/* Date Picker */}
+           <div>
               <label htmlFor="appoi_date" className="block text-sm font-medium leading-5 text-gray-700">Appointment Date</label>
               <DatePicker
                 selected={appoi_date}
-                onChange={(date) => setDate(date)}
+                onChange={handleDateChange}
+                className={`mt-1 block w-full px-3 py-2 border ${dateError ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm`}
+                minDate={new Date()} // Disable past dates
                 dateFormat="yyyy-MM-dd"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                placeholderText="Select a date"
               />
+              {dateError && <p className="text-red-500 text-sm">{dateError}</p>} {/* Display error message */}
             </div>
 
             {/* Appointment Time */}

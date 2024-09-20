@@ -73,6 +73,10 @@ const DetailsAppointment = () => {
               <p className="text-lg">{appointment.appoi_ID}</p>
             </div>
             <div>
+              <h2 className="text-2xl font-semibold mb-2">Customer ID</h2>
+              <p className="text-lg">{appointment.CusID}</p>
+            </div>
+            <div>
               <h2 className="text-2xl font-semibold mb-2">Name with initials</h2>
               <p className="text-lg">{appointment.client_name}</p>
             </div>
@@ -90,11 +94,15 @@ const DetailsAppointment = () => {
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Service Category</h2>
-              <p className="text-lg">{appointment.service}</p>
+              <p className="text-lg">{appointment.services}</p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Package Type</h2>
+              <p className="text-lg">{appointment.packages}</p>
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Customized Package Details</h2>
-              <p className="text-lg">{appointment.customize_package || 'N/A'}</p>
+              <p className="text-lg">{appointment.customize_package}</p>
             </div>
             <div>
               <h2 className="text-2xl font-semibold mb-2">Appointment Date</h2>
@@ -116,7 +124,7 @@ const DetailsAppointment = () => {
               </span>
             </button>
             <Link
-              to={`/appointments/edit/${appointment.appoi_ID}`}
+              to={`/appointments/edit/${appointment._id}`}
               className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-green-900 to-green-500 group-hover:to-green-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-200"
             >
               <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">

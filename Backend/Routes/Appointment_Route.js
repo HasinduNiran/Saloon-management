@@ -115,7 +115,8 @@ router.get("searchappointment", function (req, res) {
           { appoi_date: { $regex: search, $options: "i"} },
             { appoi_time: { $regex: search, $options: "i"} },
             { services: { $regex: search, $options: "i"} },
-            { packages: { $regex: search, $options: "i"} }
+            { packages: { $regex: search, $options: "i"} },
+            { CusID: { $regex: search, $options: "i"} }
            
         ]
     }, function (err, result) {

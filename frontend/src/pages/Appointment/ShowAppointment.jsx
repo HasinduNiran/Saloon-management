@@ -49,7 +49,8 @@ const ShowAppointment = () => {
       const appoi_date = appointments.appoi_date ? appointments.appoi_date.toLowerCase() : '';
       const appoi_time = appointments.appoi_time ? appointments.appoi_time.toLowerCase() : '';
       const packages = appointments.packages ? appointments.packages.toLowerCase() : '';
-  
+      const CusID = appointments.CusID ? appointments.CusID.toLowerCase() : '';
+
       return (
         appoi_ID.includes(searchQuery.toLowerCase()) ||
         client_name.includes(searchQuery.toLowerCase()) ||
@@ -59,7 +60,8 @@ const ShowAppointment = () => {
         appoi_date.includes(searchQuery.toLowerCase()) ||
         appoi_time.includes(searchQuery.toLowerCase()) ||
         services.includes(searchQuery.toLowerCase()) ||
-        packages.includes(searchQuery.toLowerCase())
+        packages.includes(searchQuery.toLowerCase()) ||
+        CusID.includes(searchQuery.toLowerCase())
       );
     };
 
