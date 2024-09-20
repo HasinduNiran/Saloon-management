@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import homebg from '../images/home1.jpg';
-import Card from './HomeCard/Hcard';
+import HCard from './HomeCard/Hcard';
 import Footer from './footer/Footer';
 import Logo from '../images/logo.png';
 import Swal from 'sweetalert2';
@@ -176,7 +176,7 @@ const ReadOneHome = () => {
         {/* Products section */}
         <div id="products" className="bg-gray-200 py-16 px-8 md:px-16 min-h-screen w-[100%] rounded-t-[20%]">
           <h3 className="text-5xl font-light text-pink-500 mb-16 text-center">Our Services</h3>
-          <Card />
+          <HCard CusID={CusID} />
         </div>
 
         <Footer />
