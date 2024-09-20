@@ -39,6 +39,7 @@ router.post('/', validateFields, async (req, res) => {
             customize_package: req.body.customize_package,
             appoi_date: req.body.appoi_date,
             appoi_time: req.body.appoi_time,
+            CusID:request.body.CusID,
         };
 
         const createdAppointment = await Appointment.create(newAppointment);
@@ -127,5 +128,37 @@ router.get("searchappointment", function (req, res) {
         }
     });
 });
+
+    // Route for retrieving a specific Service by ID
+    router.get('/:identifier', async (request, response) => {
+        try {
+            // Extracting the identifier from the request parameters
+            const { identifier } = request.params;
+      
+            // Checking if the provided identifier is a valid MongoDB ObjectId
+            if (mongoose.Types.ObjectId.isValid(identifier)) {
+                // Fetching a vehicle from the database based on the ID
+                const BookingByID = await Appointment.findById(identifier);
+                if (BookingByID) {
+                    // Sending the fetched vehicle as a JSON response if found by ID
+                    return response.status(200).json(BookingByID);
+                }
+            }
+      
+            // If the provided identifier is not a valid ObjectId, try searching by register number
+            const BookingByCUSID = await Appointment.find({ CusID: identifier });
+            if (BookingByCUSID) {
+                // Sending the fetched vehicle as a JSON response if found by register number
+                return response.status(200).json(BookingByCUSID);
+            }
+      
+            // If no vehicle found by either ID or register number, send a 404 Not Found response
+            return response.status(404).json({ message: 'booking not found' });
+        } catch (error) {
+            // Handling errors and sending an error response with detailed error message
+            console.error(error);
+            response.status(500).send({ message: 'Error fetching booking: ' + error.message });
+        }
+      });
 
 export default router;

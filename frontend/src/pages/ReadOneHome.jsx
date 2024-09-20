@@ -1,39 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import homebg from '../images/home1.jpg';
-import { Link, useParams } from 'react-router-dom';
-import './Home.css';
 import Card from './HomeCard/Hcard';
 import Footer from './footer/Footer';
 import Logo from '../images/logo.png';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import './Home.css';
 
 const ReadOneHome = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState('');
   const [buttonPressed, setButtonPressed] = useState(false);
- // const [customer, setCustomer] = useState(null); // Initialized to null
-  //const { email } = useParams(); // Use lowercase for email
-  const navigate = useNavigate();
-  const { CusID } = useParams();
   const [userData, setUserData] = useState({});
+  const { CusID } = useParams(); // Extract CusID from the route
+  const navigate = useNavigate();
 
-  // Fetch customer data
-  // useEffect(() => {
-  //   if (email) {
-  //     axios
-  //       .get(`http://localhost:8076/customers/${email}`)
-  //       .then((res) => {
-  //         setCustomer(res.data.data);
-  //         console.log(res.data.data);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   }
-  // }, [email]);
+  // Fetch customer data based on CusID
   useEffect(() => {
     if (CusID) {
       fetchData();
@@ -48,6 +32,7 @@ const ReadOneHome = () => {
       console.error('Error fetching user data:', error);
     }
   };
+
   // Handle scroll event for navigation highlighting
   useEffect(() => {
     const handleScroll = () => {
@@ -115,6 +100,7 @@ const ReadOneHome = () => {
   const handleAppointmentClick = () => navigate('/appointments/create');
   const handlePackageClick = () => navigate('/pkg/pkgPage');
   const handleServiceClick = () => navigate('/services/servicePage');
+  const handleProfileClick = () => navigate(`/customers/get/${CusID}`);
 
   return (
     <div>
@@ -150,10 +136,10 @@ const ReadOneHome = () => {
           <button onClick={handleAppointmentClick} className="text-pink-500 font-semibold hover:bg-pink-200">
             Make Appointment
           </button>
-          <button onClick={() => navigate(`/customers/get/${userData.CusID}`)} className="text-pink-500 font-semibold hover:bg-pink-200">
-  My Profile
-</button>
 
+          <button onClick={handleProfileClick} className="text-pink-500 font-semibold hover:bg-pink-200">
+            My Profile
+          </button>
 
           <a href="#" onClick={handleLogout} className="text-pink-500 font-semibold hover:underline ml-4">
             Logout
@@ -186,18 +172,15 @@ const ReadOneHome = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Products section */}
         <div id="products" className="bg-gray-200 py-16 px-8 md:px-16 min-h-screen w-[100%] rounded-t-[20%]">
-          <h3 className="text-3xl font-light text-center mb-8 text-black">
-            Products <span className="text-pink-500">&rhard;</span>
-          </h3>
-          <div className="flex flex-col md:flex-row justify-center space-y-8 md:space-y-0 md:space-x-8">
-          <Card CusID={CusID} />
-          </div>
+          <h3 className="text-5xl font-light text-pink-500 mb-16 text-center">Our Services</h3>
+          <Card />
         </div>
+
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };
