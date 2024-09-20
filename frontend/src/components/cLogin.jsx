@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import  backgroundImage from '../images/logobg.jpg'
+import { Link } from 'react-router-dom'; 
+
 function CLogin() {
   const [CusID, setCusID] = useState("");
   const [Password, setPassword] = useState("");
@@ -220,6 +222,14 @@ function CLogin() {
               <span>Log In Now </span>
               <i className="button__icon fas fa-chevron-right" style={buttonIconStyle}><FaArrowAltCircleRight /></i>
             </button>
+            <Link to="/customers/create" style={{ textDecoration: 'none' }}>
+      <button type="submit" style={loginSubmitStyle}>
+        <span>Sign Up</span>
+        <i className="button__icon fas fa-chevron-right" style={buttonIconStyle}>
+          <FaArrowAltCircleRight />
+        </i>
+      </button>
+    </Link>
           </form>
          
         </div>

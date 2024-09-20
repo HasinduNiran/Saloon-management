@@ -127,7 +127,7 @@ const CreateCustomer = () => {
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                   // Handle cancel action if needed
                 }
-                navigate("/customers");
+                navigate("/");
               });
             })
             .catch((error) => {
