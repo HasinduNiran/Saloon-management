@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import backgroundImage from "https://wallpapercave.com/wp/wp8658370.jpg";
 import { FaStar } from "react-icons/fa";
 
@@ -203,15 +201,7 @@ const CreateFeedback = () => {
           <label style={styles.label}>Star Rating</label>
           <div>{renderStars()}</div>
         </div>
-        <div>
-          <label style={styles.label}>Date of Service</label>
-          <DatePicker
-            selected={dateOfService}
-            onChange={(date) => setDateOfService(date)}
-            dateFormat="yyyy-MM-dd"
-            className="date-picker-input text-black"
-          />
-        </div>
+       
         <div>
           <label style={styles.label}>Message</label>
           <textarea
