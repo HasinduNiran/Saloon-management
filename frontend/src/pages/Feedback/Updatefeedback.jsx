@@ -1,328 +1,177 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import backgroundImage from "https://wallpapercave.com/wp/wp8658370.jpg";
-import { FaBolt, FaStar } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const UpdateFeedback = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [employee, setEmployee] = useState("");
-  const [dateOfService, setDateOfService] = useState(new Date());
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [starRating, setStarRating] = useState(null);
-  const [employees, setEmployees] = useState([]);
-  const [feedbackId, setFeedbackId] = useState("");
-  const { id } = useParams();
-  const navigate = useNavigate();
+    const [feedbacks, setFeedbacks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [editFeedback, setEditFeedback] = useState({});
+    const [success, setSuccess] = useState('');
+    const [updateError, setUpdateError] = useState('');
 
-  useEffect(() => {
-    if (id) {
-      fetchFeedbackData();
-      fetchEmployeesData();
-    }
-  }, [id]);
+    // Fetch feedback data on component load
+    useEffect(() => {
+        const fetchFeedbacks = async () => {
+            try {
+                const response = await axios.get('http://localhost:8076/feedback'); // Replace with your API endpoint
+                setFeedbacks(response.data);
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+                setError('Failed to load feedback. Please try again later.');
+                setLoading(false);
+            }
+        };
 
-  const fetchFeedbackData = () => {
-    setLoading(true);
-    axios
-      .get(`http://localhost:8076/feedback/${id}`)
-      .then((response) => {
-        const {
-          _id,
-          name,
-          email,
-          phone_number,
-          employee,
-          date_of_service,
-          message,
-          star_rating,
-        } = response.data;
-        setFeedbackId(_id);
-        setName(name);
-        setEmail(email);
-        setPhoneNumber(phone_number);
-        setEmployee(employee);
-        setDateOfService(new Date(date_of_service));
-        setMessage(message);
-        setStarRating(star_rating);
-      })
-      .catch((error) => {
-        console.error("Error fetching feedback:", error);
-        alert(
-          "An error occurred while fetching feedback. Please try again later."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+        fetchFeedbacks();
+    }, []);
 
-  const fetchEmployeesData = () => {
-    axios
-      .get("http://localhost:8076/employees")
-      .then((response) => {
-        const employeesData = response.data.data;
-        setEmployees(employeesData);
-      })
-      .catch((error) => {
-        console.error("Error fetching employees:", error);
-      });
-  };
-
-  const handleSaveFeedback = () => {
-    const isValidEmail = (email) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+    // Handle edit click
+    const handleEditClick = (feedback) => {
+        setEditMode(true);
+        setEditFeedback(feedback);
+        setSuccess('');
+        setUpdateError('');
     };
 
-    setEmailError("");
-    setPhoneNumber("");
+    // Handle update feedback
+    const handleUpdateFeedback = async (e) => {
+        e.preventDefault();
+        setUpdateError('');
+        setSuccess('');
 
-    if (
-      !name ||
-      !email ||
-      !phoneNumber ||
-      !employee ||
-      !dateOfService ||
-      !message
-    ) {
-      alert("Please fill in all fields before submitting.");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setEmailError("Please enter a valid email address.");
-      return;
-    }
-
-    const phoneRegex = /^\d{10}$/;
-
-    if (!phoneRegex.test(phoneNumber)) {
-      alert("Please enter a valid phone number.");
-      return;
-    }
-
-    const data = {
-      name,
-      email,
-      phone_number: phoneNumber,
-      employee,
-      date_of_service: dateOfService.toISOString(),
-      message,
-      star_rating: starRating,
+        try {
+            await axios.put(`http://localhost:8076/feedback/${editFeedback.id}`, editFeedback); // Replace with your API endpoint
+            setFeedbacks(feedbacks.map((fb) => (fb.id === editFeedback.id ? editFeedback : fb)));
+            setSuccess('Feedback updated successfully!');
+            setEditMode(false);
+        } catch (err) {
+            console.error(err);
+            setUpdateError('Failed to update feedback. Please try again.');
+        }
     };
 
-    setLoading(true);
-    axios
-      .put(`http://localhost:8076/feedback/${feedbackId}`, data)
-      .then(() => {
-        navigate(`/customer/get/${cusID}`);
-      })
-      .catch((error) => {
-        console.error("Error updating feedback:", error);
-        alert(
-          "An error occurred while saving feedback. Please try again later."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-  const Spinner = () => {
-    return <div className="spinner"></div>;
-  };
+    // Handle form field changes
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEditFeedback({ ...editFeedback, [name]: value });
+    };
 
-  const renderStars = () => {
+    if (loading) {
+        return <div>Loading feedback...</div>;
+    }
+
+    if (error) {
+        return <div className="text-red-600">{error}</div>;
+    }
+
     return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        {[...Array(5)].map((_, index) => (
-          <FaStar
-            key={index}
-            className={index < starRating ? "star-filled" : "star-empty"}
-            onMouseOver={() => handleStarHover(index)}
-            onClick={() => handleStarClick(index)}
-            style={{
-              color: index < starRating ? "red" : "gray",
-              height: "50px",width:"50px",
-            }}
-          />
-        ))}
-      </div>
+        <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
+                <h1 className="text-center text-3xl font-extrabold text-gray-900">Update Feedback</h1>
+            </div>
+
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    {updateError && <p className="text-red-600">{updateError}</p>}
+                    {success && <p className="text-green-600">{success}</p>}
+
+                    {editMode ? (
+                        <form onSubmit={handleUpdateFeedback} className="space-y-4">
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    value={editFeedback.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={editFeedback.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    value={editFeedback.message}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="rating" className="block text-sm font-medium text-gray-700">Rating (out of 5)</label>
+                                <input
+                                    id="rating"
+                                    name="rating"
+                                    type="number"
+                                    min="1"
+                                    max="5"
+                                    value={editFeedback.rating}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none transition duration-150 ease-in-out"
+                                >
+                                    Update Feedback
+                                </button>
+                                <button
+                                    onClick={() => setEditMode(false)}
+                                    className="w-full flex justify-center py-2 px-4 mt-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none transition duration-150 ease-in-out"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <ul className="space-y-4">
+                            {feedbacks.map((feedback, index) => (
+                                <li
+                                    key={index}
+                                    className="p-4 border border-gray-300 rounded-lg shadow-sm"
+                                >
+                                    <h2 className="text-xl font-semibold text-gray-800">{feedback.name}</h2>
+                                    <p className="text-sm text-gray-500">{feedback.email}</p>
+                                    <p className="mt-2 text-gray-700">{feedback.message}</p>
+                                    <p className="mt-2 text-yellow-500">Rating: {feedback.rating}/5</p>
+                                    <button
+                                        onClick={() => handleEditClick(feedback)}
+                                        className="mt-4 bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-500 transition duration-150 ease-in-out"
+                                    >
+                                        Edit Feedback
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </div>
     );
-  };
-
-  const handleStarClick = (index) => {
-    setStarRating(index + 1);
-  };
-
-  const handleStarHover = (index) => {
-    setStarRating(index + 1);
-  };
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.formContainer}>
-        <a href="/feedback" style={styles.button}>
-          Back to Feedback
-        </a>
-        <div>
-        <h1 style={styles.heading}>Edit Feedback</h1>
-        {loading && <Spinner />}
-        </div>
-        <div className="p-4">
-          <label style={styles.label}>Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={styles.input}
-          />
-          <label style={styles.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            className={` ${emailError && "border-red-500"}`}
-          />
-          {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-          <label style={styles.label}>Phone Number</label>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            style={styles.input}
-          />
-          <div className="p-4">
-            <label style={styles.label}>Employee</label>
-            <select
-              value={employee}
-              onChange={(e) => setEmployee(e.target.value)}
-              className="border-2 border-gray-500 px-4 py-2 w-full custom-select"
-              style={styles.input}
-            >
-              <option value="">Select Employee</option>
-              {employees.map((employee) => (
-                <option key={employee.id} value={employee.employeeName}>
-                  {employee.employeeName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label style={styles.label}>Star Rating</label>
-            {renderStars()}
-          </div>
-          <label style={styles.label}>Date Of Service</label>
-          <DatePicker
-            selected={dateOfService}
-            onChange={(date) => setDateOfService(date)}
-            className="date-picker-input text-black" 
-          />
-          <label style={styles.label}>Message</label>
-          <input
-            type="text"
-            value={message}
-            style={styles.text}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </div>
-        <div style={styles.buttonContainer}>
-          <button
-            style={styles.button}
-            disabled={loading}
-            onClick={handleSaveFeedback}
-          >
-            {loading ? "Editing..." : "Edit Feedback"}
-            Save
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 };
 
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  },
-  formContainer: {
-    width: "80%",
-    backgroundColor: "rgba(5, 4, 2, 0.8)",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.8)",
-    padding: "20px",
-    border: "2px solid red",
-    borderColor: "red",
-    margin: "10px",
-    textAlign: "center",
-    position: "relative",
-    alignItems: "center",
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: "0.5rem",
-    fontSize: "1.2rem",
-    color: "red",
-    textAlign: "center",
-    width: "100%",
-    padding: "10px",
-    textTransform: "uppercase",
-  },
-  input: {
-    width: "60%",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "black",
-    color: "white",
-    fontSize: "1.2rem",
-    marginBottom: "10px",
-    textAlign: "left",
-  },
-  text: {
-    width: "65%",
-    height: "100px",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "black",
-    color: "white",
-    fontSize: "1.2rem",
-    marginBottom: "10px",
-    textAlign: "left",
-  },
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  button: {
-    backgroundColor: "#ff0000",
-    color: "black",
-    FaBolt: "true",
-    padding: "10px 20px",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    transition: "background-color 0.8s",
-  },
-  heading: {
-    fontSize: '3rem',
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold'
-  },
-};
-
-export default EditFeedback;
+export default UpdateFeedback;
