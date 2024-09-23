@@ -66,7 +66,7 @@ const CreateFeedback = () => {
           showConfirmButton: true,
           timer: 2000,
         });
-        navigate("/thank-you");
+        navigate(`/customers/get/${cusID}`);
       })
       .catch((error) => {
         setLoading(false);
