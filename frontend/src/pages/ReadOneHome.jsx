@@ -137,6 +137,10 @@ const ReadOneHome = () => {
             Make Appointment
           </Link>
 
+          <Link to={`/feedback/create/${userData.CusID}`} className="text-pink-500 font-semibold hover:bg-pink-200">
+            Make Feedback
+          </Link>
+
           <button onClick={handleProfileClick} className="text-pink-500 font-semibold hover:bg-pink-200">
             My Profile
           </button>

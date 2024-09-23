@@ -73,10 +73,22 @@ import MyOrder from "./pages/Cart/MyOrder";
 import AllOrders from "./pages/Cart/AllOrders";
 import DeleteOrder from "./pages/Cart/DeleteOrder";
 
+
+import CreateFeedback from "./pages/Feedback/createfeedback";
+import UpdateFeedback from "./pages/Feedback/Updatefeedback";
+import ShowFeedback from "./pages/Feedback/ShowFeedback";
+import Readfeedback from "./pages/Feedback/Readfeedback";
+
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/feedback/create/:CusID" element={<CreateFeedback />} />
+      <Route path="/feedback/edit/:id" element={<UpdateFeedback />} />
+      <Route path="/feedback/view/:id" element={<Readfeedback />} />
+      <Route path="/Feedback" element={<ShowFeedback />} />
+
+
       <Route path="/appointments/allAppointment" element={<ShowAppointment />} />
       <Route path="/appointments/create/:CusID" element={<CreateAppointment />} />
       <Route path="/appointments/delete/:id" element={<DeleteAppointment />} />

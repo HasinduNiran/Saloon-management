@@ -13,6 +13,7 @@ const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
   const [orders, setOrders] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOrders, setExpandedOrders] = useState({});
   const { id: CusID } = useParams();
@@ -29,6 +30,9 @@ const ReadOneCustomer = () => {
 
         const appointmentsResponse = await axios.get(`http://localhost:8076/appointments/${CusID}`);
         setAppointments(appointmentsResponse.data);
+
+        const feedbackResponse = await axios.get(`http://localhost:8076/feedback/${CusID}`);
+        setFeedbacks(feedbackResponse.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -59,14 +63,12 @@ const ReadOneCustomer = () => {
       console.error("Error deleting order:", error);
       Swal.fire("Error", "Failed to delete order", "error");
     }
-    window.location.reload();
   };
 
   const handleDeleteAppointment = async (appointmentId) => {
     try {
       const response = await axios.delete(`http://localhost:8076/appointments/${appointmentId}`);
       if (response.status === 200) {
-        // Remove the deleted appointment from the appointments state
         setAppointments((prevAppointments) => 
           prevAppointments.filter((appointment) => appointment._id !== appointmentId)
         );
@@ -80,8 +82,21 @@ const ReadOneCustomer = () => {
     }
   };
 
-  const handleDownloadBill = () => {
-    Swal.fire("Download", "Bill download feature is not implemented yet.", "info");
+  const handleDeleteFeedback = async (feedbackId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8076/feedback/${feedbackId}`);
+      if (response.status === 200) {
+        setFeedbacks((prevFeedbacks) => 
+          prevFeedbacks.filter((feedback) => feedback._id !== feedbackId)
+        );
+        Swal.fire("Success", "Feedback deleted successfully", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete feedback", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+      Swal.fire("Error", "Failed to delete feedback", "error");
+    }
   };
 
   const containerStyle = {
@@ -150,7 +165,6 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600 font-semibold">Stylist: {appointment.stylist}</p>
                     <p className="text-gray-600 font-semibold">Service: {appointment.services}</p>
                     <p className="text-gray-600 font-semibold">Packages: {appointment.packages}</p>
-                    <p className="text-gray-600 font-semibold">Customize Package: {appointment.packages}</p>
 
                     <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
                       <Link
@@ -238,6 +252,35 @@ const ReadOneCustomer = () => {
                 ))
               ) : (
                 <p className="text-center text-gray-600">No orders found</p>
+              )}
+            </div>
+
+            {/* Feedback Section */}
+            <div className="p-6 border-t">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Feedback</h2>
+              {feedbacks.length > 0 ? (
+                feedbacks.map((feedback) => (
+                  <div key={feedback._id} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative">
+                    <h3 className="text-lg font-semibold mb-2">Feedback ID: {feedback._id}</h3>
+                    <p className="text-gray-600">{feedback.message}</p>
+                    <p className="text-gray-600">Rating: {feedback.star_rating} / 5</p>
+
+                    <div className="absolute top-4 right-4 space-x-2 flex">
+                      <Link to={`/feedback/edit/${feedback._id}`} className="text-yellow-500 hover:text-yellow-700" title="Edit">
+                        <FaEdit size={24} />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteFeedback(feedback._id)}
+                        className="text-red-500 hover:text-red-700"
+                        title="Delete"
+                      >
+                        <FaTrash size={24} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">No feedback found</p>
               )}
             </div>
           </div>
