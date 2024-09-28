@@ -66,12 +66,12 @@ const CreateStore = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (!validateFields()) return;
-
+  
     const storageRef = ref(storage, `store_images/${image.name}`);
     const uploadTask = uploadBytesResumable(storageRef, image);
-
+  
     uploadTask.on(
       "state_changed",
       (snapshot) => {},
@@ -83,13 +83,13 @@ const CreateStore = () => {
           const data = {
             ItemNo,
             ItemName,
-            Quantity,
-            cost,
-            SPrice,
+            Quantity: parseInt(Quantity), // Convert to integer
+            cost: parseFloat(cost), // Convert to float
+            SPrice: parseFloat(SPrice), // Convert to float
             Description,
             image: downloadURL,
           };
-
+  
           axios.post("http://localhost:8076/store", data)
             .then((response) => {
               if (response.status === 201) {
@@ -103,13 +103,25 @@ const CreateStore = () => {
               }
             })
             .catch((error) => {
-              setError(error.message);
+              // Check if the error is due to a duplicate key
+              if (error.response && error.response.status === 400) {
+                // Customize this message based on the backend error response
+                Swal.fire({
+                  title: "Error!",
+                  text: "Duplicate Item No detected. Please use a unique Item No.",
+                  icon: "error",
+                  confirmButtonText: "Okay",
+                });
+              } else {
+                setError(error.message);
+              }
               setLoading(false);
             });
         });
       }
     );
   };
+  
   const containerStyle = {
    
     backgroundImage: `url(${backgroundImage})`,

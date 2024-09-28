@@ -188,12 +188,14 @@ const ReadOneCustomer = () => {
               )}
             </div>
 
-            {/* Orders Section */}
             <div className="p-6 border-t">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Orders</h2>
               {orders.length > 0 ? (
                 orders.map((order) => (
-                  <div key={order._id} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative">
+                  <div
+                    key={order._id}
+                    className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative"
+                  >
                     <h3 className="text-lg font-semibold mb-2">Order ID: {order.orderId}</h3>
                     <p className="text-gray-600">Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
                     <div className="flex space-x-4 mt-4">
@@ -217,43 +219,65 @@ const ReadOneCustomer = () => {
                             <ul className="list-disc pl-5 mb-2">
                               {order.items.map((item) => (
                                 <li key={item.itemId} className="text-gray-700">
-                                  {item.title}  Price: Rs, {item.SPrice}
-                                </li>
+                               <p>{item.ItemName} </p>
+                               <p>Qty: {item.quantity}</p>  
+                               <p>Price: Rs. {(item.SPrice * item.quantity).toFixed(2)}</p>
+                               
+                            </li>
                               ))}
                             </ul>
                           </div>
+
+                          <div className="flex-1 px-4 border-r border-gray-300">
+                            <h3 className="text-lg font-semibold mb-2">Customer Information:</h3>
+                            <p>Name: {order.customerInfo.FirstName || 'N/A'}</p>
+                            <p>Email: {order.customerInfo.Email || 'N/A'}</p>
+                            <p>Mobile: {order.customerInfo?.ContactNo || 'N/A'}</p>
+                          </div>
+
+                          <div className="flex-1 pl-4">
+                            {order.deliveryInfo?.address ? (
+                              <div>
+                                <h3 className="text-lg font-semibold mb-2">Delivery Information:</h3>
+                                <p>Address: {order.deliveryInfo.address}</p>
+                                <p>City: {order.deliveryInfo.city}</p>
+                                <p>Postal Code: {order.deliveryInfo.postalCode}</p>
+                                <p>Delivery Method: Delivery</p>
+                              </div>
+                            ) : (
+                              <p>No delivery information provided.</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="text-gray-600 mt-2">Payment Method: {order.paymentMethod}</p>
+
+                        <div className="flex space-x-2 mt-4">
+                        <button
+  onClick={() => handleDeleteOrder(order.orderId)} // Ensure this matches your order structure
+  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+>
+  Delete
+</button>
+
+                         
                         </div>
                       </div>
                     )}
 
-                    <div className="absolute top-4 right-4 space-x-2 flex">
-                      <button
-                        className="text-blue-500 hover:underline"
-                        onClick={() => handleToggleExpand(order._id)}
-                      >
-                        {expandedOrders[order._id] ? 'Hide Details' : 'Show Details'}
-                      </button>
-                      <Link
-                        to={`/order/edit/${order._id}`}
-                        className="text-yellow-500 hover:text-yellow-700"
-                        title="Edit"
-                      >
-                        <FaEdit size={24} />
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteOrder(order._id)}
-                        className="text-red-500 hover:text-red-700"
-                        title="Delete"
-                      >
-                        <FaTrash size={24} />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleToggleExpand(order._id)}
+                      className="absolute top-4 right-4 bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
+                    >
+                      {expandedOrders[order._id] ? "Show Less" : "Show More"}
+                    </button>
                   </div>
                 ))
               ) : (
                 <p className="text-center text-gray-600">No orders found</p>
               )}
             </div>
+
 
             {/* Feedback Section */}
             <div className="p-6 border-t">
@@ -276,6 +300,7 @@ const ReadOneCustomer = () => {
                       >
                         <FaTrash size={24} />
                       </button>
+                      
                     </div>
                   </div>
                 ))
@@ -283,6 +308,14 @@ const ReadOneCustomer = () => {
                 <p className="text-center text-gray-600">No feedback found</p>
               )}
             </div>
+            <button
+  className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
+  onClick={() => { window.location.href = `/editCustomer1/${CusID}` }}
+>
+  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
+    Edit Profile
+  </span>
+</button>
           </div>
         )}
       </div>

@@ -7,7 +7,7 @@ import { MdOutlineDelete } from 'react-icons/md';
 import Spinner from "../../components/Spinner";
 import CustomerReport from './CustomerReport';
 import Nav from '../../components/Dashborad/DashNav';
-import SideBar from '../../components/Dashborad/Sidebar';
+import SideBar from '../Customer/SideBar3';
 
 const ShowAllCustomers = () => {
     const [customers, setCustomers] = useState([]);
@@ -86,11 +86,11 @@ const ShowAllCustomers = () => {
                             <option value="Female">Female</option>
                         </select>
 
-                        <button class="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
+                        {/* <button class="relative inline-flex items-center justify-center p-0.5  me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500  group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
                     <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black dark:bg-gray-100 rounded-md group-hover:bg-opacity-0"  onClick={() => (window.location.href = "/customers/create")}>
                         Add
                     </span>
-                    </button>
+                    </button> */}
                     </div>
                 </div>
 
@@ -132,12 +132,12 @@ const ShowAllCustomers = () => {
                                                     <td className="px-4 py-2">{customer.ContactNo}</td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex justify-center gap-x-4">
-                                                            <Link to={`/customers/get/${customer._id}`} title="View Details">
+                                                            {/* <Link to={`/customers/get/${customer._id}`} title="View Details">
                                                                 <BsInfoCircle className="text-xl text-green-600 hover:text-green-800 transition-colors" />
-                                                            </Link>
-                                                            <Link to={`/customers/edit/${customer._id}`} title="Edit">
+                                                            </Link> */}
+                                                            {/* <Link to={`/customers/edit/${customer._id}`} title="Edit">
                                                                 <AiOutlineEdit className="text-xl text-yellow-600 hover:text-yellow-800 transition-colors" />
-                                                            </Link>
+                                                            </Link> */}
                                                             <Link to={`/customers/delete/${customer._id}`} title="Delete">
                                                                 <MdOutlineDelete className="text-xl text-red-600 hover:text-red-800 transition-colors" />
                                                             </Link>

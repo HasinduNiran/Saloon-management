@@ -10,7 +10,7 @@ import Logo from '../../images/logo.png';
 
 const EditCustomer = () => {
   const [customer, setCustomer] = useState({
-    CusID: '',
+    CusID: '',  // Ensuring CusID is part of the state
     FirstName: '',
     LastName: '',
     Age: '',
@@ -27,12 +27,13 @@ const EditCustomer = () => {
 
   const storage = getStorage(app);
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { CusID } = useParams();  // Extracting CusID from URL params
 
+  // Use CusID to fetch the customer
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:8076/customers/${id}`)
+      .get(`http://localhost:8076/customers/${CusID}`)  // Fetch based on CusID
       .then((response) => {
         setCustomer(response.data);
         setLoading(false);
@@ -50,7 +51,7 @@ const EditCustomer = () => {
         });
         console.log(error);
       });
-  }, [id]);
+  }, [CusID]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,22 +120,22 @@ const EditCustomer = () => {
 
       if (customer.image && customer.image instanceof File) {
         // Upload the image to Firebase Storage
-        const storageRef = ref(storage, `customer_images/${id}`);
+        const storageRef = ref(storage, `customer_images/${CusID}`);  // Use CusID for image storage
         const uploadTask = await uploadBytesResumable(storageRef, customer.image);
         
         // Get the download URL after the image is uploaded
         imageUrl = await getDownloadURL(uploadTask.ref);
       } else if (customer.image) {
         // If there is an existing image, get its URL
-        imageUrl = customer.image; // Ensure you keep the existing URL if no new image is uploaded
+        imageUrl = customer.image; // Keep the existing URL if no new image is uploaded
       }
   
       // Update customer with the new image URL (or existing one)
       const updatedCustomer = { ...customer, image: imageUrl };
-      await axios.patch(`http://localhost:8076/customers/${id}`, updatedCustomer);
+      await axios.patch(`http://localhost:8076/customers/${CusID}`, updatedCustomer);  // Update by CusID
   
       setLoading(false);
-      navigate(`/customers/get/${id}`);
+      navigate(`/customers/get/${CusID}`);  // Redirect using CusID
     } catch (error) {
       setLoading(false);
       console.error('Error updating customer:', error);
@@ -145,6 +146,8 @@ const EditCustomer = () => {
       });
     }
 };
+
+  
 
   
   const containerStyle = {
