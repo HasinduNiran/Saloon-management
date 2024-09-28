@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "sweetalert2": "^11.12.4"
+    "node-cron": "^3.0.3",
+    "sweetalert2": "^11.14.1"
   },
   "name": "saloon-management",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

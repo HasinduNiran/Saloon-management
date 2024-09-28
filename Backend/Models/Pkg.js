@@ -46,7 +46,6 @@ const pkgSchema = mongoose.Schema(
         },
         conditions: {
             type: String,
-            required: true
         },
         package_type: {
             type: String,

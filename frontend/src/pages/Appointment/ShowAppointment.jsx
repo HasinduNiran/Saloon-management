@@ -114,7 +114,7 @@ const generatePDF = () => {
 
     // Show Date and Time as points above the table (per appointment)
     doc.setFontSize(10).setTextColor("#333");
-    doc.text(`Appointment Date: ${appointment.appoi_date}`, 15, doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 60);
+    doc.text(`Appointment Date: ${appointment.appoi_date.slice(0, 10)}`, 15, doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 60);
     doc.text(`Appointment Time: ${appointment.appoi_time}`, 15, doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : 65);
   });
 
@@ -131,7 +131,7 @@ const generatePDF = () => {
   doc.text(`Report Generated Date: ${date}`, 105, 35, { align: "center" });
 
   doc.setFont("helvetica", "normal").setFontSize(10).setTextColor("#999");
-  doc.text("Saloon, Gampaha", 105, 45, { align: "center" });
+  doc.text("Saloon, Pannipitiya", 105, 45, { align: "center" });
 
   doc.setDrawColor(0, 0, 0).setLineWidth(0.5);
   doc.line(10, 49, 200, 49);
