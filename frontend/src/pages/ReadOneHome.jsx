@@ -145,7 +145,7 @@ const ReadOneHome = () => {
             My Profile
           </button>
 
-          <a href="#" onClick={handleLogout} className="text-pink-500 font-semibold hover:underline ml-4">
+          <a href="/" onClick={handleLogout} className="text-pink-500 font-semibold hover:underline ml-4">
             Logout
           </a>
         </div>

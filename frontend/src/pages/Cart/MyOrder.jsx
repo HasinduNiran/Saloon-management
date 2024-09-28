@@ -3,7 +3,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import Spinner from "../../components/Spinner";
- // Ensure this component exists
 
 const MyOrder = () => {
     const { CusID } = useParams(); // Get CusID from URL params
@@ -73,7 +72,6 @@ const MyOrder = () => {
                         <h2 className="text-xl font-semibold mb-2">
                             Order ID: {order._id}
                         </h2>
-                        {/* <p className="text-gray-600">Status: {order.status}</p> */}
                         <p className="text-gray-600 mt-2">
                             Order Date: {new Date(order.createdAt).toLocaleDateString()}
                         </p>
@@ -94,15 +92,15 @@ const MyOrder = () => {
                                 </div>
                             ))}
                         </div>
-                        {/* <p className="text-gray-800 font-semibold mt-4">
-                            {/* Total Cost: $ */}
-                            {/* {order.items
+                        <p className="text-gray-800 font-semibold mt-4">
+                            Total Cost: $
+                            {order.items
                                 .reduce(
                                     (total, item) => total + item.SPrice * item.quantity,
                                     0
                                 )
-                                .toFixed(2)} */}
-                        {/* </p> */} 
+                                .toFixed(2)}
+                        </p>
 
                         {expandedOrders[order._id] && (
                             <div className="mt-4">
@@ -112,9 +110,8 @@ const MyOrder = () => {
                                         <ul className="list-disc pl-5 mb-2">
                                             {order.items.map((item) => (
                                                 <li key={item.itemId} className="text-gray-700">
-                                                    {/* {item.title} - Qty: {item.Quantity} -  */}
-                                                    Price:Rs.{item.SPrice}
-                                                    {/* {(item.SPrice * item.Quantity).toFixed(2)} */}
+                                                    {item.ItemName} - Qty: {item.quantity} - Price: $
+                                                    {(item.SPrice * item.quantity).toFixed(2)}
                                                 </li>
                                             ))}
                                         </ul>
@@ -130,7 +127,7 @@ const MyOrder = () => {
                                     </div>
 
                                     <div className="flex-1 pl-4">
-                                        {order.deliveryInfo.address ? (
+                                        {order.deliveryInfo?.address ? (
                                             <div>
                                                 <h3 className="text-lg font-semibold mb-2">
                                                     Delivery Information:
@@ -143,9 +140,9 @@ const MyOrder = () => {
                                         ) : (
                                             <div>
                                                 <h3 className="text-lg font-semibold mb-2">
-                                                    
+                                                    Delivery Information:
                                                 </h3>
-                                                <p></p>
+                                                <p>N/A</p>
                                             </div>
                                         )}
                                     </div>
@@ -165,7 +162,7 @@ const MyOrder = () => {
                                         onClick={() => handleDownloadBill(order)}
                                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                                     >
-                                       
+                                        Download Bill
                                     </button>
                                 </div>
                             </div>

@@ -44,7 +44,7 @@ import ReadOneInventory from "./pages/Inventory/ReadOneInventory";
 
 import CreateCustomer from "./pages/Customer/CreateCustomer";
 import DeleteCustomer from "./pages/Customer/DeleteCustomer";
-import EditCustomer from "./pages/Customer/EditCustomer";
+//import EditCustomer from "./pages/Customer/EditCustomer";
 import ShowAllCustomers from "./pages/Customer/ShowAllCustomers";
 import ReadOneCustomer from "./pages/Customer/ReadOneCustomer";
 
@@ -78,6 +78,8 @@ import CreateFeedback from "./pages/Feedback/createfeedback";
 import UpdateFeedback from "./pages/Feedback/Updatefeedback";
 import ShowFeedback from "./pages/Feedback/ShowFeedback";
 import Readfeedback from "./pages/Feedback/Readfeedback";
+
+import EditCustomer1 from "./pages/Customer/EditCustomer1";
 
 const App = () => {
   return (
@@ -129,7 +131,7 @@ const App = () => {
 
       <Route path="/customers/create" element={<CreateCustomer />} />
       <Route path="/customers/delete/:id" element={<DeleteCustomer />} />
-      <Route path="/customers/edit/:id" element={<EditCustomer />} />
+      {/* <Route path="/customers/edit/:id" element={<EditCustomer />} /> */}
       <Route path="/customers/get/:id" element={<ReadOneCustomer />} />
       <Route path="/customers" element={<ShowAllCustomers />} />
 
@@ -159,6 +161,8 @@ const App = () => {
       <Route path="/employeesalary/create" element={<CreateEmployeeSalary />} />
       <Route path="/employeesalary/delete/:id" element={<DeleteEmployeeSalary />} />
       <Route path="/employeesalary/allEmployeeSalary" element={<ShowEmployeeSalary />} />
+
+      <Route path="/editCustomer1/:CusID" element={<EditCustomer1 />} />
     </Routes>
   );
 };
