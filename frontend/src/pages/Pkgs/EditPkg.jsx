@@ -132,60 +132,57 @@ const EditPkg = () => {
                     {error && <p className="text-red-600 text-center mb-4">{error}</p>}
                     <form onSubmit={handleUpdatePackage} className='space-y-4'>
 
-                         {/* Category */}
-                         <div>
-                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
-                            <div className="flex items-center space-x-4">
-                            <label className="flex items-center">
-                            <input
-                                
-                                type="radio"
-                                value="Hair"
-                                chacked={category === 'Hair'}
-                                onChange={() => setCategory('Hair')}
-                                className="mr-2"
-                                required
-                            />
-                             <span className="ml-2">Hair</span>
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                
-                                type="radio"
-                                value="Weddings"
-                                chacked={category === 'Weddings'}
-                                onChange={() => setCategory('Weddings')}
-                                className="mr-2"
-                                required
-                            />
-                             <span className="ml-2">Weddings</span>
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                
-                                type="radio"
-                                value="Skin Care"
-                                chacked={category === 'Skin Care'}
-                                onChange={() => setCategory('Skin Care')}
-                                className="mr-2"
-                                required
-                            />
-                            <span className="ml-2">Skin Care</span>
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                               
-                                type="radio"
-                                 value="Nail"
-                                chacked={category === 'Nail'}
-                                onChange={() => setCategory('Nail')}
-                                className="mr-2"
-                                required
-                            />
-                             <span className="ml-2">Nail</span>
-                            </label>
-                            </div>
-                        </div>
+                          {/* Category */}
+<div>
+    <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
+    <div className="flex items-center space-x-4">
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Hair"
+                checked={category === 'Hair'}
+                onChange={() => setCategory('Hair')}
+                className="mr-2"
+                required
+            />
+            Hair
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Weddings"
+                checked={category === 'Weddings'}
+                onChange={() => setCategory('Weddings')}
+                className="mr-2"
+                required
+            />
+            Weddings
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Skin Care"
+                checked={category === 'Skin Care'}
+                onChange={() => setCategory('Skin Care')}
+                className="mr-2"
+                required
+            />
+            Skin Care
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Nail"
+                checked={category === 'Nail'}
+                onChange={() => setCategory('Nail')}
+                className="mr-2"
+                required
+            />
+            Nail
+        </label>
+    </div>
+</div>
+
 
                         <div>
                             <label htmlFor="p_name" className="block text-sm font-medium leading-5 text-gray-700">Package Name:</label>
