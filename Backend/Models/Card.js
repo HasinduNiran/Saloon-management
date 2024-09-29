@@ -14,7 +14,7 @@ const cardSchema = mongoose.Schema({
     },
     Cardno: {
         type: String,
-        unique: true
+      
     },
     expMonth: {
         type: String,
