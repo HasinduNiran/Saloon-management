@@ -62,12 +62,25 @@ const ShowSuppliers = () => {
                 <p className="text-gray-800 mt-2">{supplier.Email}</p>
                 <div className="text-gray-800 mt-4">
                   <p><strong>SupplierID:</strong> {supplier.SupplierID}</p>
-                  <p><strong>Item No:</strong> {supplier.ItemNo}</p>
-                  <p><strong>Item Name:</strong> {supplier.ItemName}</p>
                   <p><strong>Contact No:</strong> {supplier.ContactNo}</p>
                   <p><strong>Address:</strong> {supplier.Address}</p>
                 </div>
               </div>
+            </div>
+
+            <div className="p-6 border-t">
+              <h3 className="text-xl font-bold text-gray-800">Items Supplied:</h3>
+              {supplier.Items && supplier.Items.length > 0 ? (
+                <ul className="list-disc pl-5 mt-2">
+                  {supplier.Items.map(item => (
+                    <li key={item.ItemNo} className="text-gray-800">
+                      <strong>Item No:</strong> {item.ItemNo} - <strong>Item Name:</strong> {item.ItemName}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-800">No items supplied.</p>
+              )}
             </div>
 
             <div className="flex justify-center p-6 border-t">
