@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaEdit, FaTrash, FaPlus, FaEnvelope } from "react-icons/fa"; 
 import { BsInfoCircle } from 'react-icons/bs';
+import { AiOutlineEdit } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -114,8 +115,7 @@ const generatePDF = () => {
 
     // Show Date and Time as points above the table (per appointment)
     doc.setFontSize(10).setTextColor("#333");
-    doc.text(`Appointment Date: ${appointment.appoi_date.slice(0, 10)}`, 15, doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 60);
-    doc.text(`Appointment Time: ${appointment.appoi_time}`, 15, doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : 65);
+    
   });
 
   const date = new Date().toLocaleDateString();
@@ -263,6 +263,9 @@ const generatePDF = () => {
                 >
                   <FaTrash size={20} />
                 </Link>
+                <Link to={`/appointments/edit/${appointment._id}`} title="Edit">
+                  <AiOutlineEdit className="text-xl text-yellow-600 hover:text-yellow-800 transition-colors" />
+                  </Link>
 
                 {/* "Send Email" Button */}
                 <a

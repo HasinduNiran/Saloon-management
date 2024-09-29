@@ -120,7 +120,7 @@ const EditAppointment = () => {
           timer: 2000,
         });
         setTimeout(() => {
-        navigate(`/appointments/allAppointment`);
+        navigate(`/customers/get/${CusID}`);
       },2000);
     })
       .catch((error) => {

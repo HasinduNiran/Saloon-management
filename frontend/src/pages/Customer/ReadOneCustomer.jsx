@@ -167,14 +167,14 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600 font-semibold">Packages: {appointment.packages}</p>
 
                     <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
-                      <Link
+                    <Link
                         className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
                         to={`/appointments/details/${appointment._id}`}
                         title="View Details"
                       >
                         <BsInfoCircle size={24} />
                       </Link>
-                      <Link to={`/appointments/edit/${appointment._id}`}>
+                      <Link to={`/cusappointments/edit/${appointment._id}`}>
                         <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" size={24} title="Edit" />
                       </Link>
                       <Link to="#" onClick={() => handleDeleteAppointment(appointment._id)}>

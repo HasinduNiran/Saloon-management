@@ -10,6 +10,8 @@ import DeleteAppointment from "./pages/Appointment/DeleteAppointment";
 import EditAppointment from "./pages/Appointment/EditAppointment";
 import ReadOneAppointment from "./pages/Appointment/ReadOneAppointment";
 
+import CusEditAppointment from "./pages/Customer/CusEditAppointment";
+
 import ShowService from "./pages/SaloonService/ShowService";
 import CreateService from "./pages/SaloonService/CreateService";
 import DeleteService from "./pages/SaloonService/DeleteService";
@@ -97,6 +99,8 @@ const App = () => {
       <Route path="/appointments/delete/:id" element={<DeleteAppointment />} />
       <Route path="/appointments/edit/:id" element={<EditAppointment />} />
       <Route path="/appointments/details/:id" element={<ReadOneAppointment />} />
+
+      <Route path="/cusappointments/edit/:id" element={<CusEditAppointment />} />
 
       <Route path="/services/allService" element={<ShowService />} />
       <Route path="/services/create" element={<CreateService />} />
