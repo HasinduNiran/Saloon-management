@@ -43,6 +43,7 @@ import EditInventory from "./pages/Inventory/EditInventory";
 import ReadOneInventory from "./pages/Inventory/ReadOneInventory";
 
 import CreateCustomer from "./pages/Customer/CreateCustomer";
+import CreateCustomer1 from "./pages/Customer/CreateCustomer1";
 import DeleteCustomer from "./pages/Customer/DeleteCustomer";
 //import EditCustomer from "./pages/Customer/EditCustomer";
 import ShowAllCustomers from "./pages/Customer/ShowAllCustomers";
@@ -130,6 +131,8 @@ const App = () => {
       <Route path="/inventories/details/:id" element={<ReadOneInventory />} />
 
       <Route path="/customers/create" element={<CreateCustomer />} />
+      <Route path="/customers1/create" element={<CreateCustomer1 />} />
+
       <Route path="/customers/delete/:id" element={<DeleteCustomer />} />
       {/* <Route path="/customers/edit/:id" element={<EditCustomer />} /> */}
       <Route path="/customers/get/:id" element={<ReadOneCustomer />} />

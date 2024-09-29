@@ -53,7 +53,7 @@ const Sidebar3 = () => {
             <li>
             <button
                             className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-blue-900 to-blue-500 group-hover:to-blue-500 hover:text-white"
-                            onClick={() => (window.location.href = "customers/create")}
+                            onClick={() => (window.location.href = "/customers1/create")}
                           
                         >
                             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">

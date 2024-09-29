@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 //import ItemCard from "./ItemCard";
 import Spinner from "../../components/Spinner";
 import Hcard from "../HomeCard/Hcard";
+import BackButton from "../../components/BackButton";
 
 const Cart = () => {
   const { CusID } = useParams(); // Extract CusID from route parameters
@@ -101,7 +102,10 @@ const Cart = () => {
   }
 
   return (
+    <div>
+      <BackButton destination={`/itemdis/${CusID}`} />
     <div className="min-h-screen p-8 flex flex-col items-center">
+      
       <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10">
         <div className="w-full lg:w-2/3 space-y-6">
           <h1 className="text-3xl font-semibold mb-4">Your Cart</h1>
@@ -207,6 +211,7 @@ const Cart = () => {
                     </div>
                 </div>
             </div>
+    </div>
     </div>
   );
 };

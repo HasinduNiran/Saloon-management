@@ -7,6 +7,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { app } from "../../config/firebase";
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
+import BackButton from "../../components/BackButton";
 
 const CreateCustomer = () => {
   const [FirstName, setFirstName] = useState("");
@@ -116,7 +117,7 @@ const CreateCustomer = () => {
             } else if (result.dismiss === Swal.DismissReason.cancel) {
               // Handle cancel action if needed
             }
-            navigate("/");
+            navigate("/customers");
           });
         })
         .catch((error) => {
@@ -180,6 +181,7 @@ const CreateCustomer = () => {
 
   return (
     <div style={containerStyle}>
+        <BackButton destination={`/customers`} />
       <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
           <img className="mx-auto h-10 w-auto ml-[45%]" 

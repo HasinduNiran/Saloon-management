@@ -58,8 +58,8 @@ const EditCustomer = () => {
     let error = "";
 
     // Validation logic
-    if (name === 'ContactNo' && !/^(07\d{8})$/.test(value)) {
-      error = "Phone number must start with '07' and be exactly 10 digits long.";
+    if (name === 'ContactNo' && !/^(0\d{9})$/.test(value)) {
+      error = "Phone number must start with '0' and be exactly 10 digits long.";
     }
 
     if (name === 'FirstName' && !/^[A-Z][a-z]*$/.test(value)) {
