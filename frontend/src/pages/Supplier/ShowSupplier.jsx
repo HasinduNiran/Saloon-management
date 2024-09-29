@@ -16,33 +16,31 @@ const ShowSupplier = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        setLoading(true);
-        axios
-            .get('http://localhost:8076/suppliers')
-            .then((response) => {
+        const fetchSuppliers = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get('http://localhost:8076/suppliers');
                 setSupplier(response.data.data);
-                setFilteredSuppliers(response.data.data); // Initialize filteredSuppliers
+                setFilteredSuppliers(response.data.data);
+            } catch (error) {
+                console.error("Error fetching suppliers:", error);
+            } finally {
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.log(error);
-                setLoading(false);
-            });
+            }
+        };
+        
+        fetchSuppliers();
     }, []);
 
     useEffect(() => {
-        if (searchQuery === '') {
-            setFilteredSuppliers(suppliers);
-        } else {
-            const query = searchQuery.toLowerCase();
-            setFilteredSuppliers(
-                suppliers.filter(supplier =>
-                    Object.values(supplier).some(
-                        value => value && value.toString().toLowerCase().includes(query)
-                    )
+        const query = searchQuery.toLowerCase();
+        setFilteredSuppliers(
+            suppliers.filter(supplier =>
+                Object.values(supplier).some(value => 
+                    value && value.toString().toLowerCase().includes(query)
                 )
-            );
-        }
+            )
+        );
     }, [searchQuery, suppliers]);
 
     const handleSearchChange = (event) => {
@@ -50,6 +48,11 @@ const ShowSupplier = () => {
     };
 
     const handleEmailClick = (email) => {
+        if (!email) {
+            alert('Email address not available');
+            return;
+        }
+
         const emailSubject = encodeURIComponent('Urgent: Low Item Quantity Alert');
         const emailBody = encodeURIComponent(`Dear Supplier Manager,\n\nWe have identified that the quantity of one or more items is running low. We kindly request that you arrange for new supplies at your earliest convenience.\n\nBest regards,\nYour Company`);
         const mailtoLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
@@ -74,8 +77,11 @@ const ShowSupplier = () => {
                             onChange={handleSearchChange}
                             className='border border-gray-300 p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500'
                         />
-                        <button className='relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800'>
-                            <span className='relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0' onClick={() => (window.location.href = "/suppliers/create")}>
+                        <button 
+                            className='relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800'
+                            onClick={() => (window.location.href = "/suppliers/create")}
+                        >
+                            <span className='relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-100 rounded-md group-hover:bg-opacity-0'>
                                 Add
                             </span>
                         </button>
@@ -95,51 +101,50 @@ const ShowSupplier = () => {
                                         <tr>
                                             <th className='px-4 py-2 text-left font-semibold'>SupplierID</th>
                                             <th className='px-4 py-2 text-left font-semibold'>SupplierName</th>
-                                            <th className='px-4 py-2 text-left font-semibold max-md:hidden'>ItemNo</th>
-                                            <th className='px-4 py-2 text-left font-semibold max-md:hidden'>ItemName</th>
-                                            <th className='px-4 py-2 text-left font-semibold max-md:hidden'>ContactNo</th>
-                                            <th className='px-4 py-2 text-left font-semibold max-md:hidden'>Email No</th>
-                                            <th className='px-4 py-2 text-left font-semibold max-md:hidden'>Address</th>
-                                            <th className='px-4 py-2 text-left font-semibold'>Operations</th>
+                                            <th className='px-4 py-2 text-left font-semibold'>ContactNo</th>
+                                            <th className='px-4 py-2 text-left font-semibold'>Email</th>
+                                            <th className='px-4 py-2 text-left font-semibold'>Items</th>
+                                            <th className='px-4 py-2 text-left font-semibold'>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className='bg-white divide-y divide-gray-200'>
-                                        {filteredSuppliers.length > 0 ? (
-                                            filteredSuppliers.map((supplier, index) => (
-                                                <tr key={supplier._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                                                    <td className='px-4 py-2'>{supplier.SupplierID}</td>
-                                                    <td className='px-4 py-2'>{supplier.SupplierName}</td>
-                                                    <td className='px-4 py-2 max-md:hidden'>{supplier.ItemNo}</td>
-                                                    <td className='px-4 py-2 max-md:hidden'>{supplier.ItemName}</td>
-                                                    <td className='px-4 py-2 max-md:hidden'>{supplier.ContactNo}</td>
-                                                    <td className='px-4 py-2 max-md:hidden'>{supplier.Email}</td>
-                                                    <td className='px-4 py-2 max-md:hidden'>{supplier.Address}</td>
-                                                    <td className='px-4 py-2'>
-                                                        <div className='flex justify-center gap-x-4'>
-                                                            <Link to={`/suppliers/details/${supplier._id}`} title="View Details">
-                                                                <BsInfoCircle className='text-xl text-green-600 hover:text-green-800 transition-colors' />
-                                                            </Link>
-                                                            <Link to={`/suppliers/edit/${supplier._id}`} title="Edit">
-                                                                <AiOutlineEdit className='text-xl text-yellow-600 hover:text-yellow-800 transition-colors' />
-                                                            </Link>
-                                                            <Link to={`/suppliers/delete/${supplier._id}`} title="Delete">
-                                                                <MdOutlineDelete className='text-xl text-red-600 hover:text-red-800 transition-colors' />
-                                                            </Link>
-                                                            <button 
-                                                                onClick={() => handleEmailClick(supplier.Email)}
-                                                                className='text-blue-600'
-                                                            >
-                                                                <MdEmail className='text-xl' />
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="8" className='px-4 py-2 text-center text-gray-500'>No suppliers found</td>
+                                        {filteredSuppliers.map(supplier => (
+                                            <tr key={supplier.SupplierID}>
+                                                <td className='px-4 py-2'>{supplier.SupplierID}</td>
+                                                <td className='px-4 py-2'>{supplier.SupplierName}</td>
+                                                <td className='px-4 py-2'>{supplier.ContactNo}</td>
+                                                <td className='px-4 py-2'>{supplier.Email}</td>
+                                                <td className='px-4 py-2'>
+                                                    {supplier.Items && supplier.Items.length > 0 ? (
+                                                        <ul className='list-disc pl-5'>
+                                                            {supplier.Items.map(item => (
+                                                                <li key={item.ItemNo}>{item.ItemNo} - {item.ItemName}</li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <span>No items selected</span>
+                                                    )}
+                                                </td>
+                                                <td className='px-4 py-2 flex space-x-2'>
+                                                    <Link to={`/suppliers/details/${supplier._id}`} title="View Details">
+                                                        <BsInfoCircle className='text-xl text-green-600 hover:text-green-800 transition-colors' />
+                                                    </Link>
+                                                    <Link to={`/suppliers/edit/${supplier._id}`} title="Edit">
+                                                        <AiOutlineEdit className='text-xl text-yellow-600 hover:text-yellow-800 transition-colors' />
+                                                    </Link>
+                                                    <Link to={`/suppliers/delete/${supplier._id}`} title="Delete">
+                                                        <MdOutlineDelete className='text-xl text-red-600 hover:text-red-800 transition-colors' />
+                                                    </Link>
+                                                    <button 
+                                                        onClick={() => handleEmailClick(supplier.Email)}
+                                                        className='text-blue-600'
+                                                    >
+                                                        <MdEmail className='text-xl' />
+                                                    </button>
+                                                </td>
+
                                             </tr>
-                                        )}
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>

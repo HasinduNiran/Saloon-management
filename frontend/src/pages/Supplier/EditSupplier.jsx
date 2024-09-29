@@ -9,14 +9,12 @@ import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
 
 const EditSupplier = () => {
-  const [SupplierID, setSupplierID] = useState('');
   const [SupplierName, setSupplierName] = useState('');
-  const [ItemNo, setItemNo] = useState('');
-  const [ItemName, setItemName] = useState('');
   const [ContactNo, setContactNo] = useState('');
   const [Email, setEmail] = useState('');
   const [Address, setAddress] = useState('');
   const [items, setItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
@@ -27,13 +25,11 @@ const EditSupplier = () => {
     axios.get(`http://localhost:8076/suppliers/${id}`)
       .then((response) => {
         const data = response.data;
-        setSupplierID(data.SupplierID);
         setSupplierName(data.SupplierName);
-        setItemNo(data.ItemNo);
-        setItemName(data.ItemName);
         setContactNo(data.ContactNo);
         setEmail(data.Email);
         setAddress(data.Address);
+        setSelectedItems(data.Items || []);
         setLoading(false);
       })
       .catch((error) => {
@@ -54,54 +50,83 @@ const EditSupplier = () => {
 
   const handleItemNoChange = (e) => {
     const selectedItemNo = e.target.value;
-    setItemNo(selectedItemNo);
-
     const selectedItem = items.find(item => item.ItemNo === selectedItemNo);
-    if (selectedItem) {
-      setItemName(selectedItem.ItemName);
-    } else {
-      setItemName('');
+
+    if (selectedItem && !selectedItems.some(item => item.ItemNo === selectedItemNo)) {
+      setSelectedItems([...selectedItems, selectedItem]);
     }
   };
 
+  const handleRemoveItem = (itemNo) => {
+    setSelectedItems(selectedItems.filter(item => item.ItemNo !== itemNo));
+  };
+
   const handleEditSupplier = () => {
-    if (!SupplierName || !ItemNo || !ItemName || !ContactNo || !Email || !Address) {
+    if (!SupplierName.trim()) {
       Swal.fire({
         icon: 'error',
-        title: 'All fields are required',
-        text: 'Please fill in all the fields before submitting the form.',
+        title: 'Error',
+        text: 'Supplier Name is required!',
       });
       return;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(Email)) {
+    if (selectedItems.length === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Invalid Email',
-        text: 'Please enter a valid email address.',
+        title: 'Error',
+        text: 'At least one item must be selected!',
       });
       return;
     }
-
-    if (!/^\d{10}$/.test(ContactNo)) {
+    if (!ContactNo.trim()) {
       Swal.fire({
         icon: 'error',
-        title: 'Invalid Contact No',
-        text: 'Contact number should be 10 digits.',
+        title: 'Error',
+        text: 'Contact No is required!',
+      });
+      return;
+    }
+    if (!/^[0-9]{10}$/.test(ContactNo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Contact No must be a valid 10-digit number!',
+      });
+      return;
+    }
+    if (!Email.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Email is required!',
+      });
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(Email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Email must be a valid email address!',
+      });
+      return;
+    }
+    if (!Address.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Address is required!',
       });
       return;
     }
 
     const data = {
       SupplierName,
-      ItemNo,
-      ItemName,
       ContactNo,
       Email,
       Address,
+      Items: selectedItems,
     };
-    
+
     setLoading(true);
     axios.put(`http://localhost:8076/suppliers/${id}`, data)
       .then(() => {
@@ -133,143 +158,118 @@ const EditSupplier = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <BackButton destination='/suppliers/allSupplier' />
-        <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
-          <img className="mx-auto h-10 w-auto" src={Logo} alt="logo" style={{ width: '50px', height: '50px', marginRight: '400px'}} />
-          <h2 className="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
-            Edit Supplier
-          </h2>
-        </div>
+    <div style={containerStyle} className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <BackButton destination='/suppliers/allSupplier' />
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: '50px', height: '50px' }}
+        />
+        <h1 className="text-center text-3xl leading-9 font-extrabold text-gray-900 mt-6">
+          Edit Supplier
+        </h1>
+      </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            {loading && <Spinner />}
-            <form onSubmit={(e) => { e.preventDefault(); handleEditSupplier(); }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="grid grid-cols-1 gap-6">
+            <div>
+              <label htmlFor="supplierName" className="block text-sm font-medium leading-5 text-gray-700">Supplier Name</label>
+              <input
+                id="supplierName"
+                name="supplierName"
+                type="text"
+                value={SupplierName}
+                onChange={(e) => setSupplierName(e.target.value)}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
 
-              {/* SupplierID */}
-              <div>
-                <label htmlFor="SupplierID" className="block text-sm font-medium leading-5 text-gray-700">SupplierID</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="SupplierID"
-                    name="SupplierID"
-                    type="text"
-                    value={SupplierID}
-                    readOnly
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
+            <div>
+              <label htmlFor="itemNo" className="block text-sm font-medium leading-5 text-gray-700">Select Item</label>
+              <select
+                id="itemNo"
+                name="itemNo"
+                value=""
+                onChange={handleItemNoChange}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              >
+                <option value="" disabled>Select Item</option>
+                {items.map((item) => (
+                  <option key={item.ItemNo} value={item.ItemNo}>
+                    {item.ItemNo} - {item.ItemName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              {/* Supplier Name */}
-              <div>
-                <label htmlFor="SupplierName" className="block text-sm font-medium leading-5 text-gray-700">Supplier Name</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="SupplierName"
-                    name="SupplierName"
-                    type="text"
-                    value={SupplierName}
-                    onChange={(e) => setSupplierName(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-sm font-medium leading-5 text-gray-700">Selected Items</label>
+              <ul className="list-disc pl-5">
+                {selectedItems.map((item) => (
+                  <li key={item.ItemNo} className="flex justify-between items-center">
+                    {item.ItemNo} - {item.ItemName}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(item.ItemNo)}
+                      className="ml-4 text-red-600 hover:text-red-800"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              {/* Item No */}
-              <div>
-                <label htmlFor="ItemNo" className="block text-sm font-medium leading-5 text-gray-700">Item No</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <select
-                    id="ItemNo"
-                    name="ItemNo"
-                    value={ItemNo}
-                    onChange={handleItemNoChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  >
-                    <option value="" disabled>Select Item No</option>
-                    {items.map((item) => (
-                      <option key={item.ItemNo} value={item.ItemNo}>
-                        {item.ItemNo}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            <div>
+              <label htmlFor="contactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact No</label>
+              <input
+                id="contactNo"
+                name="contactNo"
+                type="text"
+                value={ContactNo}
+                onChange={(e) => setContactNo(e.target.value)}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
 
-              {/* Item Name */}
-              <div>
-                <label htmlFor="ItemName" className="block text-sm font-medium leading-5 text-gray-700">Item Name</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="ItemName"
-                    name="ItemName"
-                    type="text"
-                    value={ItemName}
-                    readOnly
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="text"
+                value={Email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
 
-              {/* Contact No */}
-              <div>
-                <label htmlFor="ContactNo" className="block text-sm font-medium leading-5 text-gray-700">Contact No</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="ContactNo"
-                    name="ContactNo"
-                    type="text"
-                    value={ContactNo}
-                    onChange={(e) => setContactNo(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium leading-5 text-gray-700">Address</label>
+              <textarea
+                id="address"
+                name="address"
+                value={Address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={3}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+            </div>
+          </div>
 
-              {/* Email */}
-              <div>
-                <label htmlFor="Email" className="block text-sm font-medium leading-5 text-gray-700">Email</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="Email"
-                    name="Email"
-                    type="email"
-                    value={Email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
-
-              {/* Address */}
-              <div className="col-span-2">
-                <label htmlFor="Address" className="block text-sm font-medium leading-5 text-gray-700">Address</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <textarea
-                    id="Address"
-                    name="Address"
-                    rows="3"
-                    value={Address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="col-span-2">
-                <button
-                  type="submit"
-                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:border-pink-800 focus:ring focus:ring-pink-200 transition duration-150 ease-in-out"
-                >
-                  Update Supplier
-                </button>
-              </div>
-
-            </form>
+          <div className="mt-6">
+            <span className="block w-full rounded-md shadow-sm">
+              <button
+                type="button"
+                onClick={handleEditSupplier}
+                className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:border-pink-700 focus:shadow-outline-blue active:bg-pink-700 transition duration-150 ease-in-out"
+              >
+                {loading ? <Spinner /> : 'Update Supplier'}
+              </button>
+            </span>
           </div>
         </div>
       </div>
