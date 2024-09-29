@@ -85,6 +85,8 @@ const AllOrders = () => {
 
     return (
         <div className="min-h-screen p-8 w-full lg:w-3/4 mx-auto">
+                    <BackButton destination={`/store`} />
+
             {/* <BackButton navigate='/store/' /> */}
             <h1 className="text-3xl font-bold mb-6">All Orders</h1>
             {loading ? (

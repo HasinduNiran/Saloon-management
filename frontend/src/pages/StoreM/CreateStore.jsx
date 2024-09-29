@@ -132,6 +132,7 @@ const CreateStore = () => {
   };
   return (
     <div style={containerStyle}>
+      <BackButton destination={`/store`} />
       <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
           <img
@@ -193,18 +194,19 @@ const CreateStore = () => {
               </div>
   
               <div>
-                <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <input
-                    id="description"
-                    type="text"
-                    value={Description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
-              </div>
+  <label htmlFor="description" className="block text-sm font-medium leading-5 text-gray-700">Description</label>
+  <div className="mt-1 relative rounded-md shadow-sm">
+    <textarea
+      id="description"
+      value={Description}
+      onChange={(e) => setDescription(e.target.value)}
+      required
+      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+      rows="4"
+    />
+  </div>
+</div>
+
   
               <div>
                 <label htmlFor="quantity" className="block text-sm font-medium leading-5 text-gray-700">Quantity</label>

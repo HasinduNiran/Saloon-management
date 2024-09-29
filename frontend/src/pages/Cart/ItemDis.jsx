@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Hcard from '../HomeCard/Hcard';
+import BackButton from '../../components/BackButton';
 
 const ItemDis = () => {
     const { ItemNo, CusID } = useParams();  // Extract ItemNo and CusID from URL
@@ -100,8 +101,12 @@ const ItemDis = () => {
     const recommendedItems = store.filter((item) => item.ItemNo !== parseInt(ItemNo, 5));
 
     return (
+        <div>
+                        <BackButton destination={`/ReadOneHome/${CusID}`} />
+
         <div className="min-h-screen p-8 flex flex-col items-center">
-            <div className="w-2/3 flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-10">
+            <div className="w-2/3 flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-10">\
+            
                 <div className="w-full lg:w-1/2">
                     <img
                         className="rounded-xl w-full transition-transform duration-300 transform hover:scale-105"
@@ -169,6 +174,7 @@ const ItemDis = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import BackButton from "../../components/BackButton";
 
 const Checkout = () => {
     const location = useLocation();
@@ -155,6 +156,8 @@ const Checkout = () => {
     }
 
     return (
+        <div>
+            <BackButton destination={`/cart/${CusID}`} />
         <div className="p-8 flex flex-col items-center">
             <div className="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-semibold mb-4">Checkout</h1>
@@ -280,6 +283,7 @@ const Checkout = () => {
                     Place Order
                 </button>
             </div>
+        </div>
         </div>
     );
 };
