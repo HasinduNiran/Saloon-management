@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import ItemCard from "./ItemCard";
+//import ItemCard from "./ItemCard";
 import Spinner from "../../components/Spinner";
 import Hcard from "../HomeCard/Hcard";
 
@@ -119,7 +119,7 @@ const Cart = () => {
                     >
                       -
                     </button>
-                    <span>Quantity: {item.Quantity}</span>
+                    <span>Quantity: {item.quantity}</span>
                     <button
                       onClick={() => handleIncreaseQuantity(item.ItemNo)}
                       className="text-gray-500 border px-2 rounded hover:bg-gray-200"

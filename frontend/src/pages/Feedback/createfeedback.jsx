@@ -1,307 +1,226 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+import React from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import backgroundImage from "https://wallpapercave.com/wp/wp8658370.jpg";
-import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import backgroundImage from "../../images/logobg.jpg";
+import Logo from "../../images/logo.png";
+import Swal from "sweetalert2";
+import Spinner from "../../components/Spinner"; // Assuming you have this component
 
 const CreateFeedback = () => {
-  const [cussID, setCustomerID] = useState("");
-  const [name, setCustomerName] = useState("");
+  const [cusID, setCusID] = useState("");
+  const [name, setName] = useState("");
+  const [phone_number, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [employee, setEmployee] = useState("");
-  const [starRating, setStarRating] = useState("");
-  const [dateOfService, setDateOfService] = useState(new Date());
+  const [date_of_service, setDateOfService] = useState(null);
   const [message, setMessage] = useState("");
+  const [star_rating, setStarRating] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState([]);
+  const [dateError, setDateError] = useState("");
   const navigate = useNavigate();
-  const { cusID } = useParams();
 
-  useEffect(() => {
+  const handleDateChange = (date) => {
+    if (date && date < new Date()) {
+      setDateError("Please select a future date.");
+    } else {
+      setDateError("");
+    }
+    setDateOfService(date);
+  };
+
+  const handleSaveFeedback = () => {
+    if (!name || !phone_number || !email || !employee || !date_of_service || !message || !star_rating) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Please fill in all required fields!",
+        showConfirmButton: true,
+        timer: 2000,
+      });
+      return;
+    }
+
+    const feedbackData = {
+      cusID,
+      name,
+      phone_number,
+      email,
+      employee,
+      date_of_service: date_of_service ? date_of_service.toISOString().split("T")[0] : "",
+      message,
+      star_rating,
+    };
+
     setLoading(true);
     axios
-      .get(`http://localhost:8076/customer/${cusID}`)
-      .then((response) => {
-        const data = response.data;
-        setCustomerID(data.cusID);
-        setPhoneNumber(data.phone);
-        setEmail(data.email);
-        setCustomerName(`${data.firstName} ${data.lastName}`);
+      .post("http://localhost:8076/feedback", feedbackData)
+      .then(() => {
         setLoading(false);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Feedback submitted successfully!",
+          showConfirmButton: true,
+          timer: 2000,
+        });
+        navigate(`/customers/get/${cusID}`);
       })
       .catch((error) => {
         setLoading(false);
-        alert(`An error happened. Please check console`);
+        alert("An error occurred. Please check console.");
         console.log(error);
       });
-  }, [cusID]);
-
-  useEffect(() => {
-    const fetchEmployeesData = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get("http://localhost:8076/employees");
-        if (response.data && Array.isArray(response.data.data)) {
-          setEmployees(response.data.data); // Extracting the array of employees
-        } else {
-          console.error(
-            "Invalid response format for employees:",
-            response.data
-          );
-        }
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching employees:", error);
-      }
-    };
-    fetchEmployeesData();
-  }, []);
-
-  const handleSaveFeedback = async () => {
-    // Validation code here
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d{10}$/;
-
-    // Check if all required fields are filled
-    if (!name || !email || !phoneNumber || !employee || !message || !dateOfService) {
-      alert("Please fill in all fields before submitting.");
-      return;
-    }
-
-    // Validate email format
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-
-    // Validate phone number format
-    if (!phoneRegex.test(phoneNumber)) {
-      alert("Please enter a valid phone number.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const formattedDate = formatDate(dateOfService);
-      const data = {
-        cusID: cussID,
-        name: name,
-        email: email,
-        phone_number: phoneNumber,
-        employee: employee,
-        date_of_service: formattedDate,
-        message: message,
-        star_rating: starRating,
-      };
-      await axios.post("http://localhost:8076/feedback", data);
-      setLoading(false);
-      navigate(`/customer/get/${cusID}`);
-    } catch (error) {
-      setLoading(false);
-      console.error("Error creating feedback:", error);
-    }
   };
 
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleStarClick = (index) => {
-    setStarRating(index + 1);
-  };
-
-  const handleStarHover = (index) => {
-    setStarRating(index + 1); // Update star rating based on hover index
-  };
-
-  const renderStars = () => {
-    return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        {[...Array(5)].map((_, index) => (
-          <FaStar
-            key={index}
-            className={index < starRating ? "star-filled" : "star-empty"}
-            onMouseOver={() => handleStarHover(index)}
-            onClick={() => handleStarClick(index)}
-            style={{ ...styles.star, color: index < starRating ? "red" : "gray" ,
-            height: "50px",width:"50px",
-          }}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.formContainer}>
-        <h1 style={styles.heading}>Create Feedback</h1>
-        <div>
-          <label style={styles.label}>Customer ID</label>
-          <input
-            type="text"
-            value={cussID}
-            onChange={(e) => setCustomerID(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <div>
-          <label style={styles.label}>Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setCustomerName(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <div>
-          <label style={styles.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <div>
-          <label style={styles.label}>Phone Number</label>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <div>
-          <label style={styles.label}>Employee</label>
-          <select
-            value={employee}
-            onChange={(e) => setEmployee(e.target.value)}
-            className="border-2 border-gray-500 px-4 py-2 w-full custom-select"
-            style={styles.input}
-          >
-            <option value="">Select Employee</option>
-            {employees.map((employee) => (
-              <option key={employee._id} value={employee.employeeName}>
-                {employee.employeeName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label style={styles.label}>Star Rating</label>
-          <div>{renderStars()}</div>
-        </div>
-        <div>
-          <label style={styles.label}>Date of Service</label>
-          <DatePicker
-            selected={dateOfService}
-            onChange={(date) => setDateOfService(date)}
-            dateFormat="yyyy-MM-dd"
-            className="date-picker-input text-black"
-          />
-        </div>
-        <div>
-          <label style={styles.label}>Message</label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <button style={styles.button} onClick={handleSaveFeedback}>
-          {loading ? "Creating..." : "Create"}
-        </button>
-      </div>
-    </div>
-  );
-};
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
+  const containerStyle = {
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
-  },
-  heading: {
-    fontSize: '3rem',
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold'
-  },
-  formContainer: {
-    width: "80%",
-    backgroundColor: "rgba(5, 4, 2, 0.8)",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.8)",
-    padding: "20px",
-    border: "2px solid red",
-    borderColor: "red",
-    margin: "10px",
-    textAlign: "center",
-    position: "relative",
-    alignItems: "center",
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: "0.5rem",
-    fontSize: "1.2rem",
-    color: "red",
-    textAlign: "center",
-    width: "100%",
-    padding: "10px",
-    textTransform: "uppercase",
-  },
-  input: {
-    width: "60%",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "black",
-    color: "white",
-    fontSize: "1.2rem",
-    marginBottom: "10px",
-    textAlign: "left",
-  },
-  text: {
-    width: "65%",
-    height: "100px",
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "black",
-    color: "white",
-    fontSize: "1.2rem",
-    marginBottom: "10px",
-    textAlign: "left",
-  },
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  button: {
-    backgroundColor: "#ff0000",
-    color: "black",
-    FaBolt: "true",
-    padding: "10px 20px",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    transition: "background-color 0.8s",
-  },
+    backgroundRepeat: "no-repeat",
+  };
+
+  return (
+    <div
+      style={containerStyle}
+      className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    >
+      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
+        <img
+          className="mx-auto h-10 w-auto"
+          src={Logo}
+          alt="logo"
+          style={{ width: "50px", height: "50px" }}
+        />
+        <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Submit Feedback
+        </h1>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {loading && <Spinner />}
+          <form className="space-y-4">
+
+            {/* Customer ID */}
+            <div>
+              <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">Customer ID (Optional)</label>
+              <input
+                id="cusID"
+                type="text"
+                value={cusID}
+                onChange={(e) => setCusID(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Name */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium leading-5 text-gray-700">Full Name</label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label htmlFor="phone_number" className="block text-sm font-medium leading-5 text-gray-700">Phone Number</label>
+              <input
+                id="phone_number"
+                type="text"
+                value={phone_number}
+                onChange={(e) => setPhone(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Employee */}
+            <div>
+              <label htmlFor="employee" className="block text-sm font-medium leading-5 text-gray-700">Employee</label>
+              <input
+                id="employee"
+                type="text"
+                value={employee}
+                onChange={(e) => setEmployee(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            {/* Date of Service */}
+            <div>
+              <label htmlFor="date_of_service" className="block text-sm font-medium leading-5 text-gray-700">Date of Service</label>
+              <DatePicker
+                selected={date_of_service}
+                onChange={handleDateChange}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  dateError ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm`}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select a date"
+              />
+              {dateError && <p className="text-red-500 text-sm">{dateError}</p>}
+            </div>
+
+            {/* Feedback Message */}
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium leading-5 text-gray-700">Feedback Message</label>
+              <textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                rows="4"
+              />
+            </div>
+
+            {/* Star Rating */}
+            <div>
+              <label htmlFor="star_rating" className="block text-sm font-medium leading-5 text-gray-700">Star Rating (1-5)</label>
+              <input
+                id="star_rating"
+                type="number"
+                min="1"
+                max="5"
+                value={star_rating}
+                onChange={(e) => setStarRating(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <span className="block w-40 rounded-md shadow-sm">
+                <button
+                  type="button"
+                  onClick={handleSaveFeedback}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-500 focus:outline-none focus:border-pink-700 focus:shadow-outline-indigo active:bg-pink-700 transition duration-150 ease-in-out"
+                >
+                  {loading ? <Spinner /> : "Submit Feedback"}
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CreateFeedback;

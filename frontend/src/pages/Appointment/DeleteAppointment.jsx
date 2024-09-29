@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Spinner from '../../components/Spinner';
@@ -9,7 +9,8 @@ const DeleteAppointment = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Function to handle the appointment deletion
+
+   // Function to handle the appointment deletion
   const handleDeleteAppointment = () => {
     setLoading(true);
     axios

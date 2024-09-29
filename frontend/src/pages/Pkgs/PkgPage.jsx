@@ -26,6 +26,17 @@ const PkgPage = () => {
     fetchPkg();
   }, []);
 
+  // Function to calculate remaining days until package expiration
+  const calculateRemainingDays = (endDate) => {
+    const currentDate = new Date();
+    const end = new Date(endDate);
+    const timeDiff = end.getTime() - currentDate.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+
+    return daysRemaining > 0 ? `${daysRemaining} days remaining` : "Expired";
+  };
+
+
   return (
     <div className="p-6 min-h-screen bg-background">
       {/* Hero Section */}
@@ -59,13 +70,17 @@ const PkgPage = () => {
               <h3 className="text-2xl font-bold text-yellow-400 text-text mb-2">{pkgs.p_name}</h3>
               <p className="text-text  text-yellow-600">{pkgs.description}</p>
               <p className="text-text mb-2 font-bold">{pkgs.category}</p>
+              <p className="text-text mb-2 ">Conditions :</p> <p className="text-text mb-1 ">{pkgs.conditions}</p>
               <p className="text-text mb-2">Package Type: {pkgs.package_type}</p>
               <p className="text-text mb-2">Base Price: $ {pkgs.base_price}</p>
               <p className="text-text mb-2">Discount:  {pkgs.discount_rate} %</p>
               <p className="text-text mb-2">Final Price: $ {pkgs.final_price}</p>
-              <p className="text-text mb-2">
+              <p className="text-text mb-2 ">
               Time Diuration : {pkgs.start_date.slice(0, 10)} to {pkgs.end_date.slice(0, 10)}
-            </p>              
+            </p>
+            <p className="font-bold mb-2 text-red-600">
+                ** {calculateRemainingDays(pkgs.end_date)}
+              </p>             
             </div>
           </div>
         ))}

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Spinner from '../../components/Spinner';
 import BackButton from '../../components/BackButton';
 import tableImage from '../../images/tablebg.jpg';
 import backgroundImage from "../../images/logobg.jpg";
 import Swal from "sweetalert2";
-import Nav from '../../components/Dashborad/DashNav';
-import SideBar from '../../components/Dashborad/Sidebar';
+import { BsInfoCircle } from 'react-icons/bs';
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
   const [orders, setOrders] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOrders, setExpandedOrders] = useState({});
   const { id: CusID } = useParams();
@@ -21,17 +22,17 @@ const ReadOneCustomer = () => {
     const fetchCustomerData = async () => {
       setLoading(true);
       try {
-        // Fetch customer data
         const customerResponse = await axios.get(`http://localhost:8076/customers/${CusID}`);
         setCustomer(customerResponse.data);
 
-        // Fetch orders for this customer
         const ordersResponse = await axios.get(`http://localhost:8076/order/${CusID}`);
         setOrders(ordersResponse.data);
 
-        // Fetch appointments for this customer
         const appointmentsResponse = await axios.get(`http://localhost:8076/appointments/${CusID}`);
         setAppointments(appointmentsResponse.data);
+
+        const feedbackResponse = await axios.get(`http://localhost:8076/feedback/${CusID}`);
+        setFeedbacks(feedbackResponse.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -55,7 +56,6 @@ const ReadOneCustomer = () => {
       if (response.status === 200) {
         setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         Swal.fire("Success", "Order deleted successfully", "success");
-        
       } else {
         Swal.fire("Error", "Failed to delete order", "error");
       }
@@ -63,11 +63,40 @@ const ReadOneCustomer = () => {
       console.error("Error deleting order:", error);
       Swal.fire("Error", "Failed to delete order", "error");
     }
-    window.location.reload();  // refresh the page
   };
-  
-  const handleDownloadBill = (order) => {
-    Swal.fire("Download", "Bill download feature is not implemented yet.", "info");
+
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8076/appointments/${appointmentId}`);
+      if (response.status === 200) {
+        setAppointments((prevAppointments) => 
+          prevAppointments.filter((appointment) => appointment._id !== appointmentId)
+        );
+        Swal.fire("Success", "Appointment deleted successfully", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete appointment", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      Swal.fire("Error", "Failed to delete appointment", "error");
+    }
+  };
+
+  const handleDeleteFeedback = async (feedbackId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8076/feedback/${feedbackId}`);
+      if (response.status === 200) {
+        setFeedbacks((prevFeedbacks) => 
+          prevFeedbacks.filter((feedback) => feedback._id !== feedbackId)
+        );
+        Swal.fire("Success", "Feedback deleted successfully", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete feedback", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+      Swal.fire("Error", "Failed to delete feedback", "error");
+    }
   };
 
   const containerStyle = {
@@ -82,8 +111,7 @@ const ReadOneCustomer = () => {
   return (
     <div style={containerStyle}>
       <div className="container mx-auto px-4">
-      <BackButton destination={`/ReadOneHome/${CusID}`} />
-
+        <BackButton destination={`/ReadOneHome/${CusID}`} />
 
         <div className="text-center my-8">
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
@@ -94,11 +122,14 @@ const ReadOneCustomer = () => {
         {loading ? (
           <Spinner />
         ) : (
-          <div className="max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden" style={{
-            backgroundImage: `url(${tableImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}>
+          <div
+            className="max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden"
+            style={{
+              backgroundImage: `url(${tableImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
             {/* Customer Details */}
             <div className="flex flex-col md:flex-row items-center p-6">
               <div className="md:w-1/3 w-full flex justify-center md:justify-start">
@@ -121,19 +152,35 @@ const ReadOneCustomer = () => {
                 </div>
               </div>
             </div>
-          
-{/* Appointments Section */}
-<div className="p-6 border-t">
+
+            {/* Appointments Section */}
+            <div className="p-6 border-t">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Appointments</h2>
               {appointments.length > 0 ? (
                 appointments.map((appointment) => (
                   <div key={appointment.appoi_ID} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold mb-2">Appointment ID: {appointment.appoi_ID}</h3>
-                    <p className="text-gray-600">Date: {appointment.appoi_date}</p>
-                    <p className="text-gray-600">Time: {appointment.appoi_time}</p>
-                    <p className="text-gray-600">Stylist: {appointment.stylist}</p>
-                    <p className="text-gray-600">Service: {appointment.service}</p>
-                    <p className="text-gray-600">Package: {appointment.customize_package || 'N/A'}</p>
+                    <h3 className="text-lg font-bold mb-2">Appointment ID: {appointment.appoi_ID}</h3>
+                    <p className="text-gray-600 font-semibold">Date: {appointment.appoi_date.slice(0, 10)}</p>
+                    <p className="text-gray-600 font-semibold">Time: {appointment.appoi_time}</p>
+                    <p className="text-gray-600 font-semibold">Stylist: {appointment.stylist}</p>
+                    <p className="text-gray-600 font-semibold">Service: {appointment.services}</p>
+                    <p className="text-gray-600 font-semibold">Packages: {appointment.packages}</p>
+
+                    <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
+                      <Link
+                        className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
+                        to={`/appointments/details/${appointment._id}`}
+                        title="View Details"
+                      >
+                        <BsInfoCircle size={24} />
+                      </Link>
+                      <Link to={`/appointments/edit/${appointment._id}`}>
+                        <FaEdit className="text-yellow-500 cursor-pointer hover:text-yellow-700" size={24} title="Edit" />
+                      </Link>
+                      <Link to="#" onClick={() => handleDeleteAppointment(appointment._id)}>
+                        <FaTrash className="text-red-500 cursor-pointer hover:text-red-700" size={24} title="Delete" />
+                      </Link>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -141,7 +188,6 @@ const ReadOneCustomer = () => {
               )}
             </div>
 
-            {/* Orders Section */}
             <div className="p-6 border-t">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Orders</h2>
               {orders.length > 0 ? (
@@ -173,8 +219,11 @@ const ReadOneCustomer = () => {
                             <ul className="list-disc pl-5 mb-2">
                               {order.items.map((item) => (
                                 <li key={item.itemId} className="text-gray-700">
-                                  {item.title}  Price: Rs, {item.SPrice}
-                                </li>
+                               <p>{item.ItemName} </p>
+                               <p>Qty: {item.quantity}</p>  
+                               <p>Price: Rs. {(item.SPrice * item.quantity).toFixed(2)}</p>
+                               
+                            </li>
                               ))}
                             </ul>
                           </div>
@@ -229,25 +278,44 @@ const ReadOneCustomer = () => {
               )}
             </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-center p-6 border-t">
-          <button
+
+            {/* Feedback Section */}
+            <div className="p-6 border-t">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Feedback</h2>
+              {feedbacks.length > 0 ? (
+                feedbacks.map((feedback) => (
+                  <div key={feedback._id} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative">
+                    <h3 className="text-lg font-semibold mb-2">Feedback ID: {feedback._id}</h3>
+                    <p className="text-gray-600">{feedback.message}</p>
+                    <p className="text-gray-600">Rating: {feedback.star_rating} / 5</p>
+
+                    <div className="absolute top-4 right-4 space-x-2 flex">
+                      <Link to={`/feedback/edit/${feedback._id}`} className="text-yellow-500 hover:text-yellow-700" title="Edit">
+                        <FaEdit size={24} />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteFeedback(feedback._id)}
+                        className="text-red-500 hover:text-red-700"
+                        title="Delete"
+                      >
+                        <FaTrash size={24} />
+                      </button>
+                      
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">No feedback found</p>
+              )}
+            </div>
+            <button
   className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
-  onClick={() => { window.location.href = `/customers/edit/${customers._id}` }}
+  onClick={() => { window.location.href = `/editCustomer1/${CusID}` }}
 >
   <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
     Edit Profile
   </span>
 </button>
-<button
-  className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
-  onClick={() => { window.location.href = `/feedback/create/${customers._id}` }}
->
-  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
-    Feedback
-  </span>
-</button>
-            </div>
           </div>
         )}
       </div>

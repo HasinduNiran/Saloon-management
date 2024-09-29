@@ -3,6 +3,7 @@ import { Pkg } from '../Models/Pkg.js';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import cron from 'node-cron';
 
 const router = express.Router();
 
@@ -33,7 +34,6 @@ const validateFields = (req, res, next) => {
         "final_price",
         "start_date",
         "end_date",
-        "conditions",
         "package_type",
         "p_name",
         "category",
@@ -170,5 +170,21 @@ router.get('/searchpkg', async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+
+// Schedule the task to run once a day (at midnight)
+cron.schedule('0 0 * * *', async () => {
+    try {
+      const currentDate = new Date();
+  
+      // Find and delete packages where the end_date has passed
+      const result = await Pkg.deleteMany({ end_date: { $lt: currentDate } });
+  
+      if (result.deletedCount > 0) {
+        console.log(`Deleted ${result.deletedCount} expired packages.`);
+      }
+    } catch (error) {
+      console.error("Error deleting expired packages:", error);
+    }
+  });
 
 export default router;

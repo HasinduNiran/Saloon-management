@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
+import Swal from 'sweetalert2';
 
 const EditPkg = () => {
     const { id } = useParams();
@@ -62,6 +63,16 @@ const EditPkg = () => {
     const handleUpdatePackage = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validation: Check if end date is valid
+        if (end_date && start_date && end_date <= start_date) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'End date must be after start date.',
+            });
+            return;
+        }
 
         const formData = new FormData();
         formData.append('description', description);
@@ -121,60 +132,57 @@ const EditPkg = () => {
                     {error && <p className="text-red-600 text-center mb-4">{error}</p>}
                     <form onSubmit={handleUpdatePackage} className='space-y-4'>
 
-                         {/* Category */}
-                         <div>
-                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
-                            <div className="flex items-center space-x-4">
-                            <label className="flex items-center">
-                            <input
-                                value="Hair"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Hair'}
-                                onChange={() => setCategory('Hair')}
-                                className="mr-2"
-                                required
-                            />
-                            Hair
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                value="Weddings"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Weddings'}
-                                onChange={() => setCategory('Weddings')}
-                                className="mr-2"
-                                required
-                            />
-                            Weddings
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                value="Skin Care"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Skin Care'}
-                                onChange={() => setCategory('Skin Care')}
-                                className="mr-2"
-                                required
-                            />
-                            Skin Care
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                value="Nail"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Nail'}
-                                onChange={() => setCategory('Nail')}
-                                className="mr-2"
-                                required
-                            />
-                            Nail
-                            </label>
-                            </div>
-                        </div>
+                          {/* Category */}
+<div>
+    <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
+    <div className="flex items-center space-x-4">
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Hair"
+                checked={category === 'Hair'}
+                onChange={() => setCategory('Hair')}
+                className="mr-2"
+                required
+            />
+            Hair
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Weddings"
+                checked={category === 'Weddings'}
+                onChange={() => setCategory('Weddings')}
+                className="mr-2"
+                required
+            />
+            Weddings
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Skin Care"
+                checked={category === 'Skin Care'}
+                onChange={() => setCategory('Skin Care')}
+                className="mr-2"
+                required
+            />
+            Skin Care
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Nail"
+                checked={category === 'Nail'}
+                onChange={() => setCategory('Nail')}
+                className="mr-2"
+                required
+            />
+            Nail
+        </label>
+    </div>
+</div>
+
 
                         <div>
                             <label htmlFor="p_name" className="block text-sm font-medium leading-5 text-gray-700">Package Name:</label>
@@ -221,7 +229,7 @@ const EditPkg = () => {
                                 id="description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                required
+                                
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                             />
                         </div>
@@ -267,6 +275,7 @@ const EditPkg = () => {
                                 selected={start_date}
                                 onChange={date => setStartDate(date)}
                                 dateFormat="yyyy-MM-dd"
+                                minDate={new Date()}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                                 required
                             />
@@ -278,6 +287,7 @@ const EditPkg = () => {
                                 selected={end_date}
                                 onChange={date => setEndDate(date)}
                                 dateFormat="yyyy-MM-dd"
+                                minDate={new Date()}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                                 required
                             />

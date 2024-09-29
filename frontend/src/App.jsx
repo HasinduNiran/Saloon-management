@@ -44,7 +44,7 @@ import ReadOneInventory from "./pages/Inventory/ReadOneInventory";
 
 import CreateCustomer from "./pages/Customer/CreateCustomer";
 import DeleteCustomer from "./pages/Customer/DeleteCustomer";
-import EditCustomer from "./pages/Customer/EditCustomer";
+//import EditCustomer from "./pages/Customer/EditCustomer";
 import ShowAllCustomers from "./pages/Customer/ShowAllCustomers";
 import ReadOneCustomer from "./pages/Customer/ReadOneCustomer";
 
@@ -73,10 +73,24 @@ import MyOrder from "./pages/Cart/MyOrder";
 import AllOrders from "./pages/Cart/AllOrders";
 import DeleteOrder from "./pages/Cart/DeleteOrder";
 
+
+import CreateFeedback from "./pages/Feedback/createfeedback";
+import UpdateFeedback from "./pages/Feedback/Updatefeedback";
+import ShowFeedback from "./pages/Feedback/ShowFeedback";
+import Readfeedback from "./pages/Feedback/Readfeedback";
+
+import EditCustomer1 from "./pages/Customer/EditCustomer1";
+
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/feedback/create/:CusID" element={<CreateFeedback />} />
+      <Route path="/feedback/edit/:id" element={<UpdateFeedback />} />
+      <Route path="/feedback/view/:id" element={<Readfeedback />} />
+      <Route path="/Feedback" element={<ShowFeedback />} />
+
+
       <Route path="/appointments/allAppointment" element={<ShowAppointment />} />
       <Route path="/appointments/create/:CusID" element={<CreateAppointment />} />
       <Route path="/appointments/delete/:id" element={<DeleteAppointment />} />
@@ -117,7 +131,7 @@ const App = () => {
 
       <Route path="/customers/create" element={<CreateCustomer />} />
       <Route path="/customers/delete/:id" element={<DeleteCustomer />} />
-      <Route path="/customers/edit/:id" element={<EditCustomer />} />
+      {/* <Route path="/customers/edit/:id" element={<EditCustomer />} /> */}
       <Route path="/customers/get/:id" element={<ReadOneCustomer />} />
       <Route path="/customers" element={<ShowAllCustomers />} />
 
@@ -147,6 +161,8 @@ const App = () => {
       <Route path="/employeesalary/create" element={<CreateEmployeeSalary />} />
       <Route path="/employeesalary/delete/:id" element={<DeleteEmployeeSalary />} />
       <Route path="/employeesalary/allEmployeeSalary" element={<ShowEmployeeSalary />} />
+
+      <Route path="/editCustomer1/:CusID" element={<EditCustomer1 />} />
     </Routes>
   );
 };

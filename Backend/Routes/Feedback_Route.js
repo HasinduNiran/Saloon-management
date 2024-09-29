@@ -128,29 +128,7 @@ router.get("/", async (req, res) => {
 });
 
 // Route for retrieving feedback from a specific Customer by ID or cusID
-router.get('/:identifier', async (req, res) => {
-    try {
-        const { identifier } = req.params;
 
-        if (mongoose.Types.ObjectId.isValid(identifier)) {
-            const FeedbackByID = await Feedback.findById(identifier);
-            if (FeedbackByID) {
-                return res.status(200).json(FeedbackByID);
-            }
-        }
-
-        const FeedbackByCUSID = await Feedback.findOne({ cusID: identifier });
-        if (FeedbackByCUSID) {
-            return res.status(200).json(FeedbackByCUSID);
-        }
-
-        return res.status(404).json({ message: 'Feedback not found' });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: 'Error fetching feedback: ' + error.message });
-    }
-});
 
 // Update feedback by ID
 router.put("/:id", async (req, res) => {
@@ -188,5 +166,29 @@ router.delete("/:id", async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
+
+router.get("/:identifier", async (req, res) => {
+    try {
+        const { identifier } = req.params;
+
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            const feedbackByID = await Feedback.findById(identifier);
+            if (feedbackByID) {
+                return res.status(200).json(feedbackByID);
+            }
+        }
+
+        const feedbackByCusID = await Feedback.find({ cusID: identifier });
+        if (feedbackByCusID.length) {
+            return res.status(200).json(feedbackByCusID);
+        }
+
+        return res.status(404).json({ message: 'Feedback not found' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: 'Error fetching feedback: ' + error.message });
+    }
+});
+
 
 export default router;

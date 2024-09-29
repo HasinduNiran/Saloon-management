@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from '../../images/logo.png';
+import Swal from 'sweetalert2';
 
 const CreatePkg = () => {
     const [description, setDescription] = useState('');
@@ -16,7 +17,7 @@ const CreatePkg = () => {
     const [conditions, setCondition] = useState('');
     const [package_type, setType] = useState('');
     const [p_name, setPName] = useState('');
-    const [category, setCategory] = useState([]);
+    const [category, setCategory] = useState('');
     const [image, setImage] = useState(null);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -31,9 +32,21 @@ const CreatePkg = () => {
         }
     }, [base_price, discount_rate]);
 
+   
     const handleSavePackage = async (e) => {
         e.preventDefault();
         setError('');
+
+         // Validation: Check if end date is valid
+        if (end_date && start_date && end_date <= start_date) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'End date must be after start date.',
+            });
+            return;
+        }
+
 
         const formData = new FormData();
         formData.append('description', description);
@@ -45,7 +58,7 @@ const CreatePkg = () => {
         formData.append('conditions', conditions);
         formData.append('package_type', package_type);
         formData.append('p_name', p_name);
-        formData.append('category',category);
+        formData.append('category', category);
         formData.append('image', image);
 
         try {
@@ -81,63 +94,60 @@ const CreatePkg = () => {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     {error && <p className='text-red-600'>{error}</p>}
-
+                   
                     <form onSubmit={handleSavePackage} className='space-y-4'>
 
-                        {/* Category */}
-                        <div>
-                            <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
-                            <div className="flex items-center space-x-4">
-                            <label className="flex items-center">
-                            <input
-                                id="category1"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Hair'}
-                                onChange={() => setCategory('Hair')}
-                                className="mr-2"
-                                required
-                            />
-                            Hair
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                id="category1"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Weddings'}
-                                onChange={() => setCategory('Weddings')}
-                                className="mr-2"
-                                required
-                            />
-                            Weddings
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                id="category1"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Skin Care'}
-                                onChange={() => setCategory('Skin Care')}
-                                className="mr-2"
-                                required
-                            />
-                            Skin Care
-                            </label>
-                            <label className="flex items-center">
-                            <input
-                                id="category1"
-                                type="radio"
-                                multiple
-                                chacked={category === 'Nail'}
-                                onChange={() => setCategory('Nail')}
-                                className="mr-2"
-                                required
-                            />
-                            Nail
-                            </label>
-                            </div>
-                        </div>
+                       {/* Category */}
+<div>
+    <label htmlFor="category" className="block text-sm font-medium leading-5 text-gray-700">Service Categories</label>
+    <div className="flex items-center space-x-4">
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Hair"
+                checked={category === 'Hair'}
+                onChange={() => setCategory('Hair')}
+                className="mr-2"
+                required
+            />
+            Hair
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Weddings"
+                checked={category === 'Weddings'}
+                onChange={() => setCategory('Weddings')}
+                className="mr-2"
+                required
+            />
+            Weddings
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Skin Care"
+                checked={category === 'Skin Care'}
+                onChange={() => setCategory('Skin Care')}
+                className="mr-2"
+                required
+            />
+            Skin Care
+        </label>
+        <label className="flex items-center">
+            <input
+                type="radio"
+                value="Nail"
+                checked={category === 'Nail'}
+                onChange={() => setCategory('Nail')}
+                className="mr-2"
+                required
+            />
+            Nail
+        </label>
+    </div>
+</div>
+
 
                         {/* Package Name */}
                         <div>
@@ -229,13 +239,14 @@ const CreatePkg = () => {
                             />
                         </div>
 
-                        {/* Start Date */}
+                         {/* Start Date */}
                         <div>
                             <label htmlFor="start_date" className="block text-sm font-medium leading-5 text-gray-700">Start Date</label>
                             <DatePicker
                                 selected={start_date}
                                 onChange={(date) => setStartDate(date)}
                                 dateFormat="yyyy-MM-dd"
+                                minDate={new Date()}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                             />
                         </div>
@@ -247,6 +258,7 @@ const CreatePkg = () => {
                                 selected={end_date}
                                 onChange={(date) => setEndDate(date)}
                                 dateFormat="yyyy-MM-dd"
+                                minDate={new Date()}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                             />
                         </div>
@@ -258,7 +270,6 @@ const CreatePkg = () => {
                                 id="conditions"
                                 value={conditions}
                                 onChange={(e) => setCondition(e.target.value)}
-                                required
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
                             />
                         </div>

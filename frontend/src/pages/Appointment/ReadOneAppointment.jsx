@@ -26,9 +26,6 @@ const DetailsAppointment = () => {
       });
   }, [id]);
 
-  const handleBack = () => {
-    navigate('/appointments/allAppointment');
-  };
 
   const containerStyle = {
     backgroundImage: `url(${backgroundImage})`,
@@ -115,14 +112,7 @@ const DetailsAppointment = () => {
           </div>
 
           <div className="mt-6 flex justify-center space-x-4">
-            <button
-              className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-blue-900 to-blue-500 group-hover:to-blue-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200"
-              onClick={handleBack}
-            >
-              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
-                Back to Appointments
-              </span>
-            </button>
+           
             <Link
               to={`/appointments/edit/${appointment._id}`}
               className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-black-100 rounded-lg group bg-gradient-to-br from-green-900 to-green-500 group-hover:to-green-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-200"

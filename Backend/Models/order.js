@@ -19,12 +19,12 @@ const orderSchema = mongoose.Schema({
             ItemNo: { type: String},
             ItemName: { type: String},
             Description: { type: String},
-            Quantity: { type: Number},
+            quantity: { type: Number},
             SPrice: { type: Number},
             image: { type: String},
         },
     ],
-    Total: {
+    total: {
         type: Number,
     },
     deliveryInfo: {

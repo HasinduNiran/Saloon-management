@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { BsInfoCircle } from 'react-icons/bs';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { MdOutlineDelete } from 'react-icons/md';
-import Swal from 'sweetalert2'; // Ensure you import SweetAlert
+import Swal from 'sweetalert2'; 
 import Spinner from "../../components/Spinner";
 import StoreReport from './StoreReport';
 import Nav from '../../components/Dashborad/DashNav';
@@ -12,57 +11,78 @@ import SideBar from './SideBar1';
 
 const ShowStore = () => {
     const [store, setStore] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    
-     useEffect(() => {
-        setLoading(true);
-        axios
-            .get('http://localhost:8076/store')
-            .then((response) => {
-                console.log('API Response:', response.data);
-                const data = response.data;
-                if (Array.isArray(data)) {
-                    setStore(data);
 
-                    // Check for low inventory items
-                    data.forEach(item => {
-                        if (item.Quantity < 5) {
-                            Swal.fire({
-                                title: 'Low Inventory!',
-                                text: `Item "${item.ItemName}" has a low quantity: ${item.Quantity}`,
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: 'OK',
-                                cancelButtonText: 'Cancel',
-                            });
-                        }
-                    });
-                } else {
-                    console.warn('Data is not an array:', data);
-                    setStore([]);
-                }
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching store data:', error);
+    // Fetch store items and orders
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch store items
+                const storeResponse = await axios.get('http://localhost:8076/store');
+                const storeData = storeResponse.data;
+
+                // Fetch orders
+                const ordersResponse = await axios.get('http://localhost:8076/order');
+                const ordersData = ordersResponse.data;
+
+                setStore(storeData);
+                setOrders(ordersData);
+
+                // Check for low inventory items after setting state
+                checkLowInventory(storeData, ordersData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
                 setStore([]);
+                setOrders([]);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+        fetchData();
     }, []);
+
+    // Check for low inventory items
+    const checkLowInventory = (storeData, ordersData) => {
+        storeData.forEach(item => {
+            const remainingQuantity = calculateRemainingQuantity(item, ordersData);
+            if (remainingQuantity < 5) {
+                Swal.fire({
+                    title: 'Low Inventory!',
+                    text: `Item "${item.ItemName}" has a low quantity of ${remainingQuantity}`,
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
+            }
+        });
+    };
+
+    // Calculate remaining item quantity
+    const calculateRemainingQuantity = (storeItem, ordersData) => {
+        let soldQuantity = 0;
+        ordersData.forEach((order) => {
+            order.items.forEach((orderItem) => {
+                if (orderItem.ItemNo === storeItem.ItemNo) {
+                    soldQuantity += orderItem.quantity;
+                }
+            });
+        });
+        return storeItem.Quantity - soldQuantity;
+    };
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
 
-    const filteredStores = Array.isArray(store) ? store.filter((store) => {
-        const searchMatch = store.ItemNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            store.ItemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            store.Description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            store.Quantity.toString().includes(searchQuery) ||  
-            store.cost.toString().includes(searchQuery) ||  
-            store.SPrice.toString().includes(searchQuery);
-
+    const filteredStores = Array.isArray(store) ? store.filter((storeItem) => {
+        const searchMatch = storeItem.ItemNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            storeItem.ItemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            storeItem.Description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            storeItem.Quantity.toString().includes(searchQuery) ||  
+            storeItem.cost.toString().includes(searchQuery) ||  
+            storeItem.SPrice.toString().includes(searchQuery);
         return searchMatch;
     }) : [];
 
@@ -98,7 +118,7 @@ const ShowStore = () => {
                                 <th className="border px-4 py-2 text-left">Item No</th>
                                 <th className="border px-4 py-2 text-left">Item Name</th>
                                 <th className="border px-4 py-2 text-left">Description</th>
-                                <th className="border px-4 py-2 text-left">Quantity</th>
+                                <th className="border px-4 py-2 text-left">Remaining Quantity</th>
                                 <th className="border px-4 py-2 text-left">Cost</th>
                                 <th className="border px-4 py-2 text-left">Selling Price</th>
                                 <th className="border px-4 py-2 text-left">Actions</th>
@@ -106,23 +126,23 @@ const ShowStore = () => {
                         </thead>
                         <tbody>
                             {filteredStores.length > 0 ? (
-                                filteredStores.map((store, index) => (
-                                    <tr key={store._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                                filteredStores.map((storeItem, index) => (
+                                    <tr key={storeItem._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                                         <td className="border px-4 py-2">
-                                            <img src={store.image} alt="Item" width={'100'} />
+                                            <img src={storeItem.image} alt="Item" width={'100'} />
                                         </td>
-                                        <td className="border px-4 py-2">{store.ItemNo}</td>
-                                        <td className="border px-4 py-2">{store.ItemName}</td>
-                                        <td className="border px-4 py-2">{store.Description}</td>
-                                        <td className="border px-4 py-2">{store.Quantity}</td>
-                                        <td className="border px-4 py-2">{store.cost}</td>
-                                        <td className="border px-4 py-2">{store.SPrice}</td>
+                                        <td className="border px-4 py-2">{storeItem.ItemNo}</td>
+                                        <td className="border px-4 py-2">{storeItem.ItemName}</td>
+                                        <td className="border px-4 py-2">{storeItem.Description}</td>
+                                        <td className="border px-4 py-2">{calculateRemainingQuantity(storeItem, orders)}</td>
+                                        <td className="border px-4 py-2">{storeItem.cost}</td>
+                                        <td className="border px-4 py-2">{storeItem.SPrice}</td>
                                         <td className="border px-4 py-2">
                                             <div className="flex justify-center gap-x-4">
-                                                <Link to={`/store/edit/${store._id}`}>
+                                                <Link to={`/store/edit/${storeItem._id}`}>
                                                     <AiOutlineEdit className="text-xl text-yellow-600 hover:text-yellow-800 transition-colors" />
                                                 </Link>
-                                                <Link to={`/store/delete/${store._id}`}>
+                                                <Link to={`/store/delete/${storeItem._id}`}>
                                                     <MdOutlineDelete className="text-xl text-red-600 hover:text-red-800 transition-colors" />
                                                 </Link>
                                             </div>

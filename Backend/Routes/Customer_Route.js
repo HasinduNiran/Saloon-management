@@ -70,10 +70,10 @@ router.get('/:identifier', async (request, response) => {
 
         // Checking if the provided identifier is a valid MongoDB ObjectId
         if (mongoose.Types.ObjectId.isValid(identifier)) {
-            // Fetching a vehicle from the database based on the ID
+            // Fetching a customer from the database based on the ID
             const cuByID = await Customer.findById(identifier);
             if (cuByID) {
-                // Sending the fetched vehicle as a JSON response if found by ID
+                // Sending the fetched customer as a JSON response if found by ID
                 return response.status(200).json(cuByID);
             }
         }
@@ -81,11 +81,11 @@ router.get('/:identifier', async (request, response) => {
         // If the provided identifier is not a valid ObjectId, try searching by register number
         const customerByCUSID = await Customer.findOne({ CusID: identifier });
         if (customerByCUSID) {
-            // Sending the fetched vehicle as a JSON response if found by register number
+            // Sending the fetched customer as a JSON response if found by  number
             return response.status(200).json(customerByCUSID);
         }
 
-        // If no vehicle found by either ID or register number, send a 404 Not Found response
+        // If no customer found by either ID or  number, send a 404 Not Found response
         return response.status(404).json({ message: 'Customer not found' });
     } catch (error) {
         // Handling errors and sending an error response with detailed error message
@@ -95,17 +95,17 @@ router.get('/:identifier', async (request, response) => {
 });
 // Route for Updating a Customer
 
-router.patch('/:id', async (request, response) => {
-    try {
-        const customer = await Customer.findByIdAndUpdate(request.params.id, request.body, {new: true});
+// router.patch('/:id', async (request, response) => {
+//     try {
+//         const customer = await Customer.findByIdAndUpdate(request.params.id, request.body, {new: true});
 
-        if (!customer) return response.status(404).send('Customer not found');
+//         if (!customer) return response.status(404).send('Customer not found');
 
-        response.send(customer);
-    } catch (error) {
-        response.status(400).send(error);
-    }
-});
+//         response.send(customer);
+//     } catch (error) {
+//         response.status(400).send(error);
+//     }
+// });
 
 // Route for Deleting a Customer
 
@@ -175,14 +175,14 @@ router.get('/:identifier', async (request, response) => {
             }
         }
 
-        // If the provided identifier is not a valid ObjectId, try searching by register number
+        // If the provided identifier is not a valid ObjectId, try searching by  number
         const customerByCUSID = await Customer.findOne({ cusID: identifier });
         if (customerByCUSID) {
-            // Sending the fetched vehicle as a JSON response if found by register number
+            // Sending the fetched vehicle as a JSON response if found by  number
             return response.status(200).json(customerByCUSID);
         }
 
-        // If no vehicle found by either ID or register number, send a 404 Not Found response
+        // If no vehicle found by either ID or  number, send a 404 Not Found response
         return response.status(404).json({ message: 'Customer not found' });
     } catch (error) {
         // Handling errors and sending an error response with detailed error message
@@ -190,6 +190,29 @@ router.get('/:identifier', async (request, response) => {
         response.status(500).send({ message: 'Error fetching Customer: ' + error.message });
     }
 });
+router.patch('/:identifier', async (request, response) => {
+    try {
+        const { identifier } = request.params;
+
+        // Check if the identifier is a valid MongoDB ObjectId
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            const customer = await Customer.findByIdAndUpdate(identifier, request.body, { new: true });
+            if (!customer) return response.status(404).send('Customer not found');
+            return response.status(200).send(customer);
+        }
+
+        // If not a valid ObjectId, try searching by CusID
+        const customerByCUSID = await Customer.findOneAndUpdate({ CusID: identifier }, request.body, { new: true });
+        if (!customerByCUSID) return response.status(404).send('Customer not found');
+        return response.status(200).send(customerByCUSID);
+        
+    } catch (error) {
+        console.error(error);
+        response.status(400).send({ message: 'Error updating customer: ' + error.message });
+    }
+});
+
+
 
 
 

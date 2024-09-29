@@ -158,11 +158,27 @@ const Checkout = () => {
         <div className="p-8 flex flex-col items-center">
             <div className="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-semibold mb-4">Checkout</h1>
+                {items && items.length > 0 ? (
+                    items.map((item) => (
+                        <div key={item.itemId} className="flex justify-between items-center p-4 border-b">
+                            <div className="flex gap-2 items-center">
+                                <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded" />
+                                {/* <span className="font-medium">{item.title}</span> */}
+                            </div>
+                            <span>Qty: {item.quantity}</span>
+                          
+                            <span>  Total Price:Rs.{(item.SPrice * item.quantity).toFixed(2)}</span>
+                        </div>
+                    ))
+                ) : (
+                    <p>No items to display</p>
+                )}
                 <div className="mb-4">
-                    <div className="flex justify-between font-semibold">
+                    {/* <div className="flex justify-between font-semibold">
                         <span>Total Price:</span>
                         <span>Rs.{(total || 0).toFixed(2)}</span>
-                    </div>
+                        
+                    </div> */}
                     <h2 className="text-2xl font-semibold mb-2">Customer Information</h2>
                     <input
                         type="text"
