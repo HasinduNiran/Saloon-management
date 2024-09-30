@@ -3,29 +3,29 @@ import React from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate, useParams } from "react-router-dom"; // Add useParams
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from "../../images/logo.png";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner"; // Assuming you have this component
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import Font Awesome
+import { faStar } from "@fortawesome/free-solid-svg-icons"; // Import the star icon
 
 const CreateFeedback = () => {
-  // const [cusID, setCusID] = useState("");
   const [name, setName] = useState("");
-  const [lastName, setLastName] = useState(""); // Added last name
+  const [lastName, setLastName] = useState("");
   const [phone_number, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [employee, setEmployee] = useState("");
-  const [employeeOptions, setEmployeeOptions] = useState([]); // Dropdown options
+  const [employeeOptions, setEmployeeOptions] = useState([]);
   const [date_of_service, setDateOfService] = useState(null);
   const [message, setMessage] = useState("");
-  const [star_rating, setStarRating] = useState(0);
+  const [star_rating, setStarRating] = useState(0); // Star rating state
   const [loading, setLoading] = useState(false);
   const [dateError, setDateError] = useState("");
   const [cussID, setcussID] = useState('');
   
   const navigate = useNavigate();
-  
   const { cusID } = useParams(); // Get CusID from the URL
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const CreateFeedback = () => {
       axios.get(`http://localhost:8076/customers/${cusID}`)
         .then((response) => {
           const data = response.data;
-          setcussID(data.cusID); // Assuming cusID is coming from the API response
+          setcussID(data.cusID);
           setPhone(data.ContactNo);
           setEmail(data.Email);
           setName(`${data.FirstName} ${data.LastName}`);
@@ -45,14 +45,9 @@ const CreateFeedback = () => {
           alert('An error occurred. Please check the console.');
           console.log(error);
         });
-    } else {
-      console.log("cusID is undefined");
     }
   }, [cusID]);
   
-  
-
-  // Fetch Employee options for the dropdown
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -75,7 +70,6 @@ const CreateFeedback = () => {
 
     fetchEmployees();
   }, []);
-
 
   const handleDateChange = (date) => {
     if (date && date < new Date()) {
@@ -131,6 +125,27 @@ const CreateFeedback = () => {
       });
   };
 
+  const handleStarClick = (rating) => {
+    setStarRating(rating); // Set the star rating
+  };
+
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <FontAwesomeIcon
+          key={i}
+          icon={faStar}
+          onClick={() => handleStarClick(i)} // Handle star click
+          className={i <= star_rating ? "text-yellow-500" : "text-gray-300"}
+          size="2x"
+          style={{ cursor: "pointer" }}
+        />
+      );
+    }
+    return stars;
+  };
+
   const containerStyle = {
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: "cover",
@@ -159,7 +174,6 @@ const CreateFeedback = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {loading && <Spinner />}
           <form className="space-y-4">
-            {/* Customer ID */}
             <div>
               <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">Customer ID</label>
               <input
@@ -167,12 +181,11 @@ const CreateFeedback = () => {
                 type="text"
                 value={cussID}
                 onChange={(e) => setcussID(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                 disabled
               />
             </div>
 
-            {/* Auto-filled Fields */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium leading-5 text-gray-700">First Name</label>
               <input
@@ -180,7 +193,7 @@ const CreateFeedback = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -191,7 +204,7 @@ const CreateFeedback = () => {
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -202,7 +215,7 @@ const CreateFeedback = () => {
                 type="text"
                 value={phone_number}
                 onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -213,76 +226,63 @@ const CreateFeedback = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
-            {/* Employee */}
             <div>
               <label htmlFor="employee" className="block text-sm font-medium leading-5 text-gray-700">Employee</label>
               <select
                 id="employee"
                 value={employee}
                 onChange={(e) => setEmployee(e.target.value)}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               >
-                <option value="" disabled>Select Employee</option>
-                {employeeOptions.map((emp) => (
-                  <option key={emp.value} value={emp.value}>
-                    {emp.label}
+                <option value="">Select an employee</option>
+                {employeeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Date of Service */}
             <div>
               <label htmlFor="date_of_service" className="block text-sm font-medium leading-5 text-gray-700">Date of Service</label>
               <DatePicker
+                id="date_of_service"
                 selected={date_of_service}
                 onChange={handleDateChange}
-                className={`mt-1 block w-full px-3 py-2 border ${
-                  dateError ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm`}
-                placeholderText="Select date of service"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select a date"
               />
-              {dateError && (
-                <p className="text-red-500 text-xs mt-1">{dateError}</p>
-              )}
+              {dateError && <p className="text-red-600">{dateError}</p>}
             </div>
 
-            {/* Message */}
             <div>
               <label htmlFor="message" className="block text-sm font-medium leading-5 text-gray-700">Message</label>
               <textarea
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                rows={4}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
             {/* Star Rating */}
             <div>
-              <label htmlFor="star_rating" className="block text-sm font-medium leading-5 text-gray-700">Star Rating</label>
-              <input
-                id="star_rating"
-                type="number"
-                value={star_rating}
-                onChange={(e) => setStarRating(Number(e.target.value))}
-                min={0}
-                max={5}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
-              />
+              <label className="block text-sm font-medium leading-5 text-gray-700">Star Rating</label>
+              <div className="flex items-center space-x-4">
+                {renderStars()}
+              </div>
             </div>
 
-            {/* Save Button */}
             <div>
               <button
                 type="button"
                 onClick={handleSaveFeedback}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:shadow-outline-blue focus:border-pink-700 active:bg-pink-700 transition duration-150 ease-in-out"
+                className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-300 hover:bg-pink-400"
               >
                 Submit Feedback
               </button>
