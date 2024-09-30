@@ -100,7 +100,7 @@ const generatePDF = () => {
   ];
   const tableRows = [];
 
-  appointments.forEach((appointment) => {
+  filteredAppoointments.forEach((appointment) => {
     const appointmentData = [
       appointment.CusID,
       appointment.appoi_ID,
@@ -115,7 +115,6 @@ const generatePDF = () => {
 
     // Show Date and Time as points above the table (per appointment)
     doc.setFontSize(10).setTextColor("#333");
-    
   });
 
   const date = new Date().toLocaleDateString();
@@ -161,7 +160,7 @@ const generatePDF = () => {
       3: { cellWidth: 25 }, // Phone
       4: { cellWidth: 20 }, // Stylist
       5: { cellWidth: 20 }, // Service
-      6: { cellWidth: 20 }, 
+      6: { cellWidth: 20 },
       7: { cellWidth: 20 },
     },
   });
@@ -169,6 +168,7 @@ const generatePDF = () => {
   // Save the generated PDF
   doc.save(`Appointment-Details-Report_${date}.pdf`);
 };
+
 
 
 
