@@ -8,6 +8,8 @@ import backgroundImage from "../../images/logobg.jpg";
 import Logo from "../../images/logo.png";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner"; // Assuming you have this component
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const UpdateFeedback = () => {
   const { id } = useParams(); // Get feedback ID from route params
@@ -57,6 +59,23 @@ const UpdateFeedback = () => {
       setDateError("");
     }
     setDateOfService(date);
+  };
+
+  const handleStarClick = (index) => {
+    setStarRating(index);
+  };
+
+  const renderStars = () => {
+    return [...Array(5)].map((_, index) => (
+      <FontAwesomeIcon
+        key={index}
+        icon={faStar}
+        className={`cursor-pointer ${
+          star_rating >= index + 1 ? "text-yellow-500" : "text-gray-300"
+        }`}
+        onClick={() => handleStarClick(index + 1)}
+      />
+    ));
   };
 
   const handleUpdateFeedback = () => {
@@ -131,16 +150,17 @@ const UpdateFeedback = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {loading && <Spinner />}
           <form className="space-y-4">
-
             {/* Customer ID */}
             <div>
-              <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">Customer ID (Optional)</label>
+              <label htmlFor="cusID" className="block text-sm font-medium leading-5 text-gray-700">
+                Customer ID (Optional)
+              </label>
               <input
                 id="cusID"
                 type="text"
                 value={cusID}
                 onChange={(e) => setCusID(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -152,7 +172,7 @@ const UpdateFeedback = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -164,7 +184,7 @@ const UpdateFeedback = () => {
                 type="text"
                 value={phone_number}
                 onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -176,7 +196,7 @@ const UpdateFeedback = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -188,7 +208,7 @@ const UpdateFeedback = () => {
                 type="text"
                 value={employee}
                 onChange={(e) => setEmployee(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
 
@@ -200,7 +220,7 @@ const UpdateFeedback = () => {
                 onChange={handleDateChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   dateError ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm`}
+                } rounded-md shadow-sm`}
                 dateFormat="yyyy-MM-dd"
                 placeholderText="Select a date"
               />
@@ -214,30 +234,25 @@ const UpdateFeedback = () => {
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                 rows="4"
               />
             </div>
 
             {/* Star Rating */}
             <div>
-              <label htmlFor="star_rating" className="block text-sm font-medium leading-5 text-gray-700">Star Rating (1-5)</label>
-              <input
-                id="star_rating"
-                type="number"
-                min="1"
-                max="5"
-                value={star_rating}
-                onChange={(e) => setStarRating(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
-              />
+              <label className="block text-sm font-medium leading-5 text-gray-700">Star Rating</label>
+              <div className="flex items-center space-x-4">
+                {renderStars()}
+              </div>
             </div>
 
+            {/* Submit Button */}
             <div>
               <button
                 type="button"
                 onClick={handleUpdateFeedback}
-                className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:border-pink-700 focus:shadow-outline-blue active:bg-pink-700 transition duration-150 ease-in-out"
+                className="mt-6 w-full bg-blue-500 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-blue-700"
               >
                 Update Feedback
               </button>
