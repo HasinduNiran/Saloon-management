@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import Spinner from "../../components/Spinner";
 import Nav from '../../components/Dashborad/DashNav';
 import SideBar from '../../components/Dashborad/Sidebar';
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai'; // Importing star icons
 
 const Readfeedback = () => {
     const { id } = useParams();  // Get feedback ID from URL params
@@ -83,7 +84,16 @@ const Readfeedback = () => {
                         </div>
                         <div>
                             <strong>Rating: </strong>
-                            <span>{feedback.star_rating} / 5</span>
+                            <span className="flex items-center">
+                                {Array.from({ length: 5 }, (_, index) => (
+                                    index < feedback.star_rating ? (
+                                        <AiFillStar key={index} className="text-yellow-500" />
+                                    ) : (
+                                        <AiOutlineStar key={index} className="text-yellow-500" />
+                                    )
+                                ))}
+                                {/* <span className="ml-2">{feedback.star_rating} / 5</span> */}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -93,5 +103,3 @@ const Readfeedback = () => {
 };
 
 export default Readfeedback;
-
-

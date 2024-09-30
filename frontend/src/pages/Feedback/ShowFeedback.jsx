@@ -6,7 +6,7 @@ import { MdOutlineDelete } from 'react-icons/md';
 import Spinner from "../../components/Spinner";
 import Nav from '../../components/Dashborad/DashNav';
 import SideBar from '../../components/Dashborad/Sidebar';
-import { AiOutlineStar } from 'react-icons/ai';
+import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { Link } from 'react-router-dom';
@@ -28,7 +28,7 @@ const ShowFeedback = () => {
             .then((response) => {
                 console.log('API Response:', response.data);
                 const { data } = response.data;  // Extract data field from the response
-                
+
                 if (Array.isArray(data)) {
                     setFeedbacks(data);
                 } else {
@@ -183,8 +183,13 @@ const ShowFeedback = () => {
                                                     <td className="px-4 py-2">{new Date(feedback.date_of_service).toLocaleDateString()}</td>
                                                     <td className="px-4 py-2">{feedback.message}</td>
                                                     <td className="px-4 py-2 flex items-center">
-                                                        {feedback.star_rating}
-                                                        <AiOutlineStar className="ml-1 text-yellow-500" />
+                                                        {Array.from({ length: 5 }, (_, index) => (
+                                                            index < feedback.star_rating ? (
+                                                                <AiFillStar key={index} className="text-yellow-500" />
+                                                            ) : (
+                                                                <AiOutlineStar key={index} className="text-yellow-500" />
+                                                            )
+                                                        ))}
                                                     </td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex justify-center gap-x-4">

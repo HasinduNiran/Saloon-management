@@ -8,6 +8,8 @@ import backgroundImage from "../../images/logobg.jpg";
 import Swal from "sweetalert2";
 import { BsInfoCircle } from 'react-icons/bs';
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const ReadOneCustomer = () => {
   const [customers, setCustomer] = useState({});
@@ -69,7 +71,7 @@ const ReadOneCustomer = () => {
     try {
       const response = await axios.delete(`http://localhost:8076/appointments/${appointmentId}`);
       if (response.status === 200) {
-        setAppointments((prevAppointments) => 
+        setAppointments((prevAppointments) =>
           prevAppointments.filter((appointment) => appointment._id !== appointmentId)
         );
         Swal.fire("Success", "Appointment deleted successfully", "success");
@@ -86,7 +88,7 @@ const ReadOneCustomer = () => {
     try {
       const response = await axios.delete(`http://localhost:8076/feedback/${feedbackId}`);
       if (response.status === 200) {
-        setFeedbacks((prevFeedbacks) => 
+        setFeedbacks((prevFeedbacks) =>
           prevFeedbacks.filter((feedback) => feedback._id !== feedbackId)
         );
         Swal.fire("Success", "Feedback deleted successfully", "success");
@@ -167,7 +169,7 @@ const ReadOneCustomer = () => {
                     <p className="text-gray-600 font-semibold">Packages: {appointment.packages}</p>
 
                     <div className="px-4 py-2 text-sm text-gray-700 flex items-center space-x-4 border border-gray-300 rounded-md shadow-md">
-                    <Link
+                      <Link
                         className="text-green-600 hover:text-green-800 transition duration-150 ease-in-out"
                         to={`/appointments/details/${appointment._id}`}
                         title="View Details"
@@ -219,11 +221,11 @@ const ReadOneCustomer = () => {
                             <ul className="list-disc pl-5 mb-2">
                               {order.items.map((item) => (
                                 <li key={item.itemId} className="text-gray-700">
-                               <p>{item.ItemName} </p>
-                               <p>Qty: {item.quantity}</p>  
-                               <p>Price: Rs. {(item.SPrice * item.quantity).toFixed(2)}</p>
-                               
-                            </li>
+                                  <p>{item.ItemName} </p>
+                                  <p>Qty: {item.quantity}</p>
+                                  <p>Price: Rs. {(item.SPrice * item.quantity).toFixed(2)}</p>
+
+                                </li>
                               ))}
                             </ul>
                           </div>
@@ -253,14 +255,14 @@ const ReadOneCustomer = () => {
                         <p className="text-gray-600 mt-2">Payment Method: {order.paymentMethod}</p>
 
                         <div className="flex space-x-2 mt-4">
-                        <button
-  onClick={() => handleDeleteOrder(order.orderId)} // Ensure this matches your order structure
-  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
->
-  Delete
-</button>
+                          <button
+                            onClick={() => handleDeleteOrder(order.orderId)} // Ensure this matches your order structure
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                          >
+                            Delete
+                          </button>
 
-                         
+
                         </div>
                       </div>
                     )}
@@ -281,41 +283,52 @@ const ReadOneCustomer = () => {
 
             {/* Feedback Section */}
             <div className="p-6 border-t">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">Feedback</h2>
-              {feedbacks.length > 0 ? (
-                feedbacks.map((feedback) => (
-                  <div key={feedback._id} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative">
-                    <h3 className="text-lg font-semibold mb-2">Feedback ID: {feedback._id}</h3>
-                    <p className="text-gray-600">{feedback.message}</p>
-                    <p className="text-gray-600">Rating: {feedback.star_rating} / 5</p>
+          <h2 className="text-xl font-bold mb-4 text-gray-800">Feedback</h2>
+          {feedbacks.length > 0 ? (
+            feedbacks.map((feedback) => (
+              <div key={feedback._id} className="border border-gray-300 p-4 mb-4 rounded-lg shadow-md relative">
+                <h3 className="text-lg font-semibold mb-2">Feedback ID: {feedback._id}</h3>
+                <p className="text-gray-600">{feedback.message}</p>
 
-                    <div className="absolute top-4 right-4 space-x-2 flex">
-                      <Link to={`/feedback/edit/${feedback._id}`} className="text-yellow-500 hover:text-yellow-700" title="Edit">
-                        <FaEdit size={24} />
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteFeedback(feedback._id)}
-                        className="text-red-500 hover:text-red-700"
-                        title="Delete"
-                      >
-                        <FaTrash size={24} />
-                      </button>
-                      
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-600">No feedback found</p>
-              )}
-            </div>
+                {/* Render Star Ratings */}
+                <div className="flex mb-2">
+                  {[...Array(5)].map((_, index) => (
+                    <FontAwesomeIcon
+                      key={index}
+                      icon={faStar}
+                      className={`h-5 w-5 ${
+                        index < feedback.star_rating ? "text-yellow-500" : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="absolute top-4 right-4 space-x-2 flex">
+                  <Link to={`/feedback/edit/${feedback._id}`} className="text-yellow-500 hover:text-yellow-700" title="Edit">
+                    <FaEdit size={24} />
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteFeedback(feedback._id)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete"
+                  >
+                    <FaTrash size={24} />
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-600">No feedback found</p>
+          )}
+        </div>
             <button
-  className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
-  onClick={() => { window.location.href = `/editCustomer1/${CusID}` }}
->
-  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
-    Edit Profile
-  </span>
-</button>
+              className="relative inline-flex items-center justify-center p-0.5 me-2 overflow-hidden text-sm font-medium text-gray-100 rounded-lg group bg-gradient-to-br from-pink-900 to-pink-500 group-hover:to-pink-500 hover:text-white"
+              onClick={() => { window.location.href = `/editCustomer1/${CusID}` }}
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-black rounded-md group-hover:bg-opacity-0">
+                Edit Profile
+              </span>
+            </button>
           </div>
         )}
       </div>
