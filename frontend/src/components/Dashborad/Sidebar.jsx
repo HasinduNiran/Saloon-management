@@ -1,5 +1,6 @@
 import React from "react";
 import Logo from '../../images/logo.png'
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     <>
@@ -32,14 +33,14 @@ const Sidebar = () => {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-pink-700">
-        <a href="" className="flex items-center space-x-3 rtl:space-x-reverse ml-12">
-        <img 
-        src={Logo} 
-        alt="logo" 
-        style={{ width: '30px', height: '30px', borderRadius: '50%' }} 
-      />
-          <span className=" text-white self-center text-xl font-bold whitespace-nowrap dark:text-">Bashi</span>
-        </a>
+          <a href="" className="flex items-center space-x-3 rtl:space-x-reverse ml-12">
+            <img
+              src={Logo}
+              alt="logo"
+              style={{ width: '30px', height: '30px', borderRadius: '50%' }}
+            />
+            <span className=" text-white self-center text-xl font-bold whitespace-nowrap dark:text-">Bashi</span>
+          </a>
           <ul className="space-y-2 font-medium mt-10">
             <li>
               <a
@@ -74,7 +75,7 @@ const Sidebar = () => {
                   <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
                 </svg>
                 <span className="flex-1 ms-3 whitespace-nowrap">Kanban</span>
-               
+
               </a>
             </li>
             <li>
@@ -97,12 +98,16 @@ const Sidebar = () => {
                 </span>
               </a>
             </li>
+            <li className="text-gray-400 hover:bg-gray-700 hover:text-white p-3">
+              <Link to="/">Logout</Link>
+            </li>
+
             {/* Add more sidebar items as needed */}
           </ul>
         </div>
       </aside>
 
-      
+
     </>
   );
 };
