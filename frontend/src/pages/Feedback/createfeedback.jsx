@@ -3,15 +3,16 @@ import React from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Add useParams
 import backgroundImage from "../../images/logobg.jpg";
 import Logo from "../../images/logo.png";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner"; // Assuming you have this component
 
 const CreateFeedback = () => {
-  const [cusID, setCusID] = useState("");
+  // const [cusID, setCusID] = useState("");
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState(""); // Added last name
   const [phone_number, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [employee, setEmployee] = useState("");
@@ -21,34 +22,35 @@ const CreateFeedback = () => {
   const [star_rating, setStarRating] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dateError, setDateError] = useState("");
+  const [cussID, setcussID] = useState('');
+  
   const navigate = useNavigate();
+  
+  const { cusID } = useParams(); // Get CusID from the URL
 
-  // Fetch Customer data based on cusID
   useEffect(() => {
-    const fetchCustomerData = async () => {
-      if (cusID) {
-        try {
-          const response = await axios.get(`http://localhost:8076/customers/${cusID}`);
-          const customer = response.data;
-          if (customer) {
-            // Auto-fill only if customer data exists
-            setName(customer.name || "");
-            setPhone(customer.phone_number || "");
-            setEmail(customer.email || "");
-          }
-        } catch (error) {
-          console.error("Error fetching customer data:", error);
-          Swal.fire({
-            title: "Error",
-            text: "Unable to fetch customer data. Please check the Customer ID.",
-            icon: "error",
-          });
-        }
-      }
-    };
-
-    fetchCustomerData();
+    if (cusID) {
+      setLoading(true);
+      axios.get(`http://localhost:8076/customers/${cusID}`)
+        .then((response) => {
+          const data = response.data;
+          setcussID(data.cusID); // Assuming cusID is coming from the API response
+          setPhone(data.ContactNo);
+          setEmail(data.Email);
+          setName(`${data.FirstName} ${data.LastName}`);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          alert('An error occurred. Please check the console.');
+          console.log(error);
+        });
+    } else {
+      console.log("cusID is undefined");
+    }
   }, [cusID]);
+  
+  
 
   // Fetch Employee options for the dropdown
   useEffect(() => {
@@ -57,7 +59,7 @@ const CreateFeedback = () => {
         const response = await axios.get("http://localhost:8076/employees");
         const employees = response.data.data || [];
         const employeeOptions = employees.map((emp) => ({
-          value: emp.EmpID,
+          value: emp.FirstName,
           label: `${emp.FirstName} ${emp.LastName}`,
         }));
         setEmployeeOptions(employeeOptions);
@@ -74,6 +76,7 @@ const CreateFeedback = () => {
     fetchEmployees();
   }, []);
 
+
   const handleDateChange = (date) => {
     if (date && date < new Date()) {
       setDateError("Please select a future date.");
@@ -84,7 +87,7 @@ const CreateFeedback = () => {
   };
 
   const handleSaveFeedback = () => {
-    if (!name || !phone_number || !email || !employee || !date_of_service || !message || !star_rating) {
+    if (!name || !lastName || !phone_number || !email || !employee || !date_of_service || !message || !star_rating) {
       Swal.fire({
         position: "center",
         icon: "error",
@@ -98,6 +101,7 @@ const CreateFeedback = () => {
     const feedbackData = {
       cusID,
       name,
+      lastName,
       phone_number,
       email,
       employee,
@@ -161,20 +165,32 @@ const CreateFeedback = () => {
               <input
                 id="cusID"
                 type="text"
-                value={cusID}
-                onChange={(e) => setCusID(e.target.value)}
+                value={cussID}
+                onChange={(e) => setcussID(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+                disabled
               />
             </div>
 
             {/* Auto-filled Fields */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium leading-5 text-gray-700">Full Name</label>
+              <label htmlFor="name" className="block text-sm font-medium leading-5 text-gray-700">First Name</label>
               <input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium leading-5 text-gray-700">Last Name</label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-pink-300 transition duration-150 ease-in-out sm:text-sm"
               />
             </div>

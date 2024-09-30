@@ -88,7 +88,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/feedback/create/:CusID" element={<CreateFeedback />} />
+      <Route path="/feedback/create/:cusID" element={<CreateFeedback />} />
       <Route path="/feedback/edit/:id" element={<UpdateFeedback />} />
       <Route path="/feedback/view/:id" element={<Readfeedback />} />
       <Route path="/Feedback" element={<ShowFeedback />} />
