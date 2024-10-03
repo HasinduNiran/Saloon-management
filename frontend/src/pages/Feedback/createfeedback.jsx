@@ -145,7 +145,7 @@ const CreateFeedback = () => {
       });
       return;
     }
-
+  
     const feedbackData = {
       cusID,
       name,
@@ -157,35 +157,34 @@ const CreateFeedback = () => {
       message,
       star_rating,
     };
-
+  
     setLoading(true);
     axios
       .post("http://localhost:8076/feedback", feedbackData)
       .then(() => {
         setLoading(false);
+        // Immediately show success message for feedback submission
         Swal.fire({
           position: "center",
           icon: "success",
           title: "Feedback submitted successfully!",
           showConfirmButton: true,
           timer: 2000,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Show a prompt to send email after successful feedback submission
-            Swal.fire({
-              title: "Send Email?",
-              text: "Do you want to send a feedback confirmation email to the customer?",
-              icon: "question",
-              showCancelButton: true,
-              confirmButtonText: "Yes, send it",
-              cancelButtonText: "No, skip",
-            }).then((emailResult) => {
-              if (emailResult.isConfirmed) {
-                // Send email when user confirms
-                sendEmailToCustomer(feedbackData);
-              }
-            });
-          }
+        }).then(() => {
+          // Show prompt to send email after successful feedback submission
+          Swal.fire({
+            title: "Send Email?",
+            text: "Do you want to send a feedback confirmation email to the customer?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, send it",
+            cancelButtonText: "No, skip",
+          }).then((emailResult) => {
+            if (emailResult.isConfirmed) {
+              // Send email when user confirms
+              sendEmailToCustomer(feedbackData);
+            }
+          });
         });
         navigate(`/customers/get/${cusID}`);
       })
@@ -195,6 +194,7 @@ const CreateFeedback = () => {
         console.error(error);
       });
   };
+  
 
   const handleStarClick = (rating) => {
     setStarRating(rating);
