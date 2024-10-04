@@ -28,11 +28,12 @@ const PkgPage = () => {
 
   // Function to calculate remaining days until package expiration
   const calculateRemainingDays = (endDate) => {
-    const currentDate = new Date();
-    const end = new Date(endDate);
-    const timeDiff = end.getTime() - currentDate.getTime();
+    const currentDate = new Date();  // Get the current date and time
+    const end = new Date(endDate); // Convert the provided endDate into a Date object
+    const timeDiff = end.getTime() - currentDate.getTime(); // Calculate the difference between the end date and the current date in milliseconds
     const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
 
+     // If daysRemaining is greater than 0, return the number of days; otherwise, return "Expired"
     return daysRemaining > 0 ? `${daysRemaining} days remaining` : "Expired";
   };
 
