@@ -10,7 +10,9 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';  // Import SweetAlert2
+import Swal from 'sweetalert2'; 
+
+// Import SweetAlert2
 
 const ShowFeedback = () => {
     const [feedbacks, setFeedbacks] = useState([]);
