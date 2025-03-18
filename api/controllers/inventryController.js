@@ -1,4 +1,4 @@
-import User from "../models/inventryModel.js";
+import Inventory from "../models/inventryModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -77,7 +77,7 @@ export const getOneInventory = async (request, response, ) => {
 
   
   // Update an Inventory
-  export const updateInventory = async (req, res, ) => {
+  export const updateInventory = async (request, response, ) => {
     try {
       if (
         
