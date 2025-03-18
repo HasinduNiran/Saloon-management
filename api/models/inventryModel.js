@@ -1,0 +1,40 @@
+import mongoose from "mongoose";
+
+const inventorySchema = new mongoose.Schema(
+    {
+        ItemNo : {
+            type: String,
+            unique: true
+        },
+        ItemName: {
+            type: String,
+            required: true,
+        },
+        Category: {
+            type: String,
+            required: true,
+        },
+        Quantity: {
+            type: String,
+            required: true,
+        },
+        Price: {
+            type: String,
+            required: true,
+        },
+        SupplierName: {
+            type: String,
+            required: true,
+        },
+        SupplierEmail: {
+            type: String,
+            required: true,
+        },
+    
+    },
+  { timestamps: true }
+);
+
+const inventory = mongoose.model("inventory", inventorySchema);
+
+export default inventory;
