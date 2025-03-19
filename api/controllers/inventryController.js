@@ -1,6 +1,5 @@
 import Inventory from "../models/inventryModel.js";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 
 
@@ -62,13 +61,18 @@ export const createInventry = async (request, response) => {
   
 // Get One Inventory from database by id
 
-export const getOneInventory = async (request, response, ) => {
+export const getOneInventory = async (request, response ) => {
   try {
     const { id } = request.params;
-
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response.status(400).json({ message: "Invalid ID format" });
+  }
     const inventory = await Inventory.findById(id);
 
-    return request.status(200).json(inventory);
+    if (!inventory) {
+      return response.status(404).json({ message: 'Inventory not found' });
+    }
+    return response.status(200).json(inventory);
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
