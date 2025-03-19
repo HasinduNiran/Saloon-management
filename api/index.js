@@ -13,11 +13,16 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventory);
-
+  
 const PORT = 7001;
 
-dbConnect().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+dbConnect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error);
+    process.exit(1); // Stop the app if DB fails to connect
   });
-});
