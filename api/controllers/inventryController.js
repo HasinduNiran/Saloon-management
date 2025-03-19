@@ -45,10 +45,7 @@ export const createInventry = async (request, response) => {
     try {
       const inventories = await Inventory.find({});
       
-      return response.status(200).json({
-        count: inventories.length,
-        data: inventories,
-      });
+      return response.status(200).json(inventories);
     } catch (error) {
       console.log(error.message);
       response.status(500).send({ message: error.message });
