@@ -1,5 +1,5 @@
 import express from 'express';
-import { Pkg } from '../Models/Pkg.js';
+import { Pkg } from '../models/packageModel.js';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -65,7 +65,7 @@ router.post('/', uploads, validateFields, async (req, res) => {
             package_type,
             category,
             p_name,
-            image
+            // image
         });
 
         await newPackage.save();

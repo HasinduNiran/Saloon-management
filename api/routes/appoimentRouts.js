@@ -1,5 +1,5 @@
 import express from 'express';
-import { Appointment } from '../Models/Appointment.js';
+import { Appointment } from '../models/appoimentModel.js';
 import mongoose from 'mongoose';
 
 const router = express.Router();
@@ -14,7 +14,7 @@ const validateFields = (req, res, next) => {
         "appoi_date",
         "appoi_time",
         "services",
-        "CusID",
+        "username",
     ];
 
     for (const field of requiredFields) {
@@ -38,7 +38,7 @@ router.post('/', validateFields, async (req, res) => {
             customize_package: req.body.customize_package,
             appoi_date: req.body.appoi_date,
             appoi_time: req.body.appoi_time,
-            CusID:req.body.CusID
+            username:req.body.username
         };
 
         const createdAppointment = await Appointment.create(newAppointment);
@@ -83,9 +83,9 @@ router.get('/:identifier', async (req, res) => {
             }
         }
 
-        const appointmentByCusID = await Appointment.find({ CusID: identifier });
-        if (appointmentByCusID.length) {
-            return res.status(200).json(appointmentByCusID);
+        const appointmentByusername = await Appointment.find({ username: identifier });
+        if (appointmentByusername.length) {
+            return res.status(200).json(appointmentByusername);
         }
 
         return res.status(404).json({ message: 'Appointment not found' });
@@ -137,7 +137,7 @@ router.get("searchappointment", function (req, res) {
             { appoi_time: { $regex: search, $options: "i"} },
             { services: { $regex: search, $options: "i"} },
             { packages: { $regex: search, $options: "i"} },
-            { CusID: { $regex: search, $options: "i"} }
+            { username: { $regex: search, $options: "i"} }
            
         ]
     }, function (err, result) {
@@ -167,10 +167,10 @@ router.get("searchappointment", function (req, res) {
             }
       
             // If the provided identifier is not a valid ObjectId, try searching by register number
-            const BookingByCUSID = await Appointment.find({ CusID: identifier });
-            if (BookingByCUSID) {
+            const BookingByusername = await Appointment.find({ username: identifier });
+            if (BookingByusername) {
                 // Sending the fetched vehicle as a JSON response if found by register number
-                return response.status(200).json(BookingByCUSID);
+                return response.status(200).json(BookingByusername);
             }
       
             // If no vehicle found by either ID or register number, send a 404 Not Found response
