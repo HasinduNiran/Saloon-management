@@ -5,7 +5,7 @@ import dbConnect from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import inventory from "./routes/inventoryRoute.js";
-
+import serviceRoutes from './routes/Service_Route.js';
 import appoinment from "./routes/appoimentRouts.js";
 import Package from "./routes/PackageRoute.js";
 import cors from 'cors'; 
@@ -25,7 +25,7 @@ app.use(cors({
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventory);
-
+app.use('/api/services', serviceRoutes);
 app.use("/api/v1/appoiment", appoinment);
 app.use("/api/v1/package", Package);
 
