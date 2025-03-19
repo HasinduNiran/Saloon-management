@@ -137,7 +137,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               className={`flex items-center text-DarkColor p-2 rounded-l-full transition-all duration-300 ${
                 selected === item.path
                   ? "bg-PrimaryColor text-DarkColor"
-                  : "hover:bg-DarkColor hover:text-ExtraDarkColor"
+                  : "hover:bg-DarkColor hover:text-SecondaryColor"
               } ${!isOpen ? "justify-center" : "justify-start"}`}
               onClick={() => setSelected(item.path)}
             >
