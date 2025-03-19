@@ -61,8 +61,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       icon: <FaTags />,
     },
     {
-      name: "Sales Forecasting",
-      path: "/manager/sales-forecasting",
+      name: "Feedback",
+      path: "/manager/Feedback-management",
       icon: <FaChartLine />,
     },
     { name: "Profile", path: "/manager/profile", icon: <FaUserCircle /> },
