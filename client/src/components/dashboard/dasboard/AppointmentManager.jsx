@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CreateFeedback from "../../../pages/feedback/CreateFeedback";
-import ManageFeedback from "../../../pages/feedback/ManageFeedback";
+import CreateAppontment from "../../../pages/appointment/CreateAppontment";
+import ManageAppointment from "../../../pages/appointment/ManageAppointment";
 
 
-
-export default function FeedbackManager() {
+export default function AppointmentManager() {
   const [activeTab, setActiveTab] = useState("all"); // State to manage active tab
 
   return (
@@ -17,7 +16,7 @@ export default function FeedbackManager() {
       transition={{ duration: 0.5 }}
     >
       <h1 className="text-3xl font-bold mb-2 text-ExtraDarkColor">
-        Feedback Management
+        Appointment Management
       </h1>
 
       {/* Tab Navigation */}
@@ -30,7 +29,7 @@ export default function FeedbackManager() {
           }`}
           onClick={() => setActiveTab("all")}
         >
-          Manage Feedback
+          Manage Appointment
         </div>
         <div
           className={`cursor-pointer px-4 py-2 -mb-1 ${
@@ -40,7 +39,7 @@ export default function FeedbackManager() {
           }`}
           onClick={() => setActiveTab("add")}
         >
-          Add Feedback
+          Add Appointment
         </div>
         {/* <div
           className={`cursor-pointer px-4 py-2 -mb-1 ${
@@ -64,8 +63,8 @@ export default function FeedbackManager() {
           transition={{ duration: 0.3 }}
           className="mt-4"
         >
-          {activeTab === "all" && <ManageFeedback />}
-          {activeTab === "add" && <CreateFeedback />}
+          {activeTab === "all" && <ManageAppointment />}
+          {activeTab === "add" && <CreateAppontment />}
           {/* {activeTab === "retrieved" && <RetrievedInventoryTable />} */}
         </motion.div>
       </AnimatePresence>
