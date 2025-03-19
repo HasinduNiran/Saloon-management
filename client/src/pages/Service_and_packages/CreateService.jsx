@@ -83,7 +83,7 @@ const CreateService = () => {
         text: 'Service created successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/services');
+        navigate('/manager/');
       });
     } catch (error) {
       Swal.fire({
