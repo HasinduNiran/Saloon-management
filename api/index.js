@@ -8,7 +8,7 @@ import inventory from "./routes/inventoryRoute.js";
 
 import appoinment from "./routes/appoimentRouts.js";
 import Package from "./routes/PackageRoute.js";
-
+import cors from 'cors'; 
 import feedback from "./routes/feedbackRoute.js";
 
 
@@ -16,6 +16,12 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.json()); 
+app.use(cors({ 
+//   origin: 'http://localhost:5175',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type'], 
+}));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventory);
