@@ -11,7 +11,6 @@ const ManageService = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch services on component mount
   useEffect(() => {
     fetchServices();
   }, []);
@@ -81,10 +80,6 @@ const ManageService = () => {
     navigate(`manage/services/edit/${id}`);
   };
 
-  // const handleCreateNew = () => {
-  //   navigate('manage/services/create');
-  // };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -94,7 +89,7 @@ const ManageService = () => {
     >
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-8">
         {/* Header */}
-        {/* <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
             className="p-2 bg-PrimaryColor text-DarkColor rounded-full hover:bg-SecondaryColor transition-all"
@@ -102,16 +97,17 @@ const ManageService = () => {
             <FiArrowLeft size={24} />
           </button>
           <h1 className="text-3xl font-extrabold text-ExtraDarkColor">Manage Services</h1>
-          <motion.button
-            onClick={handleCreateNew}
+          {/* Uncomment if you want to add a "Create New" button */}
+          {/* <motion.button
+            onClick={() => navigate('manage/services/create')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center bg-DarkColor text-white py-2 px-4 rounded-lg shadow-lg hover:bg-ExtraDarkColor transition-all"
           >
             <FiPlus size={20} className="mr-2" />
             Add New Service
-          </motion.button>
-        </div> */}
+          </motion.button> */}
+        </div>
 
         {/* Loading State */}
         {loading && (
@@ -148,6 +144,7 @@ const ManageService = () => {
                   <th className="p-4 font-semibold">Price</th>
                   <th className="p-4 font-semibold">Duration</th>
                   <th className="p-4 font-semibold">Available</th>
+                  <th className="p-4 font-semibold">Image</th>
                   <th className="p-4 font-semibold">Actions</th>
                 </tr>
               </thead>
@@ -174,6 +171,17 @@ const ManageService = () => {
                         }`}>
                           {service.available}
                         </span>
+                      </td>
+                      <td className="p-4">
+                        {service.image ? (
+                          <img 
+                            src={`${API_CONFIG.BASE_URL}${service.image}`} 
+                            alt={service.category} 
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        ) : (
+                          <span>No image</span>
+                        )}
                       </td>
                       <td className="p-4 flex space-x-2">
                         <motion.button

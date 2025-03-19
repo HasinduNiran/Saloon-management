@@ -4,26 +4,23 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import fs from 'fs'; // Added for folder creation
+import fs from 'fs';
 
 const router = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Setup Multer with dynamic folder creation
-const uploadDir = join(__dirname, '../uploads'); // Define upload directory path
+const uploadDir = join(__dirname, '../uploads');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Check if directory exists, create it if it doesn't
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        // Add timestamp to filename to avoid duplicates
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const fileExt = file.originalname.split('.').pop();
         cb(null, `${file.fieldname}-${uniqueSuffix}.${fileExt}`);
@@ -33,7 +30,6 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage: storage }).single('image');
 
 // Serve static files from the uploads directory
-router.use('/uploads', express.static(uploadDir));
 
 // Middleware for validating required fields
 const validateFields = (req, res, next) => {
@@ -56,28 +52,27 @@ const validateFields = (req, res, next) => {
 
 // Create a new service
 router.post("/", uploads, validateFields, async (req, res) => {
-  try {
-    const { category, description, duration, price, available, subCategory } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
-
-    const newService = new Service({
-      category,
-      description,
-      duration,
-      price,
-      available,
-      subCategory,
-      image,
-    });
-
-    await newService.save();
-    return res.status(201).json({ message: "Service created", service: newService });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send({ message: error.message });
-  }
-});
-
+    try {
+      const { category, description, duration, price, available, subCategory } = req.body;
+      const image = req.file ? `/uploads/${req.file.filename}` : null;
+  
+      const newService = new Service({
+        category,
+        description,
+        duration,
+        price,
+        available,
+        subCategory,
+        image,
+      });
+  
+      await newService.save();
+      return res.status(201).json({ message: "Service created", service: newService });
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send({ message: error.message });
+    }
+  });
 // Get all services
 router.get('/', async (req, res) => {
     try {
