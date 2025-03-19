@@ -8,6 +8,7 @@ const API_CONFIG = {
     INVENTORY: "/api/v1/inventory", // Added inventory endpoint
     APPOINTMENTS: "/api/v1/appoiment", // Added appointments endpoint
     SERVICES: "/api/services",
+    PACK: "/api/v1/package",
   },
 };
 

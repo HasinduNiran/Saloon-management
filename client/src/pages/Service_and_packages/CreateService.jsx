@@ -67,7 +67,7 @@ const CreateService = () => {
         }
       }
 
-      const url = `${API_CONFIG.BASE_URL}/api/services`; // Using service endpoint
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SERVICES}`; // Using service endpoint
 
       const response = await fetch(url, {
         method: 'POST',
