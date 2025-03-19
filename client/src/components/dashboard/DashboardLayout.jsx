@@ -1,0 +1,43 @@
+// DashboardLayout.js
+import React, { useState } from "react";
+import Sidebar from "./Sidebar";
+import { motion } from "framer-motion";
+import { FaBars } from "react-icons/fa";
+import Header from "./Header"; // Add the Header component
+import { Route, Routes } from "react-router-dom";
+import DashboardOverview from "./Dashboard";
+
+
+const contentVariants = {
+  open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
+  closed: { marginLeft: 0, transition: { type: "spring", stiffness: 50 } },
+};
+
+export default function DashboardLayout() {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  return (
+    <div className="relative min-h-screen bg-PrimaryColor">
+      {/* Toggle Button */}
+
+      {/* Sidebar Component */}
+      <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+
+      {/* Main Content */}
+      <motion.main
+        className=" flex-1 ml-0 transition-all"
+        variants={contentVariants}
+        animate={isOpen ? "open" : "closed"}
+      >
+        <Header />
+
+        {/* Routes for Dashboard Components */}
+        <Routes>
+          <Route path="/" element={<DashboardOverview />} />
+           </Routes>
+      </motion.main>
+    </div>
+  );
+}
