@@ -1,12 +1,11 @@
 import mongoose from 'mongoose'; 
-import Feedback  from '../Models/Feedback.js';\
+
+import Feedback from '../models/feedbackModel.js';
 
 const validateFields = (req, res, next) => {
     const requiredFields = [
-        "cusID",
-        "name",
-        "phone_number",
-        "email",
+        "username",
+        "serviceid",
         "employee",
         "date_of_service",
         "message",
@@ -43,24 +42,25 @@ const validateFields = (req, res, next) => {
 
 // Create new feedback
 export const createFeedback =async (req, res) => {
+    
     try {
+
         const {
             Username,
-            name,
-            email,
-            phone_number,
-            employee,
+            serviceID,
+            employeeID,
             message,
+            date_of_service,
             star_rating,
         } = req.body;
 
+
+
         const newFeedback = {
             Username,
-            name,
-            email,
-            phone_number,
-            employee,
-            date_of_service: req.parseDate,
+            serviceID,
+            employeeID,
+            date_of_service,
             message,
             star_rating,
         };
@@ -68,13 +68,13 @@ export const createFeedback =async (req, res) => {
         // Save new feedback to the database
         const feedback = await Feedback.create(newFeedback);
         if (!feedback) {
-            return res.status(500).send({ message: "Failed to create feedback" });
+            return res.status(500).json({ message: "Failed to create feedback" });
         }
-        res.status(201).send(feedback);
+       return  res.status(201).json(feedback);
 
     } catch (error) {
         console.error(error.message);
-        res.status(500).send({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
@@ -123,6 +123,18 @@ export const updateFeedback = async  (req, res) => {
     }
 };
 
+// Get all feedback
+
+export const getAllFeedback = async (req, res) => {
+    try {
+        const feedback = await Feedback.find();
+        res.status(200).json(feedback);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send({ message: error.message });
+    }
+};
+
 
 // Delete feedback by ID
 
@@ -146,7 +158,7 @@ export const deleteFeedback = async (req, res) => {
 
 // get one feedback by ID
 
-export const getFeedbackById = async (req, res) => {
+export const getOneFeedback = async (req, res) => {
     try {
         const { id } = req.params;
         const feedback = await Feedback.findById(id);

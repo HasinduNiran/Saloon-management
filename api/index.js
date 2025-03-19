@@ -5,8 +5,12 @@ import dbConnect from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import inventory from "./routes/inventoryRoute.js";
+
 import appoinment from "./routes/appoimentRouts.js";
 import Package from "./routes/PackageRoute.js";
+
+import feedback from "./routes/feedbackRoute.js";
+
 
 dotenv.config();
 const app = express();
@@ -15,8 +19,13 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventory);
+
 app.use("/api/v1/appoiment", appoinment);
 app.use("/api/v1/package", Package);
+
+app.use("/api/v1/feedback", feedback);
+  
+
 const PORT = 7001;
 
 dbConnect()

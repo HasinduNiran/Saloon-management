@@ -6,8 +6,11 @@ import { FaBars } from "react-icons/fa";
 import Header from "./Header"; // Add the Header component
 import { Route, Routes } from "react-router-dom";
 import DashboardOverview from "./Dashboard";
-
-
+import CreateInventory from "../../pages/Inventory/CreateInventory";
+import InventoryManagement from "./dasboard/InventoryManagement";
+import FeedbackManager from "./dasboard/FeedbackManager";
+import AppointmentManager from "./dasboard/AppointmentManager";
+import Service_and_PackageManager from "./dasboard/Service_and_PackageManager";
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
   closed: { marginLeft: 0, transition: { type: "spring", stiffness: 50 } },
@@ -36,6 +39,11 @@ export default function DashboardLayout() {
         {/* Routes for Dashboard Components */}
         <Routes>
           <Route path="/" element={<DashboardOverview />} />
+          {/* <Route path="/create" element={<CreateInventory />} /> */}
+          <Route path="/inventory-management" element={<InventoryManagement />} />
+          <Route path="/Feedback-management" element={<FeedbackManager />} />
+          <Route path="/appointment-management" element={<AppointmentManager />} />
+          <Route path="/Service-management" element={<Service_and_PackageManager />} />
            </Routes>
       </motion.main>
     </div>

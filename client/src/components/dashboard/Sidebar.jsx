@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { useDispatch } from "react-redux";
+import { MdFeedback } from "react-icons/md";
 // import {
 //   signOutUserstart,
 //   signOutUserSuccess,
@@ -51,19 +52,19 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       icon: <FaBox />,
     },
     {
-      name: "Orders",
-      path: "/manager/order-management",
+      name: "Appointments",
+      path: "/manager/appointment-management",
       icon: <FaClipboardList />,
     },
     {
-      name: "Discount & Offers",
-      path: "/manager/discount-management",
+      name: "Service & Packages",
+      path: "/manager/Service-management",
       icon: <FaTags />,
     },
     {
-      name: "Sales Forecasting",
-      path: "/manager/sales-forecasting",
-      icon: <FaChartLine />,
+      name: "Feedback",
+      path: "/manager/Feedback-management",
+      icon: <MdFeedback  />,
     },
     { name: "Profile", path: "/manager/profile", icon: <FaUserCircle /> },
   ];
@@ -137,7 +138,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               className={`flex items-center text-DarkColor p-2 rounded-l-full transition-all duration-300 ${
                 selected === item.path
                   ? "bg-PrimaryColor text-DarkColor"
-                  : "hover:bg-DarkColor hover:text-ExtraDarkColor"
+                  : "hover:bg-DarkColor hover:text-SecondaryColor"
               } ${!isOpen ? "justify-center" : "justify-start"}`}
               onClick={() => setSelected(item.path)}
             >

@@ -5,26 +5,15 @@ const feedbackSchema = mongoose.Schema(
     Username: {
         type: String,
     },
-    name: {
-        type: String,
+    serviceID: { 
+        type: mongoose.Types.ObjectId,
+        
+    },
+    employeeID:{
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
-    phone_number:{
-        type:String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    employee:{
-        type: String,
-        required: true,
-    },
-    date_of_service:{
-        type: Date,
-        required: true,
-    },
+  
     message:{
         type: String,
         required: true,
@@ -33,7 +22,9 @@ const feedbackSchema = mongoose.Schema(
         type:Number,
         required: true,
     },
-}
+},
+{ timestamps: true }
     
 );
-export default  Feedback = mongoose.model('Feedback' ,feedbackSchema);
+const   Feedback = mongoose.model('Feedback' ,feedbackSchema);
+export default Feedback;

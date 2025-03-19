@@ -4,7 +4,7 @@ import { createInventry, getAllInventory, getOneInventory, updateInventory, dele
 
 const router = express.Router();
 
-router.post("/create", createInventry);
+router.post("/", createInventry);
 router.get("/", getAllInventory);
 router.get("/:id", getOneInventory);
 router.put("/:id", updateInventory);
