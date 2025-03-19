@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
+import { FiPlus, FiX, FiArrowLeft, FiSave } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 
@@ -9,8 +9,9 @@ const SERVICES = ['Haircut', 'Coloring', 'Styling', 'Manicure', 'Pedicure', 'Mak
 const PACKAGES = ['Basic', 'Premium', 'Deluxe'];
 const STYLISTS = ['Alice', 'Bob', 'Charlie', 'Diana'];
 
-const CreateAppointment = () => {
+const EditAppointment = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     client_name: '',
     client_email: '',
@@ -22,8 +23,39 @@ const CreateAppointment = () => {
     services: [],
     packages: '',
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch existing appointment data
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch appointment');
+        const data = await response.json();
+        
+        // Convert services string to array
+        const servicesArray = data.services.split(', ').filter(s => s);
+        
+        setFormData({
+          ...data,
+          services: servicesArray,
+          appoi_date: data.appoi_date.split('T')[0] // Format date for input
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message,
+          confirmButtonColor: '#89198f',
+        }).then(() => navigate('/manage-appointments'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointment();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,20 +75,15 @@ const CreateAppointment = () => {
     e.preventDefault();
 
     const requiredFields = [
-      'client_name',
-      'client_email',
-      'client_phone',
-      'stylist',
-      'appoi_date',
-      'appoi_time',
-      'services',
+      'client_name', 'client_email', 'client_phone',
+      'stylist', 'appoi_date', 'appoi_time', 'services'
     ];
 
-    const missingFields = requiredFields.filter((field) => !formData[field]);
+    const missingFields = requiredFields.filter(field => !formData[field]);
     if (missingFields.length > 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Required Fields Missing',
+        title: 'Missing Fields',
         text: `Please fill in: ${missingFields.join(', ')}`,
         confirmButtonColor: '#89198f',
       });
@@ -65,37 +92,32 @@ const CreateAppointment = () => {
 
     try {
       setIsSubmitting(true);
-
-      // Prepare the data to send
-      const appointmentData = {
+      
+      // Prepare data for backend
+      const updateData = {
         ...formData,
-        services: formData.services.join(', '), // Convert array to string
+        services: formData.services.join(', '),
+        appoi_date: new Date(formData.appoi_date).toISOString()
       };
 
-      // Use API_CONFIG to construct the URL
-      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.APPOINTMENTS}`;
-
-      // Send the request to the backend
-      const response = await fetch(url, {
-        method: 'POST',
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(appointmentData),
+        body: JSON.stringify(updateData),
       });
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'Failed to create appointment');
+      if (!response.ok) throw new Error(result.message || 'Failed to update appointment');
 
-      // Show success message
       Swal.fire({
         icon: 'success',
-        title: 'Success',
-        text: 'Appointment created successfully!',
+        title: 'Success!',
+        text: 'Appointment updated successfully',
         confirmButtonColor: '#89198f',
-      }).then(() => {
-        navigate('/appointments'); // Redirect to appointments page
-      });
+      }).then(() => navigate('/manage-appointments'));
+      
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -107,6 +129,14 @@ const CreateAppointment = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-PrimaryColor to-SecondaryColor flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-DarkColor"></div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -126,9 +156,9 @@ const CreateAppointment = () => {
           </button>
           <h1 className="text-3xl font-extrabold text-ExtraDarkColor flex items-center">
             <span className="mr-3 bg-DarkColor text-white p-2 rounded-full">
-              <FiPlus size={24} />
+              <FiSave size={24} />
             </span>
-            Create New Appointment
+            Edit Appointment
           </h1>
         </div>
 
@@ -143,7 +173,6 @@ const CreateAppointment = () => {
                 value={formData.client_name}
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., John Doe"
                 required
               />
             </div>
@@ -156,7 +185,6 @@ const CreateAppointment = () => {
                 value={formData.client_email}
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., john.doe@example.com"
                 required
               />
             </div>
@@ -169,7 +197,6 @@ const CreateAppointment = () => {
                 value={formData.client_phone}
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., +1 123-456-7890"
                 required
               />
             </div>
@@ -185,9 +212,7 @@ const CreateAppointment = () => {
               >
                 <option value="">Select Stylist</option>
                 {STYLISTS.map((stylist) => (
-                  <option key={stylist} value={stylist}>
-                    {stylist}
-                  </option>
+                  <option key={stylist} value={stylist}>{stylist}</option>
                 ))}
               </select>
             </div>
@@ -233,10 +258,9 @@ const CreateAppointment = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleServiceToggle(service)}
                     className={`w-24 h-12 rounded-lg flex items-center justify-center text-sm font-medium transition-all shadow-sm
-                      ${
-                        formData.services.includes(service)
-                          ? 'bg-DarkColor text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ${formData.services.includes(service)
+                        ? 'bg-DarkColor text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                   >
                     {service}
@@ -255,9 +279,7 @@ const CreateAppointment = () => {
               >
                 <option value="">Select Package</option>
                 {PACKAGES.map((pkg) => (
-                  <option key={pkg} value={pkg}>
-                    {pkg}
-                  </option>
+                  <option key={pkg} value={pkg}>{pkg}</option>
                 ))}
               </select>
             </div>
@@ -290,10 +312,10 @@ const CreateAppointment = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h-8z" />
                   </svg>
-                  Creating...
+                  Updating...
                 </span>
               ) : (
-                'Create Appointment'
+                'Update Appointment'
               )}
             </motion.button>
           </div>
@@ -303,5 +325,4 @@ const CreateAppointment = () => {
   );
 };
 
-export default CreateAppointment;
-
+export default EditAppointment;
