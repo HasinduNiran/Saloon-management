@@ -12,6 +12,7 @@ import FeedbackManager from "./dasboard/FeedbackManager";
 import AppointmentManager from "./dasboard/AppointmentManager";
 import Service_and_PackageManager from "./dasboard/Service_and_PackageManager";
 import EditAppointment from "../../pages/appointment/EditAppointment";
+import EditService from "../../pages/Service_and_packages/EditService";
 
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
@@ -47,6 +48,7 @@ export default function DashboardLayout() {
           <Route path="/appointment-management" element={<AppointmentManager />} />
           <Route path="/Service-management" element={<Service_and_PackageManager />} />
           <Route path="/edit-appointment/:id" element={<EditAppointment />} />
+          <Route path="/edit-service/:id" element={<EditService />} />
            </Routes>
       </motion.main>
     </div>
