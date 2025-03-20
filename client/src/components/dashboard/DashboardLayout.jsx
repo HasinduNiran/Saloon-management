@@ -7,6 +7,7 @@ import Header from "./Header"; // Add the Header component
 import { Route, Routes } from "react-router-dom";
 import DashboardOverview from "./Dashboard";
 import CreateInventory from "../../pages/Inventory/CreateInventory";
+import EditInventory from "../../pages/Inventory/EditInventory";
 import InventoryManagement from "./dasboard/InventoryManagement";
 import FeedbackManager from "./dasboard/FeedbackManager";
 import AppointmentManager from "./dasboard/AppointmentManager";
@@ -49,8 +50,13 @@ export default function DashboardLayout() {
           <Route path="/appointment-management" element={<AppointmentManager />} />
           <Route path="/Service-management" element={<Service_and_PackageManager />} />
           <Route path="/edit-appointment/:id" element={<EditAppointment />} />
+
+          <Route path="/edit-inventory/:id" element={<EditInventory />} />
+
           <Route path="/edit-service/:id" element={<EditService />} />
+
           <Route path="/edit-package/:packageId" element={<EditPackage />} />
+
            </Routes>
       </motion.main>
     </div>

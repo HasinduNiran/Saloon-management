@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiArrowLeft } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 
 const CATEGORIES = ['Hair Products', 'Makeup', 'Nail Care', 'Skincare', 'Tools & Accessories'];
 
-const CreateInventory = () => {
+const EditInventory = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the inventory item ID from the URL
   const [formData, setFormData] = useState({
     ItemName: '',
     Category: '',
@@ -19,6 +20,40 @@ const CreateInventory = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch the inventory item data when the component mounts
+  useEffect(() => {
+    const fetchInventoryItem = async () => {
+      try {
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${id}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.message || 'Failed to fetch inventory item');
+
+        // Populate the form with the fetched data
+        setFormData({
+          ItemName: data.ItemName,
+          Category: data.Category,
+          Quantity: data.Quantity,
+          Price: data.Price,
+          SupplierName: data.SupplierName,
+          SupplierEmail: data.SupplierEmail,
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message,
+          confirmButtonColor: '#89198f',
+        }).then(() => {
+          navigate('/inventory-management'); // Redirect to inventory page if there's an error
+        });
+      }
+    };
+
+    fetchInventoryItem();
+  }, [id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -45,11 +80,11 @@ const CreateInventory = () => {
       setIsSubmitting(true);
 
       // Use API_CONFIG to construct the URL
-      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}`;
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${id}`;
 
       // Send the request to the backend
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -57,13 +92,13 @@ const CreateInventory = () => {
       });
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'Failed to create inventory item');
+      if (!response.ok) throw new Error(result.message || 'Failed to update inventory item');
 
       // Show success message
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Inventory item created successfully!',
+        text: 'Inventory item updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
         navigate('/manager/inventory-management'); // Redirect to inventory page
@@ -97,10 +132,7 @@ const CreateInventory = () => {
             <FiArrowLeft size={24} />
           </button>
           <h1 className="text-3xl font-extrabold text-ExtraDarkColor flex items-center">
-            <span className="mr-3 bg-DarkColor text-white p-2 rounded-full">
-              <FiPlus size={24} />
-            </span>
-            Create New Inventory Item
+            Edit Inventory Item
           </h1>
         </div>
 
@@ -206,10 +238,10 @@ const CreateInventory = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h-8z" />
                   </svg>
-                  Creating...
+                  Updating...
                 </span>
               ) : (
-                'Create Inventory Item'
+                'Update Inventory Item'
               )}
             </motion.button>
           </div>
@@ -219,4 +251,4 @@ const CreateInventory = () => {
   );
 };
 
-export default CreateInventory;
+export default EditInventory;
