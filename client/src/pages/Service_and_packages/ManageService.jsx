@@ -77,7 +77,7 @@ const ManageService = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`manager/edit-service/${id}`);
+    navigate(`/manager/edit-service/${id}`);
   };
 
   return (
