@@ -158,7 +158,8 @@ const ManageFeedback = () => {
                   <th className="p-3 text-left">Username</th>
                   <th className="p-3 text-left">Service ID</th>
                   <th className="p-3 text-left">Employee ID</th>
-                  <th className="p-3 text-left">Date of Service</th>
+                  <th className="p-3 text-left">Created At</th>
+                  <th className="p-3 text-left">Updated at</th>
                   <th className="p-3 text-left">Message</th>
                   <th className="p-3 text-left">Star Rating</th>
                   <th className="p-3 text-left">Actions</th>
@@ -170,7 +171,8 @@ const ManageFeedback = () => {
                     <td className="p-3">{item.Username}</td>
                     <td className="p-3">{item.serviceID}</td>
                     <td className="p-3">{item.employeeID}</td>
-                    <td className="p-3">{new Date(item.date_of_service).toLocaleDateString()}</td>
+                    <td className="p-3">{item.createdAt}</td>
+                    <td className="p-3">{item.updatedAt}</td>
                     <td className="p-3">{item.message}</td>
                     <td className="p-3">{item.star_rating}</td>
                     <td className="p-3 flex space-x-2">

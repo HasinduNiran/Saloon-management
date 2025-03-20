@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiSave } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 
-const CreateFeedback = () => {
+const EditFeedback = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the feedback ID from the URL
   const [formData, setFormData] = useState({
     Username: '',
     serviceID: '',
@@ -16,6 +17,36 @@ const CreateFeedback = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch the feedback data to populate the form
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch feedback data');
+        const data = await response.json();
+        setFormData({
+          Username: data.Username,
+          serviceID: data.serviceID,
+          employeeID: data.employeeID,
+          message: data.message,
+          star_rating: data.star_rating,
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message,
+          confirmButtonColor: '#89198f',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeedback();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +56,7 @@ const CreateFeedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['Username', 'serviceID', 'employeeID',  'message', 'star_rating'];
+    const requiredFields = ['Username', 'serviceID', 'employeeID', 'message', 'star_rating'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -42,11 +73,11 @@ const CreateFeedback = () => {
       setIsSubmitting(true);
 
       // Use API_CONFIG to construct the URL
-      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}`;
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}/${id}`;
 
       // Send the request to the backend
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -54,13 +85,13 @@ const CreateFeedback = () => {
       });
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'Failed to create feedback');
+      if (!response.ok) throw new Error(result.message || 'Failed to update feedback');
 
       // Show success message
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Feedback created successfully!',
+        text: 'Feedback updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
         navigate('/manager/feedback-management'); // Redirect to feedback management page
@@ -76,6 +107,14 @@ const CreateFeedback = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-PrimaryColor to-SecondaryColor flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-DarkColor"></div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -95,9 +134,9 @@ const CreateFeedback = () => {
           </button>
           <h1 className="text-3xl font-extrabold text-ExtraDarkColor flex items-center">
             <span className="mr-3 bg-DarkColor text-white p-2 rounded-full">
-              <FiPlus size={24} />
+              <FiSave size={24} />
             </span>
-            Create New Feedback
+            Edit Feedback
           </h1>
         </div>
 
@@ -143,7 +182,7 @@ const CreateFeedback = () => {
               />
             </div>
 
-
+  
 
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700">Message</label>
@@ -189,10 +228,10 @@ const CreateFeedback = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h-8z" />
                   </svg>
-                  Creating...
+                  Updating...
                 </span>
               ) : (
-                'Create Feedback'
+                'Update Feedback'
               )}
             </motion.button>
           </div>
@@ -202,4 +241,4 @@ const CreateFeedback = () => {
   );
 };
 
-export default CreateFeedback;
+export default EditFeedback;
