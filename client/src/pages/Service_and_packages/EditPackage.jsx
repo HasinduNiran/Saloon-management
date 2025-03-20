@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { FiSave, FiArrowLeft } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 
-const CreatePackage = () => {
+const EditPackage = () => {
   const navigate = useNavigate();
+  const { packageId } = useParams(); // Get packageId from URL
   const [formData, setFormData] = useState({
     p_name: '',
     description: '',
@@ -21,26 +22,46 @@ const CreatePackage = () => {
   });
   const [servicesList, setServicesList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch services when component mounts
+  // Fetch package and services data
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SERVICES}`);
-        if (!response.ok) throw new Error('Failed to fetch services');
-        const data = await response.json();
-        setServicesList(data);
+        // Fetch package data
+        const packageResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PACK}/${packageId}`);
+        if (!packageResponse.ok) throw new Error('Failed to fetch package');
+
+        const packageData = await packageResponse.json();
+
+        // Fetch services data
+        const servicesResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SERVICES}`);
+        if (!servicesResponse.ok) throw new Error('Failed to fetch services');
+
+        const servicesData = await servicesResponse.json();
+
+        // Pre-fill form data
+        setFormData({
+          ...packageData,
+          services: packageData.services.map(service => service._id), // Extract service IDs
+          start_date: packageData.start_date.split('T')[0], // Format date
+          end_date: packageData.end_date.split('T')[0] // Format date
+        });
+        setServicesList(servicesData);
+        setIsLoading(false);
       } catch (error) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to fetch services',
+          text: error.message,
           confirmButtonColor: '#89198f',
         });
+        navigate('/manager/packages'); // Redirect to packages page on error
       }
     };
-    fetchServices();
-  }, []);
+
+    fetchData();
+  }, [packageId, navigate]);
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -86,10 +107,10 @@ const CreatePackage = () => {
     try {
       setIsSubmitting(true);
 
-      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PACK}`; // Assuming endpoint based on route
+      const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PACK}/${packageId}`; // Update endpoint
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -97,15 +118,15 @@ const CreatePackage = () => {
       });
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'Failed to create package');
+      if (!response.ok) throw new Error(result.message || 'Failed to update package');
 
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Package created successfully!',
+        text: 'Package updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/packages'); // Assuming manage packages route
+        navigate('/manager/packages'); // Redirect to packages page
       });
     } catch (error) {
       Swal.fire({
@@ -118,6 +139,14 @@ const CreatePackage = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-PrimaryColor to-SecondaryColor flex items-center justify-center">
+        <div className="text-white text-2xl">Loading package data...</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -137,9 +166,9 @@ const CreatePackage = () => {
           </button>
           <h1 className="text-3xl font-extrabold text-ExtraDarkColor flex items-center">
             <span className="mr-3 bg-DarkColor text-white p-2 rounded-full">
-              <FiPlus size={24} />
+              <FiSave size={24} />
             </span>
-            Create New Package
+            Edit Package
           </h1>
         </div>
 
@@ -298,10 +327,10 @@ const CreatePackage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h-8z" />
                   </svg>
-                  Creating...
+                  Updating...
                 </span>
               ) : (
-                'Create Package'
+                'Update Package'
               )}
             </motion.button>
           </div>
@@ -311,4 +340,4 @@ const CreatePackage = () => {
   );
 };
 
-export default CreatePackage;
+export default EditPackage;

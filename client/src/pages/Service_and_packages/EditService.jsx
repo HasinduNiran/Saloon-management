@@ -127,7 +127,7 @@ const EditService = () => {
         text: 'Service updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/');
+        navigate('/manager/Service-management');
       });
     } catch (err) {
       Swal.fire({
