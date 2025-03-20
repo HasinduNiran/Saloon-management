@@ -7,17 +7,7 @@ import {
   setCurrentUser,
 } from "./authslices";
 
-export const initializeUser = () => (dispatch) => {
-  // First check if there's an authenticated user
-  const token = localStorage.getItem("token");
 
-  if (token) {
-    dispatch(checkAuthStatus());
-  } else {
-    // If no authenticated user, ensure guest user ID exists
-    getOrCreateGuestId();
-  }
-};
 
 export const login = (credentials, navigate) => async (dispatch) => {
   dispatch(authStart());
@@ -142,23 +132,23 @@ export const logout = (navigate) => async (dispatch) => {
   }
 };
 
-export const checkAuthStatus = () => async (dispatch) => {
-  const token = localStorage.getItem("token");
+// export const checkAuthStatus = () => async (dispatch) => {
+//   const token = localStorage.getItem("token");
 
-  if (!token) {
-    dispatch(logoutAction());
-    return;
-  }
+//   if (!token) {
+//     dispatch(logoutAction());
+//     return;
+//   }
 
-  try {
-    const user = await authService.getCurrentUser();
-    if (user) {
-      dispatch(setCurrentUser(user));
-    } else {
-      dispatch(logoutAction());
-    }
-  } catch (error) {
-    console.error("Auth check error:", error);
-    dispatch(logoutAction());
-  }
-};
+//   try {
+//     const user = await authService.getCurrentUser();
+//     if (user) {
+//       dispatch(setCurrentUser(user));
+//     } else {
+//       dispatch(logoutAction());
+//     }
+//   } catch (error) {
+//     console.error("Auth check error:", error);
+//     dispatch(logoutAction());
+//   }
+// };
