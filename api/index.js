@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 app.use(express.json()); 
 app.use(cors({ 
- origin: 'http://localhost:5176',
+ origin: 'http://localhost:5177',
  credentials: true,
  allowedHeaders: ['Content-Type'],
  optionsSuccessStatus: 200,

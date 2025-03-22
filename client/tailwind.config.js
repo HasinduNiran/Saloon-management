@@ -8,6 +8,7 @@ export default {
         SecondaryColor: "#f8abfc",
         DarkColor: "#89198f",
         ExtraDarkColor: "#89198f",
+        navcolor: "#a21caf",
       },
     },
   },
