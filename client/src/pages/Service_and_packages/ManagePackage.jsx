@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiEdit2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 
@@ -10,7 +10,6 @@ const ManagePackage = () => {
   const [packages, setPackages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch packages when component mounts
   useEffect(() => {
     const fetchPackages = async () => {
       try {
@@ -32,7 +31,6 @@ const ManagePackage = () => {
     fetchPackages();
   }, []);
 
-  // Handle package deletion
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -66,6 +64,10 @@ const ManagePackage = () => {
         });
       }
     }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/manager/edit-package/${id}`);
   };
 
   if (isLoading) {
@@ -124,12 +126,22 @@ const ManagePackage = () => {
                   <td className="px-4 py-2">{new Date(pkg.end_date).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{pkg.status}</td>
                   <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleDelete(pkg._id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FiTrash2 size={20} />
-                    </button>
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => handleEdit(pkg._id)}
+                        className="text-blue-500 hover:text-blue-700"
+                        title="Edit package"
+                      >
+                        <FiEdit2 size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(pkg._id)}
+                        className="text-red-500 hover:text-red-700"
+                        title="Delete package"
+                      >
+                        <FiTrash2 size={20} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
