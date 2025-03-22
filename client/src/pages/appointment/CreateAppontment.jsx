@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
+import { useSelector } from 'react-redux';
 
 const SERVICES = ['Haircut', 'Coloring', 'Styling', 'Manicure', 'Pedicure', 'Makeup'];
 const PACKAGES = ['Basic', 'Premium', 'Deluxe'];
@@ -21,10 +22,11 @@ const CreateAppointment = () => {
     appoi_time: '',
     services: [],
     packages: '',
+    user_id: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const {user} = useSelector((state) => state.auth) ;
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -69,6 +71,7 @@ const CreateAppointment = () => {
       // Prepare the data to send
       const appointmentData = {
         ...formData,
+        user_id: user._id, // Use the user's ID from the Redux store
         services: formData.services.join(', '), // Convert array to string
       };
 

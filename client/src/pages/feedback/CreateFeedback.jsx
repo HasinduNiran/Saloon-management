@@ -4,15 +4,20 @@ import { motion } from 'framer-motion';
 import { FiPlus, FiArrowLeft } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
+import { useSelector } from 'react-redux';
+
+
 
 const CreateFeedback = () => {
   const navigate = useNavigate();
+  const {user} = useSelector((state) => state.auth) ;
   const [formData, setFormData] = useState({
-    Username: '',
+  
     serviceID: '',
     employeeID: '',
     message: '',
     star_rating: '',
+    user_id: user?._id || '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,7 +30,7 @@ const CreateFeedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['Username', 'serviceID', 'employeeID',  'message', 'star_rating'];
+    const requiredFields = [, 'serviceID', 'employeeID',  'message', 'star_rating'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -113,7 +118,7 @@ const CreateFeedback = () => {
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                 placeholder="e.g., john_doe"
-                required
+            
               />
             </div>
 

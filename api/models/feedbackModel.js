@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const feedbackSchema = mongoose.Schema(
     {
-    Username: {
+    user_id: {
         type: String,
     },
     serviceID: { 
