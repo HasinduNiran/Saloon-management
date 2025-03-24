@@ -18,6 +18,7 @@ import EditService from "../../pages/Service_and_packages/EditService";
 import EditFeedback from "../../pages/feedback/EditFeedback";
 
 import EditPackage from "../../pages/Service_and_packages/EditPackage";
+import UserManagement from "./UserManagement";
 
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
@@ -48,6 +49,7 @@ export default function DashboardLayout() {
         <Routes>
           <Route path="/" element={<DashboardOverview />} />
           {/* <Route path="/create" element={<CreateInventory />} /> */}
+          <Route path="/user-management" element={<UserManagement />} />
           <Route
             path="/inventory-management"
             element={<InventoryManagement />}
