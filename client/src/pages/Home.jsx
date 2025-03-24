@@ -1,10 +1,12 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../features/auth/authslices'; // Assuming this exists in your auth slice
+import { logout } from '../features/auth/authslices';
 import woman from './woman.jpg';
 import API_CONFIG from '../config/apiConfig';
 import Swal from 'sweetalert2';
+import Navbar from '../components/Navbar';
+
 function SalonHomepage() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -13,6 +15,7 @@ function SalonHomepage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState({services: false, packages: false, reviews: false});
   const [error, setError] = useState({services: null, packages: null, reviews: null});
+  const [currentServicePage, setCurrentServicePage] = useState(0);
 
   useEffect(() => {
     fetchServices();
@@ -94,51 +97,16 @@ function SalonHomepage() {
     dispatch(logout());
   };
 
+  const totalServicePages = Math.ceil(services.length / 3);
+  const handleDotClick = (pageIndex) => {
+    setCurrentServicePage(pageIndex);
+  };
+
   return (
     <div className="bg-PrimaryColor min-h-screen">
-      {/* Dynamic Navbar */}
-      <nav className="bg-navcolor text-white p-4 sticky top-0 z-10">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="text-2xl font-bold">Glamour Salon</div>
-
-          <div className="hidden md:flex space-x-6 items-center">
-            <a href="#" className="hover:text-SecondaryColor transition">Home</a>
-            <a href="#services" className="hover:text-SecondaryColor transition">Services</a>
-            <a href="#packages" className="hover:text-SecondaryColor transition">Packages</a>
-            <a href="#reviews" className="hover:text-SecondaryColor transition">Reviews</a>
-            <a href="#contact" className="hover:text-SecondaryColor transition">Contact</a>
-
-            {user ? (
-              <>
-                <span className="text-SecondaryColor font-medium">Hello, {user.name}!</span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <a href="/signin" className="bg-SecondaryColor hover:bg-DarkColor text-white px-4 py-2 rounded-lg transition">
-                  Login
-                </a>
-                <a href="/signup" className="bg-SecondaryColor hover:bg-DarkColor text-white px-4 py-2 rounded-lg transition">
-                  Sign Up
-                </a>
-              </>
-            )}
-          </div>
-
-          <div className="md:hidden">
-            <button className="text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Use the Navbar component */}
+      <Navbar user={user} onLogout={handleLogout} />
+      
       <div className="relative w-full h-screen">
         <img
           src={woman}
@@ -189,43 +157,120 @@ function SalonHomepage() {
             </div>
           )}
 
-          {!loading.services && !error.services && (
-            <div className="overflow-x-auto no-scrollbar">
-              <div className="flex space-x-6 pb-4" style={{ minWidth: 'max-content' }}>
-                {services.length > 0 ? (
-                  services.map(service => (
+          {!loading.services && !error.services && services.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {services
+                  .slice(currentServicePage * 3, (currentServicePage * 3) + 3)
+                  .map(service => (
                     <div
                       key={service._id || service.id}
-                      className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition flex-shrink-0 w-[300px]"
+                      className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 duration-300"
                     >
                       <img
                         src={service.image ? `${API_CONFIG.BASE_URL}${service.image}` : '/images/default-service.jpg'}
                         alt={service.name}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-64 object-cover"
                       />
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold text-DarkColor">{service.name}</h3>
-                        <p className="text-gray-600 mt-2">{service.description || 'Premium service'}</p>
-                        <div className="flex justify-between items-center mt-4">
+                      <div className="p-8">
+                        <h3 className="text-2xl font-semibold text-DarkColor">{service.name}</h3>
+                        <p className="text-gray-600 mt-3 min-h-[80px]">{service.description || 'Premium service'}</p>
+                        <div className="flex justify-between items-center mt-6">
                           <div>
-                            <span className="text-DarkColor font-bold text-lg">${service.price}</span>
+                            <span className="text-DarkColor font-bold text-xl">${service.price}</span>
                             <span className="text-gray-500 text-sm ml-2">({service.duration})</span>
                           </div>
-                          <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-4 py-2 rounded-lg transition">
+                          <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-5 py-2 rounded-lg transition">
                             Book
                           </button>
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-center text-gray-500">No services available at the moment.</p>
-                )}
+                  ))}
               </div>
-            </div>
+                    
+              {/* Pagination Dots */}
+              {totalServicePages > 1 && (
+                <div className="flex justify-center items-center mt-10 space-x-3">
+                  {[...Array(totalServicePages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleDotClick(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        currentServicePage === index 
+                          ? 'bg-SecondaryColor w-6' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`View page ${index + 1} of services`}
+                    />
+                  ))}
+                </div>
+              )}
+              
+              {/* <div className="mt-12 text-center">
+                <h3 className="text-xl font-bold text-DarkColor mb-4">Looking for a specific service?</h3>
+                <p className="text-gray-600 mb-6">Browse all {services.length} beauty services or book a consultation.</p>
+                <a href="/services" className="bg-navcolor hover:bg-DarkColor text-white font-bold py-3 px-8 rounded-full transition duration-300 inline-block">
+                  View All Services
+                </a>
+              </div> */}
+            </>
+          )}
+          
+          {!loading.services && !error.services && services.length === 0 && (
+            <p className="text-center text-gray-500">No services available at the moment.</p>
           )}
         </div>
-      </section>      {/* Packages Section */}
+      </section>
+
+      {/* About Us Section */}
+      <section id="about" className="py-16 px-4 bg-SecondaryColor text-white">
+        <div className="container mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="lg:w-1/2">
+              <h2 className="text-4xl font-bold mb-6">Welcome to Glamour Salon</h2>
+              <p className="text-lg mb-6 leading-relaxed">
+                Since 2010, Glamour Salon has been the premier destination for beauty and wellness services. 
+                Our team of expert stylists and beauty professionals are dedicated to helping you look and feel your best.
+              </p>
+              <p className="text-lg mb-8 leading-relaxed">
+                We pride ourselves on using only the highest quality products and providing a luxurious, 
+                relaxing environment for all our clients. Whether you're looking for a new hairstyle, 
+                a rejuvenating facial, or a complete makeover, we're here to exceed your expectations.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                  <h3 className="text-2xl font-bold">10+</h3>
+                  <p>Years Experience</p>
+                </div>
+                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                  <h3 className="text-2xl font-bold">5000+</h3>
+                  <p>Happy Clients</p>
+                </div>
+                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                  <h3 className="text-2xl font-bold">15+</h3>
+                  <p>Expert Stylists</p>
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-1/2 relative">
+              <div className="rounded-lg overflow-hidden shadow-2xl">
+                <img 
+                  src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" 
+                  alt="Salon interior" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 bg-DarkColor p-4 rounded-lg shadow-xl hidden md:block">
+                <p className="text-xl font-bold">Book Your Appointment</p>
+                <p className="text-sm">Call us: (555) 123-4567</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Packages Section */}
       <section id="packages" className="py-16 px-4 bg-gray-100">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center text-DarkColor mb-12">Special Packages</h2>
