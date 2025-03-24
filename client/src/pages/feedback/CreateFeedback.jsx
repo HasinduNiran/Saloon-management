@@ -10,12 +10,12 @@ const CreateFeedback = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    pkgs: '',
+    service: '',  // Changed from pkgs to service for consistency
     message: '',
     star_rating: '',
     user_id: user?._id || '',
   });
-  const [pkgs, setServices] = useState([]);
+  const [servicesList, setServicesList] = useState([]);  // Renamed for clarity
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,13 +23,13 @@ const CreateFeedback = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PACKAGES}`;
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SERVICES}`;  // Changed to SERVICES endpoint
         const response = await fetch(url);
         const result = await response.json();
         
         if (!response.ok) throw new Error(result.message || 'Failed to fetch services');
         
-        setServices(result.data || []);
+        setServicesList(result || []);  // Updated to match CreatePackage pattern
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -65,7 +65,7 @@ const CreateFeedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['pkgs', 'message', 'star_rating'];
+    const requiredFields = ['service', 'message', 'star_rating'];  // Updated field name
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -170,9 +170,9 @@ const CreateFeedback = () => {
                   required
                 >
                   <option value="">Select a service</option>
-                  {pkgs.map((pkgs) => (
-                    <option key={pkgs._id} value={pkgs._id}>
-                      {pkgs.p_name}
+                  {servicesList.map((service) => (
+                    <option key={service._id} value={service._id}>
+                      {service.category} {service.subCategory}
                     </option>
                   ))}
                 </select>
