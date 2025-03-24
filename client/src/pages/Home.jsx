@@ -6,8 +6,6 @@ function Home() {
   return (
     <>
       <div>Home</div>
-      <p>{user.name}</p>
-      <p>{user._id}</p>
     </>
   );
 }

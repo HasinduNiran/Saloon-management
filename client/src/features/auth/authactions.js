@@ -7,8 +7,6 @@ import {
   setCurrentUser,
 } from "./authslices";
 
-
-
 export const login = (credentials, navigate) => async (dispatch) => {
   dispatch(authStart());
 
@@ -99,8 +97,6 @@ export const login = (credentials, navigate) => async (dispatch) => {
 // };
 
 export const signup = (data) => async (dispatch) => {
-  dispatch(authStart());
-
   try {
     const response = await authService.signup(data);
 
@@ -132,23 +128,23 @@ export const logout = (navigate) => async (dispatch) => {
   }
 };
 
-// export const checkAuthStatus = () => async (dispatch) => {
-//   const token = localStorage.getItem("token");
+export const checkAuthStatus = () => async (dispatch) => {
+  const token = localStorage.getItem("token");
 
-//   if (!token) {
-//     dispatch(logoutAction());
-//     return;
-//   }
+  if (!token) {
+    dispatch(logoutAction());
+    return;
+  }
 
-//   try {
-//     const user = await authService.getCurrentUser();
-//     if (user) {
-//       dispatch(setCurrentUser(user));
-//     } else {
-//       dispatch(logoutAction());
-//     }
-//   } catch (error) {
-//     console.error("Auth check error:", error);
-//     dispatch(logoutAction());
-//   }
-// };
+  try {
+    const user = await authService.getCurrentUser();
+    if (user) {
+      dispatch(setCurrentUser(user));
+    } else {
+      dispatch(logoutAction());
+    }
+  } catch (error) {
+    console.error("Auth check error:", error);
+    dispatch(logoutAction());
+  }
+};
