@@ -50,6 +50,21 @@ export const login = async (req, res, next) => {
   }
 };
 
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
 export const signOut = (req, res, next) => {
   try {
     res.clearCookie("access_token");

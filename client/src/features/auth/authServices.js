@@ -94,6 +94,16 @@ const authService = {
     }
   },
 
+  getCurrentUser: async () => {
+    try {
+      const response = await client.get(API_CONSTANTS.GET_CURRENT_USER);
+      return response.data.user;
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      return null;
+    }
+  },
+
   //   loginWithGoogle: async () => {
   //     try {
   //       const result = await signInWithPopup(auth, googleProvider);
