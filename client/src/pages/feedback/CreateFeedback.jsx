@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiPlus, FiArrowLeft } from 'react-icons/fi';
@@ -6,31 +6,66 @@ import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 import { useSelector } from 'react-redux';
 
-
-
 const CreateFeedback = () => {
   const navigate = useNavigate();
-  const {user} = useSelector((state) => state.auth) ;
+  const { user } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-  
-    serviceID: '',
-    employeeID: '',
+    pkgs: '',
     message: '',
     star_rating: '',
     user_id: user?._id || '',
   });
-
+  const [pkgs, setServices] = useState([]);
+  const [isLoadingServices, setIsLoadingServices] = useState(true);
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PACKAGES}`;
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (!response.ok) throw new Error(result.message || 'Failed to fetch services');
+        
+        setServices(result.data || []);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message,
+          confirmButtonColor: '#89198f',
+        });
+      } finally {
+        setIsLoadingServices(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleStarClick = (rating) => {
+    setFormData((prev) => ({ ...prev, star_rating: rating }));
+  };
+
+  const handleStarHover = (rating) => {
+    setHoverRating(rating);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = [, 'serviceID', 'employeeID',  'message', 'star_rating'];
+    const requiredFields = ['pkgs', 'message', 'star_rating'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -46,29 +81,28 @@ const CreateFeedback = () => {
     try {
       setIsSubmitting(true);
 
-      // Use API_CONFIG to construct the URL
       const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}`;
-
-      // Send the request to the backend
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          serviceID: formData.service // Maintain compatibility with backend
+        }),
       });
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || 'Failed to create feedback');
 
-      // Show success message
       Swal.fire({
         icon: 'success',
         title: 'Success',
         text: 'Feedback created successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/feedback-management'); // Redirect to feedback management page
+        navigate('/manager/feedback-management');
       });
     } catch (error) {
       Swal.fire({
@@ -118,37 +152,32 @@ const CreateFeedback = () => {
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                 placeholder="e.g., john_doe"
-            
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700">Service ID</label>
-              <input
-                type="text"
-                name="serviceID"
-                value={formData.serviceID}
-                onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., 12345"
-                required
-              />
+              <label className="block text-sm font-semibold text-gray-700">Service</label>
+              {isLoadingServices ? (
+                <div className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 bg-gray-100 animate-pulse">
+                  Loading services...
+                </div>
+              ) : (
+                <select
+                  name="service"
+                  value={formData.service}
+                  onChange={handleInputChange}
+                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                  required
+                >
+                  <option value="">Select a service</option>
+                  {pkgs.map((pkgs) => (
+                    <option key={pkgs._id} value={pkgs._id}>
+                      {pkgs.p_name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Employee ID</label>
-              <input
-                type="text"
-                name="employeeID"
-                value={formData.employeeID}
-                onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., 67890"
-                required
-              />
-            </div>
-
-
 
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700">Message</label>
@@ -164,16 +193,36 @@ const CreateFeedback = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700">Star Rating</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Star Rating</label>
+              <div className="flex items-center space-x-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <motion.button
+                    key={star}
+                    type="button"
+                    onClick={() => handleStarClick(star)}
+                    onMouseEnter={() => handleStarHover(star)}
+                    onMouseLeave={handleStarLeave}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-3xl focus:outline-none"
+                  >
+                    {star <= (hoverRating || formData.star_rating) ? (
+                      <span className="text-yellow-500">★</span>
+                    ) : (
+                      <span className="text-gray-300">☆</span>
+                    )}
+                  </motion.button>
+                ))}
+                {formData.star_rating && (
+                  <span className="ml-2 text-gray-600 font-medium">
+                    ({formData.star_rating} {formData.star_rating === 1 ? 'star' : 'stars'})
+                  </span>
+                )}
+              </div>
               <input
-                type="number"
+                type="hidden"
                 name="star_rating"
                 value={formData.star_rating}
-                onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., 5"
-                min="1"
-                max="5"
                 required
               />
             </div>
@@ -183,7 +232,7 @@ const CreateFeedback = () => {
           <div className="pt-6">
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isLoadingServices}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full bg-gradient-to-r from-DarkColor to-ExtraDarkColor text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:from-ExtraDarkColor hover:to-DarkColor transition-all disabled:opacity-50 disabled:cursor-not-allowed"

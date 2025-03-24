@@ -7,19 +7,18 @@ import API_CONFIG from '../../config/apiConfig';
 
 const EditFeedback = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the feedback ID from the URL
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     Username: '',
     serviceID: '',
-    employeeID: '',
     message: '',
     star_rating: '',
   });
 
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch the feedback data to populate the form
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
@@ -29,7 +28,6 @@ const EditFeedback = () => {
         setFormData({
           Username: data.Username,
           serviceID: data.serviceID,
-          employeeID: data.employeeID,
           message: data.message,
           star_rating: data.star_rating,
         });
@@ -53,10 +51,22 @@ const EditFeedback = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleStarClick = (rating) => {
+    setFormData((prev) => ({ ...prev, star_rating: rating }));
+  };
+
+  const handleStarHover = (rating) => {
+    setHoverRating(rating);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['Username', 'serviceID', 'employeeID', 'message', 'star_rating'];
+    const requiredFields = ['Username', 'serviceID', 'message', 'star_rating'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -71,11 +81,7 @@ const EditFeedback = () => {
 
     try {
       setIsSubmitting(true);
-
-      // Use API_CONFIG to construct the URL
       const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}/${id}`;
-
-      // Send the request to the backend
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
@@ -87,14 +93,13 @@ const EditFeedback = () => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || 'Failed to update feedback');
 
-      // Show success message
       Swal.fire({
         icon: 'success',
         title: 'Success',
         text: 'Feedback updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/feedback-management'); // Redirect to feedback management page
+        navigate('/manager/feedback-management');
       });
     } catch (error) {
       Swal.fire({
@@ -169,21 +174,6 @@ const EditFeedback = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">Employee ID</label>
-              <input
-                type="text"
-                name="employeeID"
-                value={formData.employeeID}
-                onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., 67890"
-                required
-              />
-            </div>
-
-  
-
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700">Message</label>
               <textarea
@@ -198,16 +188,36 @@ const EditFeedback = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700">Star Rating</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Star Rating</label>
+              <div className="flex items-center space-x-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <motion.button
+                    key={star}
+                    type="button"
+                    onClick={() => handleStarClick(star)}
+                    onMouseEnter={() => handleStarHover(star)}
+                    onMouseLeave={handleStarLeave}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="text-3xl focus:outline-none"
+                  >
+                    {star <= (hoverRating || formData.star_rating) ? (
+                      <span className="text-yellow-500">★</span>
+                    ) : (
+                      <span className="text-gray-300">☆</span>
+                    )}
+                  </motion.button>
+                ))}
+                {formData.star_rating && (
+                  <span className="ml-2 text-gray-600 font-medium">
+                    ({formData.star_rating} {formData.star_rating === 1 ? 'star' : 'stars'})
+                  </span>
+                )}
+              </div>
               <input
-                type="number"
+                type="hidden"
                 name="star_rating"
                 value={formData.star_rating}
-                onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                placeholder="e.g., 5"
-                min="1"
-                max="5"
                 required
               />
             </div>
