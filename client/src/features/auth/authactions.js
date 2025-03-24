@@ -22,7 +22,7 @@ export const login = (credentials, navigate) => async (dispatch) => {
       );
 
       if (response.user.role === "admin") {
-        navigate("/admin");
+        navigate("/manager");
       } else {
         navigate("/");
       }
