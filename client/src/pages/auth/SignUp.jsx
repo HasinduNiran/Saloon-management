@@ -127,12 +127,10 @@ export const SignupPage = () => {
         setTimeout(() => {
           navigate("/signin");
         }, 3000);
-        loading = false;
       } else {
         setFormError(
           result.message || "Failed to create account. Please try again."
         );
-        loading = false;
       }
     }
   };
