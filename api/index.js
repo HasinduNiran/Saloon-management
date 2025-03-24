@@ -8,6 +8,7 @@ import inventory from "./routes/inventoryRoute.js";
 import serviceRoutes from "./routes/Service_Route.js";
 import appoinment from "./routes/appoimentRouts.js";
 import Package from "./routes/PackageRoute.js";
+import userRoutes from "./routes/userRoute.js";
 import cors from "cors";
 import feedback from "./routes/feedbackRoute.js";
 import { fileURLToPath } from "url"; // Import to convert URL to file path
@@ -41,6 +42,7 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/v1/appoiment", appoinment);
 app.use("/api/v1/package", Package);
 app.use("/api/v1/feedback", feedback);
+app.use("/api/v1/user", userRoutes);
 
 const PORT = 7001;
 

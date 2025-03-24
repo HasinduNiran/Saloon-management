@@ -1,0 +1,94 @@
+import User from "../models/userModel.js";
+
+export const getAllUsers = async (req, res) => {
+  const users = await User.find({}).sort({ createdAt: -1 });
+
+  res.status(200).json(users);
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone } = req.body;
+
+    // Validate input
+    if (!name || !email) {
+      return res.status(400).json({
+        message: "Name and email are required",
+      });
+    }
+
+    // Check if email is already in use by another user
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: id },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email is already in use by another account",
+      });
+    }
+
+    // Find and update user
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        phone,
+      },
+      {
+        new: true, // Return updated document
+        runValidators: true, // Run model validation
+      }
+    ).select("-password"); // Exclude password from response
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update user error:", error);
+    res.status(500).json({
+      message: "Server error occurred while updating profile",
+      error: error.message,
+    });
+  }
+};
+
+// Delete User Account
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete user
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Optional: Delete related data (appointments, bookings, etc.)
+    // await Appointment.deleteMany({ userId: id });
+    // await Booking.deleteMany({ userId: id });
+
+    res.status(200).json({
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({
+      message: "Server error occurred while deleting account",
+      error: error.message,
+    });
+  }
+};

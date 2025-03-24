@@ -197,7 +197,7 @@ const ProfilePage = () => {
   const handleSaveProfile = async () => {
     try {
       const response = await client.put(
-        `/api/v1/auth/${user._id}`,
+        `/api/v1/user/${user._id}`,
         editedProfile
       );
 
@@ -239,7 +239,7 @@ const ProfilePage = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await client.delete(`/api/v1/auth/${user._id}`);
+      await client.delete(`/api/v1/user/${user._id}`);
       localStorage.removeItem("token");
       dispatch(logout());
       toast.success("Account deleted successfully!", {
