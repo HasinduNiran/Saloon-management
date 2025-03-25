@@ -19,6 +19,8 @@ import "react-toastify/dist/ReactToastify.css";
 import client from "../api/axiosClient";
 import { updateUser, logout } from "../features/auth/authslices";
 import Navbar from "../components/Navbar";
+import CreateFeedback from "./feedback/CreateFeedback";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 // Background Icons Component
 const BackgroundIcons = () => {
@@ -175,6 +177,7 @@ const FeedbackSection = () => {
 // Main Profile Page Component
 const ProfilePage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate
   const { user } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -234,6 +237,10 @@ const ProfilePage = () => {
     }
   };
 
+  const handleGiveFeedback = () => {
+    navigate("/feedback/Createfeedback"); // Navigate to the desired page
+  };
+
   const confirmDelete = () => {
     setShowConfirmation(true);
   };
@@ -262,7 +269,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Navbar />
+      < bar />
       <div className="relative min-h-screen bg-[#d8f3dc] flex items-center justify-center p-4 overflow-hidden">
         <ToastContainer />
         <BackgroundIcons />
@@ -366,48 +373,24 @@ const ProfilePage = () => {
                       Sign Out
                     </button>
                   )}
-                  {showConfirmation && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
-                        <div className="text-center">
-                          <div className="mb-4 flex justify-center">
-                            <div className="bg-red-100 rounded-full p-4">
-                              <Trash2 size={48} className="text-red-600" />
-                            </div>
-                          </div>
-                          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                            Delete Account
-                          </h2>
-                          <p className="text-gray-600 mb-6">
-                            Are you absolutely sure you want to delete your
-                            account? This action is permanent and cannot be
-                            undone. All your data, appointments, and personal
-                            information will be permanently erased.
-                          </p>
-                          <div className="flex justify-center space-x-4">
-                            <button
-                              onClick={handleCancelDelete}
-                              className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleConfirmDelete}
-                              className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            >
-                              Yes, Delete My Account
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+
                   <button
                     onClick={confirmDelete}
                     className="flex items-center justify-center p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                   >
                     <Trash2 size={20} className="mr-2" />
                     Delete
+                  </button>
+                </div>
+
+                {/* Give Feedback Button */}
+                <div className="mt-4">
+                  <button
+                    onClick={handleGiveFeedback}
+                    className="w-full flex items-center justify-center p-3 bg-[#52b788] text-white rounded-lg hover:bg-[#1b4332] transition-colors"
+                  >
+                    <MessageCircle size={20} className="mr-2" />
+                    Give Feedback
                   </button>
                 </div>
               </div>
@@ -420,6 +403,43 @@ const ProfilePage = () => {
             <FeedbackSection />
           </div>
         </div>
+
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+              <div className="text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="bg-red-100 rounded-full p-4">
+                    <Trash2 size={48} className="text-red-600" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  Delete Account
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Are you absolutely sure you want to delete your account? This
+                  action is permanent and cannot be undone. All your data,
+                  appointments, and personal information will be permanently
+                  erased.
+                </p>
+                <div className="flex justify-center space-x-4">
+                  <button
+                    onClick={handleCancelDelete}
+                    className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Yes, Delete My Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
