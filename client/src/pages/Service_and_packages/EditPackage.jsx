@@ -23,6 +23,114 @@ const EditPackage = () => {
   const [servicesList, setServicesList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [errors, setErrors] = useState({
+    p_name: '',
+    description: '',
+    services: '',
+    base_price: '',
+    discount_rate: '',
+    start_date: '',
+    end_date: '',
+    package_type: '',
+    category: ''
+  });
+
+  // Validation functions
+  const validateField = (name, value) => {
+    let errorMessage = '';
+    
+    switch (name) {
+      case 'p_name':
+        if (!value.trim()) {
+          errorMessage = 'Package name is required';
+        } else if (value.length < 3) {
+          errorMessage = 'Package name must be at least 3 characters';
+        } else if (value.length > 50) {
+          errorMessage = 'Package name must be less than 50 characters';
+        }
+        break;
+        
+      case 'description':
+        if (!value.trim()) {
+          errorMessage = 'Description is required';
+        } else if (value.length < 10) {
+          errorMessage = 'Description must be at least 10 characters';
+        }
+        break;
+        
+      case 'services':
+        if (!value || value.length === 0) {
+          errorMessage = 'At least one service must be selected';
+        }
+        break;
+        
+      case 'base_price':
+        if (!value) {
+          errorMessage = 'Base price is required';
+        } else if (isNaN(value) || Number(value) < 0) {
+          errorMessage = 'Base price must be a positive number';
+        }
+        break;
+        
+      case 'discount_rate':
+        if (!value) {
+          errorMessage = 'Discount rate is required';
+        } else if (isNaN(value) || Number(value) < 0 || Number(value) > 100) {
+          errorMessage = 'Discount rate must be between 0 and 100';
+        }
+        break;
+        
+      case 'start_date':
+        if (!value) {
+          errorMessage = 'Start date is required';
+        } else if (new Date(value) < new Date().setHours(0, 0, 0, 0)) {
+          errorMessage = 'Start date cannot be in the past';
+        }
+        break;
+        
+      case 'end_date':
+        if (!value) {
+          errorMessage = 'End date is required';
+        } else if (formData.start_date && new Date(value) <= new Date(formData.start_date)) {
+          errorMessage = 'End date must be after start date';
+        }
+        break;
+        
+      case 'package_type':
+        if (!value) {
+          errorMessage = 'Package type is required';
+        }
+        break;
+        
+      case 'category':
+        if (!value.trim()) {
+          errorMessage = 'Category is required';
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    return errorMessage;
+  };
+
+  // Validate all fields
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {};
+    
+    Object.keys(formData).forEach(key => {
+      if (key !== 'conditions') { // conditions is optional
+        const error = validateField(key, formData[key]);
+        newErrors[key] = error;
+        if (error) valid = false;
+      }
+    });
+    
+    setErrors(newErrors);
+    return valid;
+  };
 
   // Fetch package and services data
   useEffect(() => {
@@ -66,39 +174,32 @@ const EditPackage = () => {
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let newValue;
+    
     if (name === 'services') {
       const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      newValue = selectedOptions;
       setFormData(prev => ({ ...prev, [name]: selectedOptions }));
     } else {
+      newValue = value;
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+    
+    // Validate field on change
+    const error = validateField(name, newValue);
+    setErrors(prev => ({ ...prev, [name]: error }));
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = [
-      'p_name',
-      'description',
-      'services',
-      'base_price',
-      'discount_rate',
-      'start_date',
-      'end_date',
-      'package_type',
-      'category'
-    ];
-    const missingFields = requiredFields.filter(field => {
-      if (field === 'services') return formData.services.length === 0;
-      return !formData[field];
-    });
-
-    if (missingFields.length > 0) {
+    // Validate all fields
+    if (!validateForm()) {
       Swal.fire({
         icon: 'error',
-        title: 'Required Fields Missing',
-        text: `Please fill in: ${missingFields.join(', ')}`,
+        title: 'Validation Error',
+        text: 'Please fix the errors in the form',
         confirmButtonColor: '#89198f',
       });
       return;
@@ -182,10 +283,11 @@ const EditPackage = () => {
                 name="p_name"
                 value={formData.p_name}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.p_name ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., Summer Special"
                 required
               />
+              {errors.p_name && <p className="text-red-500 text-sm mt-1">{errors.p_name}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Category</label>
@@ -194,10 +296,11 @@ const EditPackage = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.category ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., Spa, Wedding"
                 required
               />
+              {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Package Type</label>
@@ -205,7 +308,7 @@ const EditPackage = () => {
                 name="package_type"
                 value={formData.package_type}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.package_type ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               >
                 <option value="" disabled>Select a package type</option>
@@ -213,6 +316,7 @@ const EditPackage = () => {
                 <option value="premium">Premium</option>
                 <option value="basic">Basic</option>
               </select>
+              {errors.package_type && <p className="text-red-500 text-sm mt-1">{errors.package_type}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Base Price</label>
@@ -221,12 +325,13 @@ const EditPackage = () => {
                 name="base_price"
                 value={formData.base_price}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.base_price ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 100"
                 min="0"
                 step="0.01"
                 required
               />
+              {errors.base_price && <p className="text-red-500 text-sm mt-1">{errors.base_price}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Discount Rate (%)</label>
@@ -235,13 +340,14 @@ const EditPackage = () => {
                 name="discount_rate"
                 value={formData.discount_rate}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.discount_rate ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 10"
                 min="0"
                 max="100"
                 step="0.01"
                 required
               />
+              {errors.discount_rate && <p className="text-red-500 text-sm mt-1">{errors.discount_rate}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Start Date</label>
@@ -250,9 +356,10 @@ const EditPackage = () => {
                 name="start_date"
                 value={formData.start_date}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.start_date ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               />
+              {errors.start_date && <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">End Date</label>
@@ -261,9 +368,10 @@ const EditPackage = () => {
                 name="end_date"
                 value={formData.end_date}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.end_date ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               />
+              {errors.end_date && <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>}
             </div>
           </div>
 
@@ -275,7 +383,7 @@ const EditPackage = () => {
               name="services"
               value={formData.services}
               onChange={handleInputChange}
-              className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white h-32"
+              className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.services ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white h-32`}
               required
             >
               {servicesList.map(service => (
@@ -284,6 +392,7 @@ const EditPackage = () => {
                 </option>
               ))}
             </select>
+            {errors.services && <p className="text-red-500 text-sm mt-1">{errors.services}</p>}
             <p className="text-sm text-gray-500 mt-1">Hold Ctrl (or Cmd) to select multiple services</p>
           </div>
 
@@ -294,10 +403,11 @@ const EditPackage = () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+              className={`mt-1 w-full p-3 rounded-lg border-2 ${errors.description ? 'border-red-500' : 'border-gray-200'} focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
               placeholder="Describe the package..."
               required
             />
+            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
           </div>
 
           {/* Conditions */}

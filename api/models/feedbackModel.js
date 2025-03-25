@@ -6,7 +6,7 @@ const feedbackSchema = mongoose.Schema(
         type: String,
     },
     serviceID: { 
-        type: mongoose.Types.ObjectId,
+        type:String,
         
     },
     message:{
