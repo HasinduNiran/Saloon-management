@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { User, LogOut, Settings } from "lucide-react";
 import { logout } from "../features/auth/authactions";
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const toggleMobileMenu = () => {
@@ -24,38 +25,65 @@ const Navbar = () => {
     //setUserMenuAnchor(null);
   };
 
+  const handleSectionClick = (sectionId) => {
+    // Close mobile menu if open
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+    
+    // If we're already on the home page
+    if (location.pathname === '/') {
+      // Scroll to the section
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Navigate to home page with the section hash
+      navigate(`/#${sectionId}`);
+      
+      // After navigation, scroll to the section (needed because React Router doesn't auto-scroll)
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  };
+
   const NavLinks = () => (
     <>
-      <a
-        href="#"
+      <Link
+        to="/"
         className="hover:text-ExtraDarkColor transition duration-300 ease-in-out"
       >
         Home
-      </a>
-      <a
-        href="#services"
-        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out"
+      </Link>
+      <button
+        onClick={() => handleSectionClick('services')}
+        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out text-left"
       >
         Services
-      </a>
-      <a
-        href="#packages"
-        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out"
+      </button>
+      <button
+        onClick={() => handleSectionClick('packages')}
+        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out text-left"
       >
         Packages
-      </a>
-      <a
-        href="#reviews"
-        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out"
+      </button>
+      <button
+        onClick={() => handleSectionClick('reviews')}
+        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out text-left"
       >
         Reviews
-      </a>
-      <a
-        href="#contact"
-        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out"
+      </button>
+      <button
+        onClick={() => handleSectionClick('contact')}
+        className="hover:text-ExtraDarkColor transition duration-300 ease-in-out text-left"
       >
         Contact
-      </a>
+      </button>
     </>
   );
 
@@ -153,7 +181,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <Link
-                  to="/profile"
+                  to="/customer/profile"
                   className="flex items-center text-white hover:text-SecondaryColor transition duration-300"
                 >
                   <Settings size={18} className="mr-2" /> Profile
@@ -190,7 +218,7 @@ const Navbar = () => {
         <div className="md:hidden bg-DarkColor mt-4 rounded-lg p-4 shadow-lg animate-slide-down">
           <div className="flex flex-col space-y-4">
             <Link
-              to="/profile"
+              to="/customer/profile"
               className="flex items-center text-white hover:text-SecondaryColor transition duration-300"
             >
               <Settings size={18} className="mr-2" /> Profile
