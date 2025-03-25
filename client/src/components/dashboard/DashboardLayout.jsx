@@ -47,7 +47,7 @@ export default function DashboardLayout() {
 
         {/* Routes for Dashboard Components */}
         <Routes>
-          <Route path="/" element={<DashboardOverview />} />
+          <Route path="/" element={<UserManagement />} />
           {/* <Route path="/create" element={<CreateInventory />} /> */}
           <Route path="/user-management" element={<UserManagement />} />
           <Route
