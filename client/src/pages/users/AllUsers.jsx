@@ -4,14 +4,15 @@ import { saveAs } from "file-saver";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaSearch,
-  FaDownload,
-  FaUserPlus,
-  FaTrash,
-  FaUsers,
-  FaUserTie,
-  FaChartPie,
-} from "react-icons/fa";
+  Users,
+  Filter,
+  Search,
+  PlusCircle,
+  Download,
+  Trash2,
+  UserPlus,
+  BarChart2,
+} from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import {
@@ -24,9 +25,16 @@ import {
 } from "recharts";
 import html2canvas from "html2canvas";
 import client from "../../api/axiosClient";
-//import AddUserPopup from "./AddUserPopup";
+import AddUserPopup from "./AddUserPopup";
 
-const AllUsers = () => {
+const COLOR_THEME = {
+  PrimaryColor: "#d8f3dc",
+  SecondaryColor: "#95d5b2",
+  DarkColor: "#52b788",
+  ExtraDarkColor: "#1b4332",
+};
+
+const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
@@ -45,7 +53,6 @@ const AllUsers = () => {
   const fetchUsers = async () => {
     try {
       const response = await client.get(`/api/v1/user`);
-
       setUsers(response.data);
       calculateUserCounts(response.data);
     } catch (error) {
@@ -69,14 +76,14 @@ const AllUsers = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      confirmButtonColor: COLOR_THEME.DarkColor,
+      cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/user/${id}`);
+        await client.delete(`/api/v1/user/${id}`);
         Swal.fire("Deleted!", "The user has been deleted.", "success");
         fetchUsers();
       } catch (error) {
@@ -116,21 +123,11 @@ const AllUsers = () => {
     doc
       .setFont("helvetica", "normal")
       .setFontSize(28)
-      .setTextColor(169, 132, 109);
-    doc.text("FashioNexus", 105, 20, { align: "center" });
+      .setTextColor(COLOR_THEME.ExtraDarkColor);
+    doc.text("User Management", 105, 20, { align: "center" });
 
     doc.setFont("helvetica", "normal").setFontSize(18).setTextColor(0, 0, 0);
-    doc.text("User Details Report", 105, 30, { align: "center" });
-
-    // Subheader
-    doc.setFontSize(10).setTextColor(100, 100, 100);
-    doc.text("ABC Saloon, Galle Road, Colombo, Sri Lanka", 105, 38, {
-      align: "center",
-    });
-
-    // Separator line
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, 42, 190, 42);
+    doc.text("Comprehensive User Report", 105, 30, { align: "center" });
 
     // Date
     const currentDate = new Date().toLocaleDateString("en-US", {
@@ -148,18 +145,15 @@ const AllUsers = () => {
     const cardSpacing = 5;
 
     const drawCard = (x, y, title, count) => {
-      doc.setFillColor(245, 235, 224); // Using custom colors
+      doc.setFillColor(COLOR_THEME.PrimaryColor);
       doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, "F");
       doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
       doc.text(title, x + cardWidth / 2, y + 8, { align: "center" });
-      doc.setFontSize(14).setTextColor(169, 132, 109);
+      doc.setFontSize(14).setTextColor(COLOR_THEME.ExtraDarkColor);
       doc.text(count.toString(), x + cardWidth / 2, y + 20, {
         align: "center",
       });
     };
-
-    // Example userCounts data
-    const userCounts = { total: 5, customers: 4, managers: 1 };
 
     drawCard(20, cardY, "Total Users", userCounts.total);
     drawCard(
@@ -175,9 +169,9 @@ const AllUsers = () => {
       userCounts.managers
     );
 
-    // Generate Pie Chart image (assuming you have a reference to a chart, e.g., `chartRef`)
+    // Generate Pie Chart image
     if (chartRef.current) {
-      const canvas = await html2canvas(chartRef.current); // Requires html2canvas
+      const canvas = await html2canvas(chartRef.current);
       const imgData = canvas.toDataURL("image/png");
       doc.addImage(imgData, "PNG", 70, 100, 90, 70);
     }
@@ -195,8 +189,11 @@ const AllUsers = () => {
         user.createdAt,
       ]),
       styles: { fontSize: 9, cellPadding: 2 },
-      headStyles: { fillColor: [212, 163, 115], textColor: 255 },
-      alternateRowStyles: { fillColor: [245, 235, 224] },
+      headStyles: {
+        fillColor: [COLOR_THEME.DarkColor],
+        textColor: 255,
+      },
+      alternateRowStyles: { fillColor: [COLOR_THEME.PrimaryColor] },
     });
 
     // Footer (Page numbering)
@@ -233,27 +230,12 @@ const AllUsers = () => {
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const CountCard = ({ title, count, icon }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 w-64"
-    >
-      <div className="bg-[#d4a373] p-3 rounded-full">{icon}</div>
-      <div>
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-2xl font-bold">{count}</p>
-      </div>
-    </motion.div>
-  );
-
   const UserDistributionChart = () => {
     const data = [
       { name: "Managers", value: userCounts.managers },
       { name: "Customers", value: userCounts.customers },
     ];
-    const COLORS = ["#d4a373", "#a98467"];
+    const COLORS = [COLOR_THEME.DarkColor, COLOR_THEME.SecondaryColor];
 
     return (
       <motion.div
@@ -262,7 +244,9 @@ const AllUsers = () => {
         transition={{ duration: 0.5 }}
         className="bg-white p-4 rounded-lg shadow-md"
       >
-        <h3 className="text-lg font-semibold mb-4">User Distribution</h3>
+        <h3 className="text-lg font-semibold mb-4 flex items-center">
+          <BarChart2 className="mr-2" /> User Distribution
+        </h3>
         <div ref={chartRef}>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
@@ -291,31 +275,54 @@ const AllUsers = () => {
     );
   };
 
+  const UserCountCard = ({ title, count, icon }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 w-64"
+    >
+      <div
+        className="p-3 rounded-full"
+        style={{ backgroundColor: COLOR_THEME.DarkColor }}
+      >
+        {icon}
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-2xl font-bold">{count}</p>
+      </div>
+    </motion.div>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="p-6 bg-gradient-to-r from-[#f5ebe0] to-[#e3d5ca] text-[#775c41] rounded-lg"
+      style={{
+        background: `linear-gradient(135deg, ${COLOR_THEME.PrimaryColor}, ${COLOR_THEME.SecondaryColor})`,
+      }}
+      className="p-6 rounded-lg text-[#1b4332]"
     >
       {/* Summary Cards and Chart */}
-      <div className="md:grid md:grid-cols-3 gap-1 justify-center">
+      <div className="md:grid md:grid-cols-3 gap-4 justify-center">
         {/* Column for Count Cards */}
         <div className="md:col-span-2 space-y-4">
-          <CountCard
+          <UserCountCard
             title="Total Users"
             count={userCounts.total}
-            icon={<FaUsers className="text-white text-2xl" />}
+            icon={<Users className="text-white text-2xl" />}
           />
-          <CountCard
+          <UserCountCard
             title="Customers"
             count={userCounts.customers}
-            icon={<FaUserTie className="text-white text-2xl" />}
+            icon={<UserPlus className="text-white text-2xl" />}
           />
-          <CountCard
+          <UserCountCard
             title="Managers"
             count={userCounts.managers}
-            icon={<FaChartPie className="text-white text-2xl" />}
+            icon={<Filter className="text-white text-2xl" />}
           />
         </div>
 
@@ -336,11 +343,15 @@ const AllUsers = () => {
           <input
             type="text"
             placeholder="Search users..."
-            className="w-full p-3 pl-10 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
+            className="w-full p-3 pl-10 border rounded-lg shadow-md focus:outline-none focus:ring-2"
+            style={{
+              borderColor: COLOR_THEME.DarkColor,
+              focusRingColor: COLOR_THEME.ExtraDarkColor,
+            }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </motion.div>
 
         <motion.div
@@ -352,23 +363,37 @@ const AllUsers = () => {
           <select
             value={reportType}
             onChange={(e) => setReportType(e.target.value)}
-            className="p-2 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
+            className="p-2 border rounded-lg shadow-md focus:outline-none focus:ring-2"
+            style={{
+              borderColor: COLOR_THEME.DarkColor,
+              focusRingColor: COLOR_THEME.ExtraDarkColor,
+            }}
           >
             <option value="csv">CSV</option>
             <option value="pdf">PDF</option>
           </select>
           <button
             onClick={handleDownload}
-            className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
+            className="flex items-center px-4 py-2 rounded-lg transition duration-300 shadow-md"
+            style={{
+              backgroundColor: COLOR_THEME.DarkColor,
+              color: "white",
+              "&:hover": { backgroundColor: COLOR_THEME.ExtraDarkColor },
+            }}
           >
-            <FaDownload className="mr-2" />
+            <Download className="mr-2" />
             Download Report
           </button>
           <button
             onClick={() => setIsAddUserOpen(true)}
-            className="flex items-center bg-[#d4a373] text-white px-4 py-2 rounded-lg hover:bg-[#a98467] transition duration-300 shadow-md"
+            className="flex items-center px-4 py-2 rounded-lg transition duration-300 shadow-md"
+            style={{
+              backgroundColor: COLOR_THEME.DarkColor,
+              color: "white",
+              "&:hover": { backgroundColor: COLOR_THEME.ExtraDarkColor },
+            }}
           >
-            <FaUserPlus className="mr-2" />
+            <UserPlus className="mr-2" />
             Add User
           </button>
         </motion.div>
@@ -383,14 +408,18 @@ const AllUsers = () => {
       >
         <table className="w-full bg-white">
           <thead>
-            <tr className="bg-[#d4a373] text-white">
+            <tr
+              style={{ backgroundColor: COLOR_THEME.DarkColor }}
+              className="text-white"
+            >
               <th className="p-3">Avatar</th>
-              <th className="p-3">First Name</th>
-              <th className="p-3">Last Name</th>
-              <th className="p-3">Username</th>
+              <th className="p-3">Name</th>
               <th className="p-3">Email</th>
-              <th className="p-3">User Type</th>
-              <th className="p-3">Is Manager</th>
+              <th className="p-3">Mobile No</th>
+              <th className="p-3">Role</th>
+              <th className="p-3">Position</th>
+
+              <th className="p-3">Status</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -402,7 +431,7 @@ const AllUsers = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="border-b hover:bg-[#f5ebe0] transition duration-300"
+                  className="border-b hover:bg-gray-100 transition duration-300"
                 >
                   <td className="p-3">
                     <img
@@ -412,17 +441,17 @@ const AllUsers = () => {
                     />
                   </td>
                   <td className="p-3">{user?.name}</td>
-
                   <td className="p-3">{user?.email}</td>
                   <td className="p-3">{user?.phone}</td>
                   <td className="p-3">{user?.role}</td>
+                  <td className="p-3">{user?.position}</td>
                   <td className="p-3">{user?.status}</td>
                   <td className="p-3">
                     <button
                       onClick={() => deleteUser(user._id)}
                       className="flex items-center bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition duration-300"
                     >
-                      <FaTrash className="mr-2" />
+                      <Trash2 className="mr-2" />
                       Delete
                     </button>
                   </td>
@@ -433,15 +462,15 @@ const AllUsers = () => {
         </table>
       </motion.div>
 
-      {/* Add User Popup */}
-      {/* {isAddUserOpen && (
+      {/* Commented out Add User Popup - replace with your actual implementation */}
+      {isAddUserOpen && (
         <AddUserPopup
           closePopup={() => setIsAddUserOpen(false)}
           refreshUsers={fetchUsers}
         />
-      )} */}
+      )}
     </motion.div>
   );
 };
 
-export default AllUsers;
+export default UserManagement;

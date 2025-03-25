@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addUser,
   deleteUser,
   getAllUsers,
   updateUser,
@@ -8,6 +9,7 @@ import { verifyToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 router.get("/", verifyToken, getAllUsers);
+router.post("/", verifyToken, addUser);
 router.put("/:id", verifyToken, updateUser);
 router.delete("/:id", verifyToken, deleteUser);
 

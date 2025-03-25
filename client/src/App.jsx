@@ -6,7 +6,7 @@ import { checkAuthStatus } from "./features/auth/authactions";
 import AppRoutes from "./routes/Approutes";
 
 const App = () => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(checkAuthStatus());
@@ -14,8 +14,6 @@ const App = () => {
   return (
     <Router>
       <AppRoutes />
-      
-      
     </Router>
   );
 };
