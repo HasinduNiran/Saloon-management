@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { User, LogOut, Settings } from "lucide-react";
+import { logout } from "../features/auth/authactions";
 
-const Navbar = ({ onLogout }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleMobileMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -17,8 +20,8 @@ const Navbar = ({ onLogout }) => {
   };
 
   const handleLogout = () => {
-    onLogout();
-    setIsProfileDropdownOpen(false);
+    dispatch(logout(navigate));
+    //setUserMenuAnchor(null);
   };
 
   const NavLinks = () => (
