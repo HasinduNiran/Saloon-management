@@ -13,11 +13,15 @@ const EditFeedback = () => {
     serviceID: '',
     message: '',
     star_rating: '',
+    date_of_service: '',
   });
 
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Format today's date as YYYY-MM-DD for date input
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const fetchFeedback = async () => {
@@ -30,6 +34,7 @@ const EditFeedback = () => {
           serviceID: data.serviceID,
           message: data.message,
           star_rating: data.star_rating,
+          date_of_service: today, // Force date to be today regardless of original value
         });
       } catch (error) {
         Swal.fire({
@@ -44,7 +49,7 @@ const EditFeedback = () => {
     };
 
     fetchFeedback();
-  }, [id]);
+  }, [id, today]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +71,7 @@ const EditFeedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['Username', 'serviceID', 'message', 'star_rating'];
+    const requiredFields = ['Username', 'serviceID', 'message', 'star_rating', 'date_of_service'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -220,6 +225,21 @@ const EditFeedback = () => {
                 value={formData.star_rating}
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">Date of Service<span className="text-red-500">*</span></label>
+              <input
+                type="date"
+                name="date_of_service"
+                value={formData.date_of_service}
+                onChange={handleInputChange}
+                min={today}
+                max={today}
+                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                required
+              />
+              <small className="text-gray-500 mt-1 block">You can only provide feedback for today's service.</small>
             </div>
           </div>
 

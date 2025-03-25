@@ -9,6 +9,10 @@ const feedbackSchema = mongoose.Schema(
         type:String,
         
     },
+    date_of_service: {
+        type: String,
+        required: true,
+    },
     message:{
         type: String,
         required: true,

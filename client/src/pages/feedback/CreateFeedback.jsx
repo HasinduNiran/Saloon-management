@@ -9,11 +9,16 @@ import { useSelector } from 'react-redux';
 const CreateFeedback = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  
+  // Format today's date as YYYY-MM-DD for date input
+  const today = new Date().toISOString().split('T')[0];
+  
   const [formData, setFormData] = useState({
     service: '',  // Changed from pkgs to service for consistency
     message: '',
     star_rating: '',
     user_id: user?._id || '',
+    date_of_service: today, // Set today as default date
   });
   const [servicesList, setServicesList] = useState([]);  // Renamed for clarity
   const [isLoadingServices, setIsLoadingServices] = useState(true);
@@ -65,7 +70,7 @@ const CreateFeedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['service', 'message', 'star_rating'];  // Updated field name
+    const requiredFields = ['service', 'message', 'star_rating', 'date_of_service'];  // Added date_of_service
     const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -152,7 +157,22 @@ const CreateFeedback = () => {
                 onChange={handleInputChange}
                 className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                 placeholder="e.g., john_doe"
+                disabled={true}
               />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">Date of Service<span className="text-red-500">*</span></label>
+              <input
+                type="date"
+                name="date_of_service"
+                value={formData.date_of_service}
+                onChange={handleInputChange}
+                min={today}
+                max={today}
+                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                required
+              />
+              <small className="text-gray-500 mt-1 block">You can only provide feedback for today's service.</small>
             </div>
 
             <div>
