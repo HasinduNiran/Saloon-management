@@ -34,6 +34,8 @@ const CreateAppointment = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Add current date for validation
+  const today = new Date().toISOString().split('T')[0];
 
   // Fetch services and packages when component mounts
   useEffect(() => {
@@ -96,6 +98,54 @@ const CreateAppointment = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validation for client name - prevent numbers
+    if (name === 'client_name') {
+      // Only allow letters, spaces and some special characters
+      const nameValue = value.replace(/[0-9]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: nameValue }));
+      return;
+    }
+    
+    // Validation for phone - only numbers, max 10 digits
+    if (name === 'client_phone') {
+      // Only allow numbers and restrict to 10 digits
+      const phoneValue = value.replace(/\D/g, '').slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: phoneValue }));
+      return;
+    }
+    
+    // Time validation if date is today
+    if (name === 'appoi_time' && formData.appoi_date === today) {
+      const now = new Date();
+      const selectedTime = new Date(`${formData.appoi_date}T${value}`);
+      
+      // If selected time is in the past, don't update
+      if (selectedTime < now) {
+        return;
+      }
+    }
+    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Validate time whenever date changes
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Clear time if date is today and current time is already past
+    if (value === today && formData.appoi_time) {
+      const now = new Date();
+      const [hours, minutes] = formData.appoi_time.split(':');
+      const selectedTime = new Date();
+      selectedTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+      
+      if (selectedTime < now) {
+        setFormData((prev) => ({ ...prev, appoi_time: '', [name]: value }));
+        return;
+      }
+    }
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -217,6 +267,8 @@ const CreateAppointment = () => {
                   className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                   placeholder="e.g., John Doe"
                   required
+                  pattern="^[A-Za-z\s.'-]+$"
+                  title="Name cannot contain numbers"
                 />
               </div>
 
@@ -241,8 +293,10 @@ const CreateAppointment = () => {
                   value={formData.client_phone}
                   onChange={handleInputChange}
                   className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
-                  placeholder="e.g., +1 123-456-7890"
+                  placeholder="10-digit number only"
                   required
+                  pattern="[0-9]{10}"
+                  title="Phone number must be exactly 10 digits"
                 />
               </div>
 
@@ -273,7 +327,8 @@ const CreateAppointment = () => {
                   type="date"
                   name="appoi_date"
                   value={formData.appoi_date}
-                  onChange={handleInputChange}
+                  onChange={handleDateChange}
+                  min={today}
                   className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                   required
                 />
@@ -289,6 +344,11 @@ const CreateAppointment = () => {
                   className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
                   required
                 />
+                {formData.appoi_date === today && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Selected time must be in the future
+                  </p>
+                )}
               </div>
             </div>
 
