@@ -6,8 +6,10 @@ import SignupPage from "../pages/auth/SignUp";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import CreateAppontment from "../pages/appointment/CreateAppontment";
 import CreateFeedback from "../pages/feedback/CreateFeedback";
+import Editfeedback from "../pages/feedback/EditFeedback";
 import Home from "../pages/Home";
 import ProfilePage from "../pages/UserProfile";
+import EditAppointment from "../pages/appointment/EditAppointment";
 
 function AppRoutes() {
   return (
@@ -17,7 +19,9 @@ function AppRoutes() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/manager/*" element={<DashboardLayout />} />
       <Route path="/appointment/CreateAppontment" element={<CreateAppontment />} />
+      <Route path="/appointment/edit/:id" element={<EditAppointment />} />
       <Route path="/feedback/Createfeedback" element={<CreateFeedback />} />
+      <Route path="/feedback/edit/:id" element={<Editfeedback />} />
       <Route
         path="/customer/*"
         element={

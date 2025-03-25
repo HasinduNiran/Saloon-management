@@ -72,6 +72,10 @@ const AppointmentsSection = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const navigate = useNavigate();
+
+  // Remove editingAppointment and editedAppointment state as we'll navigate to another page
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -94,6 +98,40 @@ const AppointmentsSection = () => {
       fetchAppointments();
     }
   }, [user]);
+
+  const handleEditClick = (appointment) => {
+    // Navigate to EditAppointment page with the appointment ID
+    navigate(`/appointment/edit/${appointment._id}`);
+  };
+
+  const handleDeleteClick = (id) => {
+    setShowDeleteConfirm(id);
+  };
+
+  const handleConfirmDelete = async (id) => {
+    try {
+      await client.delete(`/api/v1/appoiment/${id}`);
+      
+      // Remove the deleted appointment from the list
+      setAppointments(appointments.filter(app => app._id !== id));
+      
+      toast.success("Appointment deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      
+      setShowDeleteConfirm(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete appointment", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(null);
+  };
 
   if (loading) {
     return (
@@ -144,21 +182,58 @@ const AppointmentsSection = () => {
                     {appointment.appoi_date || appointment.date} at {appointment.appoi_time || appointment.time}
                   </p>
                 </div>
-                <span
-                  className={`
-                    px-3 py-1 rounded-full text-sm 
-                    ${
-                      appointment.status === "Confirmed"
-                        ? "bg-green-100 text-green-800"
-                        : appointment.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-gray-100 text-gray-800"
-                    }
-                  `}
-                >
-                  {appointment.status || "Processing"}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span
+                    className={`
+                      px-3 py-1 rounded-full text-sm 
+                      ${
+                        appointment.status === "Confirmed"
+                          ? "bg-green-100 text-green-800"
+                          : appointment.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
+                      }
+                    `}
+                  >
+                    {appointment.status || "Processing"}
+                  </span>
+                  <button
+                    onClick={() => handleEditClick(appointment)}
+                    className="p-1 text-[#1b4332] hover:text-[#52b788] transition-colors"
+                    title="Edit appointment"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(appointment._id)}
+                    className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete appointment"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
+              
+              {/* Delete confirmation dialog */}
+              {showDeleteConfirm === appointment._id && (
+                <div className="mt-3 p-3 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-sm text-red-600 mb-2">Are you sure you want to delete this appointment?</p>
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={handleCancelDelete}
+                      className="px-3 py-1 bg-gray-200 text-gray-800 text-sm rounded hover:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleConfirmDelete(appointment._id)}
+                      className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}
@@ -173,6 +248,10 @@ const FeedbackSection = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const navigate = useNavigate();
+
+  // Remove editingFeedback and editedFeedback state as we'll navigate to another page
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -195,6 +274,40 @@ const FeedbackSection = () => {
       fetchFeedbacks();
     }
   }, [user]);
+
+  const handleEditClick = (feedback) => {
+    // Navigate to EditFeedback page with the feedback ID
+    navigate(`/feedback/edit/${feedback._id}`);
+  };
+
+  const handleDeleteClick = (id) => {
+    setShowDeleteConfirm(id);
+  };
+
+  const handleConfirmDelete = async (id) => {
+    try {
+      await client.delete(`/api/v1/feedback/${id}`);
+      
+      // Remove the deleted feedback from the list
+      setFeedbacks(feedbacks.filter(fb => fb._id !== id));
+      
+      toast.success("Feedback deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      
+      setShowDeleteConfirm(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete feedback", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(null);
+  };
 
   const renderStars = (rating) => {
     return Array(5)
@@ -255,12 +368,49 @@ const FeedbackSection = () => {
                 <h3 className="font-semibold text-[#1b4332]">
                   {feedback.service || feedback.serviceID || "Service"}
                 </h3>
-                <p className="text-sm text-[#52b788]">
-                  {feedback.date_of_service || feedback.date || new Date(feedback.createdAt).toLocaleDateString()}
-                </p>
+                <div className="flex items-center">
+                  <p className="text-sm text-[#52b788] mr-2">
+                    {feedback.date_of_service || feedback.date || new Date(feedback.createdAt).toLocaleDateString()}
+                  </p>
+                  <button
+                    onClick={() => handleEditClick(feedback)}
+                    className="p-1 text-[#1b4332] hover:text-[#52b788] transition-colors"
+                    title="Edit feedback"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(feedback._id)}
+                    className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                    title="Delete feedback"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
               <div className="mb-2">{renderStars(feedback.star_rating || feedback.rating || 0)}</div>
               <p className="text-[#1b4332] opacity-80">{feedback.message || feedback.comment}</p>
+              
+              {/* Delete confirmation dialog */}
+              {showDeleteConfirm === feedback._id && (
+                <div className="mt-3 p-3 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-sm text-red-600 mb-2">Are you sure you want to delete this feedback?</p>
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={handleCancelDelete}
+                      className="px-3 py-1 bg-gray-200 text-gray-800 text-sm rounded hover:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleConfirmDelete(feedback._id)}
+                      className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}
