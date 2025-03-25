@@ -8,20 +8,21 @@ import API_CONFIG from '../../config/apiConfig';
 const ManageInventory = () => {
   const navigate = useNavigate();
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch all inventory items from the backend
+  // Fetch all inventory items from the backend only once on component mount
   useEffect(() => {
     const fetchInventoryItems = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}`);
         if (!response.ok) throw new Error('Failed to fetch inventory items');
-       
+        
         const data = await response.json();
-
-        console.log(data)
         setInventoryItems(data);
+        setFilteredItems(data); // Initialize filtered items with all items
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -35,22 +36,43 @@ const ManageInventory = () => {
     };
 
     fetchInventoryItems();
-  }, []);
+  }, []); // Only run on component mount
 
-  // Handle search functionality
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/search?search=${searchQuery}`);
-      if (!response.ok) throw new Error('Failed to search inventory items');
-      const data = await response.json();
-      setInventoryItems(data);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message,
-        confirmButtonColor: '#89198f',
-      });
+  // Client-side search functionality
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      // If search is empty, show all items
+      setFilteredItems(inventoryItems);
+      return;
+    }
+    
+    // Filter items based on search query (case-insensitive)
+    const lowercaseQuery = searchQuery.toLowerCase();
+    const results = inventoryItems.filter(item => 
+      item.ItemName.toLowerCase().includes(lowercaseQuery) ||
+      item.Category.toLowerCase().includes(lowercaseQuery) ||
+      item.SupplierName.toLowerCase().includes(lowercaseQuery) ||
+      item.SupplierEmail.toLowerCase().includes(lowercaseQuery)
+    );
+    
+    setFilteredItems(results);
+  };
+
+  // Handle search input changes with immediate filtering
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // If search field is cleared, show all items
+    if (value === '') {
+      setFilteredItems(inventoryItems);
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -76,6 +98,7 @@ const ManageInventory = () => {
 
         // Remove the deleted inventory item from the state
         setInventoryItems((prev) => prev.filter((item) => item._id !== id));
+        setFilteredItems((prev) => prev.filter((item) => item._id !== id));
 
         Swal.fire({
           icon: 'success',
@@ -135,7 +158,8 @@ const ManageInventory = () => {
             type="text"
             placeholder="Search inventory items..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchInputChange}
+            onKeyPress={handleKeyPress}
             className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
           />
           <button
@@ -152,47 +176,53 @@ const ManageInventory = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-DarkColor"></div>
           </div>
         ) : (
-          /* Inventory Table */
+          /* Inventory Table - Now using filteredItems instead of inventoryItems */
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-              <thead>
-                <tr className="bg-DarkColor text-white">
-                  <th className="p-3 text-left">Item Name</th>
-                  <th className="p-3 text-left">Category</th>
-                  <th className="p-3 text-left">Quantity</th>
-                  <th className="p-3 text-left">Price</th>
-                  <th className="p-3 text-left">Supplier Name</th>
-                  <th className="p-3 text-left">Supplier Email</th>
-                  <th className="p-3 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inventoryItems.map((item) => (
-                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="p-3">{item.ItemName}</td>
-                    <td className="p-3">{item.Category}</td>
-                    <td className="p-3">{item.Quantity}</td>
-                    <td className="p-3">{item.Price}</td>
-                    <td className="p-3">{item.SupplierName}</td>
-                    <td className="p-3">{item.SupplierEmail}</td>
-                    <td className="p-3 flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(item._id)}
-                        className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
-                      >
-                        <FiEdit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item._id)}
-                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
-                      >
-                        <FiTrash size={16} />
-                      </button>
-                    </td>
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-lg">No matching items found.</p>
+              </div>
+            ) : (
+              <table className="min-w-full bg-white border border-gray-200">
+                <thead>
+                  <tr className="bg-DarkColor text-white">
+                    <th className="p-3 text-left">Item Name</th>
+                    <th className="p-3 text-left">Category</th>
+                    <th className="p-3 text-left">Quantity</th>
+                    <th className="p-3 text-left">Price</th>
+                    <th className="p-3 text-left">Supplier Name</th>
+                    <th className="p-3 text-left">Supplier Email</th>
+                    <th className="p-3 text-left">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredItems.map((item) => (
+                    <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="p-3">{item.ItemName}</td>
+                      <td className="p-3">{item.Category}</td>
+                      <td className="p-3">{item.Quantity}</td>
+                      <td className="p-3">{item.Price}</td>
+                      <td className="p-3">{item.SupplierName}</td>
+                      <td className="p-3">{item.SupplierEmail}</td>
+                      <td className="p-3 flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(item._id)}
+                          className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
+                        >
+                          <FiEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item._id)}
+                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
+                        >
+                          <FiTrash size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
       </div>
