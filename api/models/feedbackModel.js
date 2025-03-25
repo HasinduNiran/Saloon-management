@@ -9,11 +9,6 @@ const feedbackSchema = mongoose.Schema(
         type: mongoose.Types.ObjectId,
         
     },
-    employeeID:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-    },
-  
     message:{
         type: String,
         required: true,

@@ -155,9 +155,8 @@ const ManageFeedback = () => {
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr className="bg-DarkColor text-white">
-                  <th className="p-3 text-left">Username</th>
+                  <th className="p-3 text-left">User</th>
                   <th className="p-3 text-left">Service ID</th>
-                  <th className="p-3 text-left">Employee ID</th>
                   <th className="p-3 text-left">Created At</th>
                   <th className="p-3 text-left">Updated at</th>
                   <th className="p-3 text-left">Message</th>
@@ -168,9 +167,8 @@ const ManageFeedback = () => {
               <tbody>
                 {feedbackItems.map((item) => (
                   <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="p-3">{item.Username}</td>
+                    <td className="p-3">{item._id}</td>
                     <td className="p-3">{item.serviceID}</td>
-                    <td className="p-3">{item.employeeID}</td>
                     <td className="p-3">{item.createdAt}</td>
                     <td className="p-3">{item.updatedAt}</td>
                     <td className="p-3">{item.message}</td>

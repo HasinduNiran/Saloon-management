@@ -49,7 +49,6 @@ export const createFeedback =async (req, res) => {
         const {
             user_id,
             serviceID,
-            employeeID,
             message,
             date_of_service,
             star_rating,
@@ -60,7 +59,6 @@ export const createFeedback =async (req, res) => {
         const newFeedback = {
             user_id,
             serviceID,
-            employeeID,
             date_of_service,
             message,
             star_rating,
