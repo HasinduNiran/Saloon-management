@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authslices';
 import woman from './woman.jpg';
-// Import additional hero images
-import heroImage2 from './hero2.jpg'; // You'll need to add these images
-import heroImage3 from './hero3.jpg'; // You'll need to add these images
 import API_CONFIG from '../config/apiConfig';
 import Swal from 'sweetalert2';
 import Navbar from '../components/Navbar';
@@ -21,19 +18,6 @@ function SalonHomepage() {
   const [currentServicePage, setCurrentServicePage] = useState(0);
   const [currentReviewPage, setCurrentReviewPage] = useState(0);
   const [currentPackagePage, setCurrentPackagePage] = useState(0);
-
-  // Image slider state
-  const [currentHeroImage, setCurrentHeroImage] = useState(0);
-  const heroImages = [woman, heroImage2, heroImage3];
-  
-  // Effect to rotate hero images every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     fetchServices();
@@ -154,40 +138,13 @@ function SalonHomepage() {
       {/* Use the Navbar component */}
       <Navbar user={user} onLogout={handleLogout} />
       
-      <div className="relative w-full h-screen overflow-hidden">
-        {/* Hero Image Carousel */}
-        {heroImages.map((image, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentHeroImage === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <img
-              src={image}
-              alt={`Salon interior ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
-        
-        {/* Image Indicators */}
-        <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center space-x-3">
-          {heroImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentHeroImage(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                currentHeroImage === index 
-                  ? 'bg-white w-6' 
-                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
-              }`}
-              aria-label={`View hero image ${index + 1}`}
-            />
-          ))}
-        </div>
-        
-        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-20">
+      <div className="relative w-full h-screen">
+        <img
+          src={woman}
+          alt="Salon interior"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
           <div className="text-center text-white px-4">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {user ? `Welcome Back, ${user.name}!` : 'Discover Your Beauty at Glamour Salon'}
@@ -313,15 +270,15 @@ function SalonHomepage() {
                 a rejuvenating facial, or a complete makeover, we're here to exceed your expectations.
               </p>
               <div className="flex flex-wrap gap-4">
-                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                <div className="bg-ExtraDarkColor p-5 rounded-lg text-center flex-1 min-w-[150px]">
                   <h3 className="text-2xl font-bold">10+</h3>
                   <p>Years Experience</p>
                 </div>
-                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                <div className="bg-ExtraDarkColor p-5 rounded-lg text-center flex-1 min-w-[150px]">
                   <h3 className="text-2xl font-bold">5000+</h3>
                   <p>Happy Clients</p>
                 </div>
-                <div className="bg-white bg-opacity-20 p-5 rounded-lg text-center flex-1 min-w-[150px]">
+                <div className="bg-ExtraDarkColor p-5 rounded-lg text-center flex-1 min-w-[150px]">
                   <h3 className="text-2xl font-bold">15+</h3>
                   <p>Expert Stylists</p>
                 </div>
