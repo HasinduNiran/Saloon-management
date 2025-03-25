@@ -136,7 +136,7 @@ export const getAllFeedback = async (req, res) => {
                 const feedbackObj = item.toObject();
                 
                 if (item.serviceID) {
-                    console.log(`Looking up service with ID: ${item.serviceID}`);
+                    // console.log(`Looking up service with ID: ${item.serviceID}`);
                     try {
                         // First try direct lookup by service_ID
                         let service = await Service.findOne({ service_ID: item.serviceID });
