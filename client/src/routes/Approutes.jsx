@@ -5,6 +5,7 @@ import LoginPage from "../pages/auth/Login";
 import SignupPage from "../pages/auth/SignUp";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import CreateAppontment from "../pages/appointment/CreateAppontment";
+import CreateFeedback from "../pages/feedback/CreateFeedback";
 import Home from "../pages/Home";
 import ProfilePage from "../pages/UserProfile";
 
@@ -16,6 +17,7 @@ function AppRoutes() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/manager/*" element={<DashboardLayout />} />
       <Route path="/appointment/CreateAppontment" element={<CreateAppontment />} />
+      <Route path="/feedback/Createfeedback" element={<CreateFeedback />} />
       <Route
         path="/customer/*"
         element={
