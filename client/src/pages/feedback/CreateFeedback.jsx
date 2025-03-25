@@ -107,7 +107,7 @@ const CreateFeedback = () => {
         text: 'Feedback created successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/feedback-management');
+        navigate('/');
       });
     } catch (error) {
       Swal.fire({

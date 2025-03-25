@@ -214,7 +214,7 @@ const CreateAppointment = () => {
         text: 'Appointment created successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/appointments'); // Redirect to appointments page
+        navigate('/'); // Redirect to appointments page
       });
     } catch (error) {
       Swal.fire({

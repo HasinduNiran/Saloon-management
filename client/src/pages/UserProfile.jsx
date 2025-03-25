@@ -77,9 +77,8 @@ const AppointmentsSection = () => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        console.log("Fetching appointments for user:", user._id);
+        // Use the correct endpoint as defined in apiConfig
         const response = await client.get(`/api/v1/appoiment/user/${user._id}`);
-        console.log("Appointments response:", response.data);
         setAppointments(response.data || []);
         setError(null);
       } catch (err) {
@@ -179,9 +178,8 @@ const FeedbackSection = () => {
     const fetchFeedbacks = async () => {
       try {
         setLoading(true);
-        console.log("Fetching feedback for user:", user._id);
+        // Use the correct endpoint as defined in apiConfig
         const response = await client.get(`/api/v1/feedback/user/${user._id}`);
-        console.log("Feedback response:", response.data);
         setFeedbacks(response.data || []);
         setError(null);
       } catch (err) {
