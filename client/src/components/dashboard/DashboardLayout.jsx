@@ -18,7 +18,7 @@ import EditService from "../../pages/Service_and_packages/EditService";
 import EditFeedback from "../../pages/feedback/EditFeedback";
 
 import EditPackage from "../../pages/Service_and_packages/EditPackage";
-
+import UserManagement from "./UserManagement";
 
 const contentVariants = {
   open: { marginLeft: 250, transition: { type: "spring", stiffness: 50 } },
@@ -49,10 +49,20 @@ export default function DashboardLayout() {
         <Routes>
           <Route path="/" element={<DashboardOverview />} />
           {/* <Route path="/create" element={<CreateInventory />} /> */}
-          <Route path="/inventory-management" element={<InventoryManagement />} />
+          <Route path="/user-management" element={<UserManagement />} />
+          <Route
+            path="/inventory-management"
+            element={<InventoryManagement />}
+          />
           <Route path="/Feedback-management" element={<FeedbackManager />} />
-          <Route path="/appointment-management" element={<AppointmentManager />} />
-          <Route path="/Service-management" element={<Service_and_PackageManager />} />
+          <Route
+            path="/appointment-management"
+            element={<AppointmentManager />}
+          />
+          <Route
+            path="/Service-management"
+            element={<Service_and_PackageManager />}
+          />
           <Route path="/edit-appointment/:id" element={<EditAppointment />} />
           <Route path="/edit-feedback/:id" element={<EditFeedback />} />
 
@@ -61,8 +71,7 @@ export default function DashboardLayout() {
           <Route path="/edit-service/:id" element={<EditService />} />
 
           <Route path="/edit-package/:packageId" element={<EditPackage />} />
-
-           </Routes>
+        </Routes>
       </motion.main>
     </div>
   );

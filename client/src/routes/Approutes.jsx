@@ -2,10 +2,11 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
 import LoginPage from "../pages/auth/Login";
-import { SignupPage } from "../pages/auth/SignUp";
+import SignupPage from "../pages/auth/SignUp";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import CreateAppontment from "../pages/appointment/CreateAppontment";
 import Home from "../pages/Home";
+import ProfilePage from "../pages/UserProfile";
 
 function AppRoutes() {
   return (
@@ -16,22 +17,22 @@ function AppRoutes() {
       <Route path="/manager/*" element={<DashboardLayout />} />
       <Route path="/appointment/CreateAppontment" element={<CreateAppontment />} />
       <Route
-        path="/user/*"
+        path="/customer/*"
         element={
-          <ProtectedRoute allowedRoles={["user"]}>
+          <ProtectedRoute allowedRoles={["customer"]}>
             <Routes>
-              {/* <Route path="/profile" element={<UserProfile />} /> */}
+              <Route path="/profile" element={<ProfilePage />} />
             </Routes>
           </ProtectedRoute>
         }
       />
 
       <Route
-        path="/admin/*"
+        path="/manager/*"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <Routes>
-              {/* <Route path="/" element={<AdminDashboard />} /> */}
+              {/* <Route path="/*" element={<DashboardLayout />} /> */}
             </Routes>
           </ProtectedRoute>
         }
