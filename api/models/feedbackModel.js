@@ -6,8 +6,12 @@ const feedbackSchema = mongoose.Schema(
         type: String,
     },
     serviceID: { 
-        type: mongoose.Types.ObjectId,
+        type:String,
         
+    },
+    date_of_service: {
+        type: String,
+        required: true,
     },
     message:{
         type: String,

@@ -18,15 +18,57 @@ const CreateInventory = () => {
     SupplierEmail: '',
   });
 
+  const [errors, setErrors] = useState({
+    Quantity: '',
+    Price: '',
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'Quantity':
+        if (value === '') return '';
+        if (!/^\d+$/.test(value)) return 'Quantity must be a whole number';
+        if (parseInt(value) <= 0) return 'Quantity must be greater than 0';
+        if (parseInt(value) > 10000) return 'Quantity cannot exceed 10,000';
+        return '';
+      case 'Price':
+        if (value === '') return '';
+        if (!/^\d+(\.\d{0,2})?$/.test(value)) return 'Price must be a number with up to 2 decimal places';
+        if (parseFloat(value) <= 0) return 'Price must be greater than 0';
+        if (parseFloat(value) > 100000) return 'Price cannot exceed 100,000';
+        return '';
+      default:
+        return '';
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Validate fields that have validation rules
+    if (['Quantity', 'Price'].includes(name)) {
+      const errorMessage = validateField(name, value);
+      setErrors(prev => ({ ...prev, [name]: errorMessage }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check for validation errors
+    const hasErrors = Object.values(errors).some(error => error !== '');
+    if (hasErrors) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fix the errors in the form before submitting',
+        confirmButtonColor: '#89198f',
+      });
+      return;
+    }
 
     const requiredFields = ['ItemName', 'Category', 'Quantity', 'Price', 'SupplierName', 'SupplierEmail'];
     const missingFields = requiredFields.filter((field) => !formData[field]);
@@ -141,27 +183,37 @@ const CreateInventory = () => {
             <div>
               <label className="block text-sm font-semibold text-gray-700">Quantity</label>
               <input
-                type="number"
+                type="text"
                 name="Quantity"
                 value={formData.Quantity}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  errors.Quantity ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 50"
                 required
               />
+              {errors.Quantity && (
+                <p className="mt-1 text-sm text-red-600">{errors.Quantity}</p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700">Price</label>
               <input
-                type="number"
+                type="text"
                 name="Price"
                 value={formData.Price}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  errors.Price ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 25.99"
                 required
               />
+              {errors.Price && (
+                <p className="mt-1 text-sm text-red-600">{errors.Price}</p>
+              )}
             </div>
 
             <div>
@@ -195,7 +247,7 @@ const CreateInventory = () => {
           <div className="pt-6">
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || Object.values(errors).some(error => error !== '')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full bg-gradient-to-r from-DarkColor to-ExtraDarkColor text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:from-ExtraDarkColor hover:to-DarkColor transition-all disabled:opacity-50 disabled:cursor-not-allowed"

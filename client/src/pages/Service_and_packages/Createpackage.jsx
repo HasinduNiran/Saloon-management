@@ -21,6 +21,11 @@ const CreatePackage = () => {
   });
   const [servicesList, setServicesList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  // Get today's date in YYYY-MM-DD format for date inputs
+  const today = new Date().toISOString().split('T')[0];
 
   // Fetch services when component mounts
   useEffect(() => {
@@ -51,33 +56,139 @@ const CreatePackage = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+    
+    // Mark field as touched
+    setTouched(prev => ({ ...prev, [name]: true }));
+    
+    // Validate field on change
+    validateField(name, name === 'services' ? 
+      Array.from(e.target.selectedOptions, option => option.value) : 
+      value);
+  };
+
+  // Field blur handler
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  // Validate a single field
+  const validateField = (fieldName, value) => {
+    let newErrors = { ...errors };
+    
+    switch (fieldName) {
+      case 'p_name':
+        if (!value) newErrors.p_name = 'Package name is required';
+        else if (value.length < 3) newErrors.p_name = 'Package name must be at least 3 characters';
+        else if (value.length > 50) newErrors.p_name = 'Package name must be less than 50 characters';
+        else delete newErrors.p_name;
+        break;
+      
+      case 'description':
+        if (!value) newErrors.description = 'Description is required';
+        else if (value.length < 10) newErrors.description = 'Description must be at least 10 characters';
+        else if (value.length > 500) newErrors.description = 'Description must be less than 500 characters';
+        else delete newErrors.description;
+        break;
+      
+      case 'services':
+        if (!value || value.length === 0) newErrors.services = 'At least one service must be selected';
+        else delete newErrors.services;
+        break;
+      
+      case 'base_price':
+        if (!value) newErrors.base_price = 'Base price is required';
+        else if (isNaN(value) || parseFloat(value) < 0) newErrors.base_price = 'Base price must be a positive number';
+        else delete newErrors.base_price;
+        break;
+      
+      case 'discount_rate':
+        if (!value) newErrors.discount_rate = 'Discount rate is required';
+        else if (isNaN(value) || parseFloat(value) < 0 || parseFloat(value) > 100) 
+          newErrors.discount_rate = 'Discount rate must be between 0 and 100';
+        else delete newErrors.discount_rate;
+        break;
+      
+      case 'start_date':
+        if (!value) newErrors.start_date = 'Start date is required';
+        else {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const startDate = new Date(value);
+          if (startDate < today) newErrors.start_date = 'Start date cannot be in the past';
+          else delete newErrors.start_date;
+          
+          // Also validate end_date in relation to start_date
+          if (formData.end_date) {
+            const endDate = new Date(formData.end_date);
+            if (endDate < startDate) newErrors.end_date = 'End date must be after start date';
+            else delete newErrors.end_date;
+          }
+        }
+        break;
+      
+      case 'end_date':
+        if (!value) newErrors.end_date = 'End date is required';
+        else {
+          const endDate = new Date(value);
+          
+          if (formData.start_date) {
+            const startDate = new Date(formData.start_date);
+            if (endDate < startDate) newErrors.end_date = 'End date must be after start date';
+            else delete newErrors.end_date;
+          }
+        }
+        break;
+      
+      case 'package_type':
+        if (!value) newErrors.package_type = 'Package type is required';
+        else delete newErrors.package_type;
+        break;
+      
+      case 'category':
+        if (!value) newErrors.category = 'Category is required';
+        else if (value.length < 2) newErrors.category = 'Category must be at least 2 characters';
+        else if (value.length > 30) newErrors.category = 'Category must be less than 30 characters';
+        else delete newErrors.category;
+        break;
+      
+      default:
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Validate all fields
+  const validateForm = () => {
+    let isValid = true;
+    let newErrors = {};
+    let allTouched = {};
+    
+    // Mark all fields as touched
+    Object.keys(formData).forEach(key => {
+      allTouched[key] = true;
+      if (!validateField(key, formData[key])) {
+        isValid = false;
+      }
+    });
+    
+    setTouched(allTouched);
+    return isValid;
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const requiredFields = [
-      'p_name',
-      'description',
-      'services',
-      'base_price',
-      'discount_rate',
-      'start_date',
-      'end_date',
-      'package_type',
-      'category'
-    ];
-    const missingFields = requiredFields.filter(field => {
-      if (field === 'services') return formData.services.length === 0;
-      return !formData[field];
-    });
-
-    if (missingFields.length > 0) {
+    
+    // Validate all fields before submission
+    if (!validateForm()) {
       Swal.fire({
         icon: 'error',
-        title: 'Required Fields Missing',
-        text: `Please fill in: ${missingFields.join(', ')}`,
+        title: 'Validation Error',
+        text: 'Please fix the errors in the form',
         confirmButtonColor: '#89198f',
       });
       return;
@@ -153,10 +264,16 @@ const CreatePackage = () => {
                 name="p_name"
                 value={formData.p_name}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.p_name && errors.p_name ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., Summer Special"
                 required
               />
+              {touched.p_name && errors.p_name && (
+                <p className="mt-1 text-sm text-red-500">{errors.p_name}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Category</label>
@@ -165,10 +282,16 @@ const CreatePackage = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.category && errors.category ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., Spa, Wedding"
                 required
               />
+              {touched.category && errors.category && (
+                <p className="mt-1 text-sm text-red-500">{errors.category}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Package Type</label>
@@ -176,7 +299,10 @@ const CreatePackage = () => {
                 name="package_type"
                 value={formData.package_type}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.package_type && errors.package_type ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               >
                 <option value="" disabled>Select a package type</option>
@@ -184,6 +310,9 @@ const CreatePackage = () => {
                 <option value="premium">Premium</option>
                 <option value="basic">Basic</option>
               </select>
+              {touched.package_type && errors.package_type && (
+                <p className="mt-1 text-sm text-red-500">{errors.package_type}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Base Price</label>
@@ -192,12 +321,18 @@ const CreatePackage = () => {
                 name="base_price"
                 value={formData.base_price}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.base_price && errors.base_price ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 100"
                 min="0"
                 step="0.01"
                 required
               />
+              {touched.base_price && errors.base_price && (
+                <p className="mt-1 text-sm text-red-500">{errors.base_price}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Discount Rate (%)</label>
@@ -206,13 +341,19 @@ const CreatePackage = () => {
                 name="discount_rate"
                 value={formData.discount_rate}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.discount_rate && errors.discount_rate ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 10"
                 min="0"
                 max="100"
                 step="0.01"
                 required
               />
+              {touched.discount_rate && errors.discount_rate && (
+                <p className="mt-1 text-sm text-red-500">{errors.discount_rate}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">Start Date</label>
@@ -221,9 +362,16 @@ const CreatePackage = () => {
                 name="start_date"
                 value={formData.start_date}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                min={today}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.start_date && errors.start_date ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               />
+              {touched.start_date && errors.start_date && (
+                <p className="mt-1 text-sm text-red-500">{errors.start_date}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700">End Date</label>
@@ -232,9 +380,16 @@ const CreatePackage = () => {
                 name="end_date"
                 value={formData.end_date}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                onBlur={handleBlur}
+                min={today}
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  touched.end_date && errors.end_date ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 required
               />
+              {touched.end_date && errors.end_date && (
+                <p className="mt-1 text-sm text-red-500">{errors.end_date}</p>
+              )}
             </div>
           </div>
 
@@ -246,7 +401,10 @@ const CreatePackage = () => {
               name="services"
               value={formData.services}
               onChange={handleInputChange}
-              className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white h-32"
+              onBlur={handleBlur}
+              className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                touched.services && errors.services ? 'border-red-500' : 'border-gray-200'
+              } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white h-32`}
               required
             >
               {servicesList.map(service => (
@@ -255,6 +413,9 @@ const CreatePackage = () => {
                 </option>
               ))}
             </select>
+            {touched.services && errors.services && (
+              <p className="text-sm text-red-500">{errors.services}</p>
+            )}
             <p className="text-sm text-gray-500 mt-1">Hold Ctrl (or Cmd) to select multiple services</p>
           </div>
 
@@ -265,10 +426,16 @@ const CreatePackage = () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+              onBlur={handleBlur}
+              className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                touched.description && errors.description ? 'border-red-500' : 'border-gray-200'
+              } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
               placeholder="Describe the package..."
               required
             />
+            {touched.description && errors.description && (
+              <p className="mt-1 text-sm text-red-500">{errors.description}</p>
+            )}
           </div>
 
           {/* Conditions */}
@@ -278,6 +445,7 @@ const CreatePackage = () => {
               name="conditions"
               value={formData.conditions}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
               placeholder="Any conditions or terms..."
             />

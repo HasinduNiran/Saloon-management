@@ -31,6 +31,17 @@ const EditService = () => {
   });
   const [newImage, setNewImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  // Add validation state
+  const [validationErrors, setValidationErrors] = useState({
+    category: '',
+    subCategory: '',
+    description: '',
+    duration: '',
+    price: '',
+    available: '',
+    image: ''
+  });
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // Fetch service data when the component mounts
   useEffect(() => {
@@ -57,6 +68,45 @@ const EditService = () => {
     fetchService();
   }, [id]);
 
+  // Validate the entire form
+  useEffect(() => {
+    const validateForm = () => {
+      const errors = { ...validationErrors };
+      
+      // Validate required fields
+      if (!service.category) errors.category = 'Category is required';
+      else errors.category = '';
+      
+      if (!service.subCategory) errors.subCategory = 'Subcategory is required';
+      else errors.subCategory = '';
+      
+      if (!service.description) errors.description = 'Description is required';
+      else if (service.description.length < 10) errors.description = 'Description must be at least 10 characters';
+      else errors.description = '';
+      
+      if (!service.duration) errors.duration = 'Duration is required';
+      else if (!/^(\d+h)?\s*(\d+m)?$/.test(service.duration.trim())) 
+        errors.duration = 'Duration format should be like "1h 30m" or "45m"';
+      else errors.duration = '';
+      
+      if (!service.price) errors.price = 'Price is required';
+      else if (isNaN(service.price) || parseFloat(service.price) <= 0) 
+        errors.price = 'Price must be a positive number';
+      else errors.price = '';
+      
+      if (!service.available) errors.available = 'Availability status is required';
+      else errors.available = '';
+      
+      setValidationErrors(errors);
+      
+      // Form is valid if there are no error messages
+      const valid = Object.values(errors).every(error => error === '');
+      setIsFormValid(valid);
+    };
+    
+    validateForm();
+  }, [service]);
+
   // Handle changes to text inputs and select fields
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +120,33 @@ const EditService = () => {
   // Handle image file selection and preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    
+    // Validate image
+    if (file) {
+      // Check file type
+      if (!file.type.match('image.*')) {
+        setValidationErrors(prev => ({
+          ...prev,
+          image: 'Please select an image file (jpg, png, etc)'
+        }));
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setValidationErrors(prev => ({
+          ...prev,
+          image: 'Image size must be less than 5MB'
+        }));
+        return;
+      }
+      
+      setValidationErrors(prev => ({
+        ...prev,
+        image: ''
+      }));
+    }
+    
     setNewImage(file);
     if (file) {
       const reader = new FileReader();
@@ -86,14 +163,12 @@ const EditService = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ['category', 'subCategory', 'description', 'duration', 'price', 'available'];
-    const missingFields = requiredFields.filter((field) => !service[field]);
-
-    if (missingFields.length > 0) {
+    // Prevent submission if form is invalid
+    if (!isFormValid) {
       Swal.fire({
         icon: 'error',
-        title: 'Required Fields Missing',
-        text: `Please fill in: ${missingFields.join(', ')}`,
+        title: 'Validation Error',
+        text: 'Please fix the errors in the form before submitting',
         confirmButtonColor: '#89198f',
       });
       return;
@@ -181,7 +256,9 @@ const EditService = () => {
                   name="category"
                   value={service.category}
                   onChange={handleChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.category ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white`}
                   required
                 >
                   <option value="">Select Category</option>
@@ -189,6 +266,9 @@ const EditService = () => {
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
+                {validationErrors.category && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.category}</p>
+                )}
               </div>
 
               <div>
@@ -197,7 +277,9 @@ const EditService = () => {
                   name="subCategory"
                   value={service.subCategory}
                   onChange={handleChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.subCategory ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white`}
                   required
                   disabled={!service.category}
                 >
@@ -206,6 +288,9 @@ const EditService = () => {
                     <option key={sub} value={sub}>{sub}</option>
                   ))}
                 </select>
+                {validationErrors.subCategory && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.subCategory}</p>
+                )}
               </div>
 
               <div>
@@ -215,10 +300,15 @@ const EditService = () => {
                   name="duration"
                   value={service.duration}
                   onChange={handleChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.duration ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                   placeholder="e.g., 1h 30m"
                   required
                 />
+                {validationErrors.duration && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.duration}</p>
+                )}
               </div>
 
               <div>
@@ -228,12 +318,17 @@ const EditService = () => {
                   name="price"
                   value={service.price}
                   onChange={handleChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.price ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                   placeholder="e.g., 50"
                   min="0"
                   step="0.01"
                   required
                 />
+                {validationErrors.price && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.price}</p>
+                )}
               </div>
 
               <div>
@@ -242,7 +337,9 @@ const EditService = () => {
                   name="available"
                   value={service.available}
                   onChange={handleChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.available ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor bg-white`}
                   required
                 >
                   <option value="">Select Availability</option>
@@ -250,6 +347,9 @@ const EditService = () => {
                     <option key={avail} value={avail}>{avail}</option>
                   ))}
                 </select>
+                {validationErrors.available && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.available}</p>
+                )}
               </div>
 
               <div>
@@ -258,9 +358,14 @@ const EditService = () => {
                   type="file"
                   name="image"
                   onChange={handleImageChange}
-                  className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                  className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                    validationErrors.image ? 'border-red-500' : 'border-gray-200'
+                  } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                   accept="image/*"
                 />
+                {validationErrors.image && (
+                  <p className="mt-1 text-sm text-red-600">{validationErrors.image}</p>
+                )}
               </div>
             </div>
 
@@ -271,10 +376,15 @@ const EditService = () => {
                 name="description"
                 value={service.description}
                 onChange={handleChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  validationErrors.description ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="Describe the service..."
                 required
               />
+              {validationErrors.description && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.description}</p>
+              )}
             </div>
 
             {/* Image Preview */}
@@ -293,7 +403,7 @@ const EditService = () => {
             <div className="pt-6">
               <motion.button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-gradient-to-r from-DarkColor to-ExtraDarkColor text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:from-ExtraDarkColor hover:to-DarkColor transition-all disabled:opacity-50 disabled:cursor-not-allowed"

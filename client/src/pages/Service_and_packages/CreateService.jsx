@@ -26,6 +26,11 @@ const CreateService = () => {
     image: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Update fieldErrors state to include price
+  const [fieldErrors, setFieldErrors] = useState({
+    duration: '',
+    price: ''
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,10 +39,101 @@ const CreateService = () => {
       [name]: value,
       ...(name === 'category' ? { subCategory: '' } : {}) // Reset subcategory when category changes
     }));
+    
+    // Validate fields in real-time as user types
+    if (name === 'duration') {
+      if (value) {
+        const durationValidation = validateDuration(value);
+        setFieldErrors(prev => ({
+          ...prev,
+          duration: durationValidation.isValid ? '' : durationValidation.message
+        }));
+      } else {
+        // Clear error if field is empty
+        setFieldErrors(prev => ({
+          ...prev,
+          duration: ''
+        }));
+      }
+    } else if (name === 'price') {
+      if (value) {
+        const priceValidation = validatePrice(value);
+        setFieldErrors(prev => ({
+          ...prev,
+          price: priceValidation.isValid ? '' : priceValidation.message
+        }));
+      } else {
+        // Clear error if field is empty
+        setFieldErrors(prev => ({
+          ...prev,
+          price: ''
+        }));
+      }
+    }
   };
 
   const handleFileChange = (e) => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
+  };
+
+  // Add duration validation function
+  const validateDuration = (duration) => {
+    // Regular expression to match formats like "1h", "30m", "1h 30m", "2h 15m", etc.
+    const durationRegex = /^((\d+)h\s*)?((\d+)m\s*)?$/;
+    
+    if (!durationRegex.test(duration)) {
+      return {
+        isValid: false,
+        message: 'Duration must be in format "Xh Ym" (e.g., "1h 30m", "2h", "45m")'
+      };
+    }
+    
+    // Extract hours and minutes from the duration string
+    const matches = duration.match(durationRegex);
+    const hours = matches[2] ? parseInt(matches[2]) : 0;
+    const minutes = matches[4] ? parseInt(matches[4]) : 0;
+    
+    // Check if both hours and minutes are provided
+    if (hours === 0 && minutes === 0) {
+      return {
+        isValid: false,
+        message: 'Duration must specify either hours, minutes, or both'
+      };
+    }
+    
+    // Check for negative values (shouldn't be possible with regex, but checking anyway)
+    if (hours < 0 || minutes < 0) {
+      return {
+        isValid: false,
+        message: 'Duration cannot contain negative values'
+      };
+    }
+    
+    return { isValid: true };
+  };
+
+  // Add price validation function
+  const validatePrice = (price) => {
+    // Convert to number for validation
+    const numPrice = Number(price);
+    
+    // Check if it's a valid number
+    if (isNaN(numPrice)) {
+      return {
+        isValid: false,
+        message: 'Price must be a valid number'
+      };
+    }
+    
+    // Check if price is negative or zero
+    if (numPrice <= 0) {
+      return {
+        isValid: false,
+        message: 'Price must be greater than zero'
+      };
+    }
+    
+    return { isValid: true };
   };
 
   const handleSubmit = async (e) => {
@@ -51,6 +147,30 @@ const CreateService = () => {
         icon: 'error',
         title: 'Required Fields Missing',
         text: `Please fill in: ${missingFields.join(', ')}`,
+        confirmButtonColor: '#89198f',
+      });
+      return;
+    }
+
+    // Validate duration format
+    const durationValidation = validateDuration(formData.duration);
+    if (!durationValidation.isValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Duration Format',
+        text: durationValidation.message,
+        confirmButtonColor: '#89198f',
+      });
+      return;
+    }
+
+    // Also validate price on submit as a backup
+    const priceValidation = validatePrice(formData.price);
+    if (!priceValidation.isValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Price',
+        text: priceValidation.message,
         confirmButtonColor: '#89198f',
       });
       return;
@@ -164,10 +284,15 @@ const CreateService = () => {
                 name="duration"
                 value={formData.duration}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  fieldErrors.duration ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 1h 30m"
                 required
               />
+              {fieldErrors.duration && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.duration}</p>
+              )}
             </div>
 
             <div>
@@ -177,12 +302,17 @@ const CreateService = () => {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="mt-1 w-full p-3 rounded-lg border-2 border-gray-200 focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor"
+                className={`mt-1 w-full p-3 rounded-lg border-2 ${
+                  fieldErrors.price ? 'border-red-500' : 'border-gray-200'
+                } focus:border-DarkColor focus:ring-2 focus:ring-SecondaryColor`}
                 placeholder="e.g., 50"
                 min="0"
                 step="0.01"
                 required
               />
+              {fieldErrors.price && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.price}</p>
+              )}
             </div>
 
             <div>
