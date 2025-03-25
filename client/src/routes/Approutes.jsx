@@ -4,7 +4,7 @@ import ProtectedRoute from "./ProtectedRoutes";
 import LoginPage from "../pages/auth/Login";
 import SignupPage from "../pages/auth/SignUp";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
-
+import CreateAppontment from "../pages/appointment/CreateAppontment";
 import Home from "../pages/Home";
 import ProfilePage from "../pages/UserProfile";
 
@@ -15,6 +15,7 @@ function AppRoutes() {
       <Route path="/signin" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/manager/*" element={<DashboardLayout />} />
+      <Route path="/appointment/CreateAppontment" element={<CreateAppontment />} />
       <Route
         path="/customer/*"
         element={

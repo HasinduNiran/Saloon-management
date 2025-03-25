@@ -7,6 +7,7 @@ const router = express.Router();
 // Middleware for validating required fields
 const validateFields = (req, res, next) => {
     const requiredFields = [
+        "user_id",
         "client_name",
         "client_email",
         "client_phone",
@@ -29,6 +30,7 @@ const validateFields = (req, res, next) => {
 router.post('/', validateFields, async (req, res) => {
     try {
         const newAppointment = {
+            user_id: req.body.user_id,
             client_name: req.body.client_name,
             client_email: req.body.client_email,
             client_phone: req.body.client_phone,

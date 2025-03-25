@@ -4,6 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
+
         PrimaryColor: "#d8f3dc",
         SecondaryColor: "#95d5b2",
         DarkColor: "#52b788",
@@ -27,6 +28,7 @@ export default {
           "0%, 100%": { opacity: 1 },
           "50%": { opacity: 0.5 },
         },
+
       },
     },
   },

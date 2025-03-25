@@ -4,7 +4,8 @@ import Feedback from '../models/feedbackModel.js';
 
 const validateFields = (req, res, next) => {
     const requiredFields = [
-        "username",
+        "user_id",
+        
         "serviceid",
         "employee",
         "date_of_service",
@@ -46,7 +47,7 @@ export const createFeedback =async (req, res) => {
     try {
 
         const {
-            Username,
+            user_id,
             serviceID,
             employeeID,
             message,
@@ -57,7 +58,7 @@ export const createFeedback =async (req, res) => {
 
 
         const newFeedback = {
-            Username,
+            user_id,
             serviceID,
             employeeID,
             date_of_service,

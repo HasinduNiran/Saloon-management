@@ -19,6 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
 app.use(express.json());
 app.use(
   cors({
@@ -28,6 +29,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 // Calculate __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url); // Get the current file's path
