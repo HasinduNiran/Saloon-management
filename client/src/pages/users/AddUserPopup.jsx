@@ -11,6 +11,7 @@ import {
   FaSpinner,
   FaMobile,
 } from "react-icons/fa";
+import client from "../../api/axiosClient";
 
 const AddUserPopup = ({ closePopup, refreshUsers }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,8 @@ const AddUserPopup = ({ closePopup, refreshUsers }) => {
     email: "",
     mobile: "",
     password: "",
-    position: "customer",
+    position: "admin",
+    role: "admin",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -86,9 +88,9 @@ const AddUserPopup = ({ closePopup, refreshUsers }) => {
 
     setLoading(true);
     try {
-      await axios.post("/api/user/add", {
+      await client.post("/api/v1/user/", {
         ...formData,
-        ismanager: formData.position !== "customer",
+        role: "admin",
       });
       setLoading(false);
       Swal.fire({

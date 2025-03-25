@@ -83,7 +83,7 @@ const UserManagement = () => {
 
     if (result.isConfirmed) {
       try {
-        await client.delete(`/api/user/${id}`);
+        await client.delete(`/api/v1/user/${id}`);
         Swal.fire("Deleted!", "The user has been deleted.", "success");
         fetchUsers();
       } catch (error) {
@@ -417,6 +417,8 @@ const UserManagement = () => {
               <th className="p-3">Email</th>
               <th className="p-3">Mobile No</th>
               <th className="p-3">Role</th>
+              <th className="p-3">Position</th>
+
               <th className="p-3">Status</th>
               <th className="p-3">Actions</th>
             </tr>
@@ -442,6 +444,7 @@ const UserManagement = () => {
                   <td className="p-3">{user?.email}</td>
                   <td className="p-3">{user?.phone}</td>
                   <td className="p-3">{user?.role}</td>
+                  <td className="p-3">{user?.position}</td>
                   <td className="p-3">{user?.status}</td>
                   <td className="p-3">
                     <button

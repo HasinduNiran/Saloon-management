@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import bcryptjs from "bcryptjs";
 
 export const getAllUsers = async (req, res) => {
   const users = await User.find({}).sort({ createdAt: -1 });
@@ -94,8 +95,7 @@ export const deleteUser = async (req, res) => {
 };
 
 export const addUser = async (req, res) => {
-  const { firstname, lastname, username, email, password, usertype, avatar } =
-    req.body;
+  const { fullname, email, password, mobile, position, role } = req.body;
 
   try {
     // Check if the user already exists
@@ -111,18 +111,16 @@ export const addUser = async (req, res) => {
     const hashedPassword = await bcryptjs.hash(password, salt);
 
     // Determine if the user is a manager based on usertype
-    const isManager = usertype === "manager";
 
     // Create a new user
     const newUser = new User({
-      firstname,
-      lastname,
-      username,
+      name: fullname,
       email,
       password: hashedPassword,
-      usertype,
-      ismanager: isManager,
-      avatar,
+      phone: mobile,
+      position,
+      role,
+      status: "active",
     });
 
     // Save the user to the database
