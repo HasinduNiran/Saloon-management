@@ -1,9 +1,11 @@
-
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authslices';
 import woman from './woman.jpg';
+// Import additional hero images
+import heroImage2 from './hero2.jpg'; // You'll need to add these images
+import heroImage3 from './hero3.jpg'; // You'll need to add these images
 import API_CONFIG from '../config/apiConfig';
 import Swal from 'sweetalert2';
 import Navbar from '../components/Navbar';
@@ -17,6 +19,21 @@ function SalonHomepage() {
   const [loading, setLoading] = useState({services: false, packages: false, reviews: false});
   const [error, setError] = useState({services: null, packages: null, reviews: null});
   const [currentServicePage, setCurrentServicePage] = useState(0);
+  const [currentReviewPage, setCurrentReviewPage] = useState(0);
+  const [currentPackagePage, setCurrentPackagePage] = useState(0);
+
+  // Image slider state
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+  const heroImages = [woman, heroImage2, heroImage3];
+  
+  // Effect to rotate hero images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     fetchServices();
@@ -99,8 +116,37 @@ function SalonHomepage() {
   };
 
   const totalServicePages = Math.ceil(services.length / 3);
+  const reviewsPerPage = 4; // Show 4 reviews per page
+  const totalReviewPages = Math.ceil(reviews.length / reviewsPerPage);
+  const packagesPerPage = 3; // Show 3 packages per page
+  const totalPackagePages = Math.ceil(packages.length / packagesPerPage);
+  
   const handleDotClick = (pageIndex) => {
     setCurrentServicePage(pageIndex);
+  };
+  
+  const handleReviewPageChange = (pageIndex) => {
+    setCurrentReviewPage(pageIndex);
+  };
+
+  const nextReviewPage = () => {
+    setCurrentReviewPage((prev) => (prev + 1) % totalReviewPages);
+  };
+
+  const prevReviewPage = () => {
+    setCurrentReviewPage((prev) => (prev === 0 ? totalReviewPages - 1 : prev - 1));
+  };
+
+  const handlePackagePageChange = (pageIndex) => {
+    setCurrentPackagePage(pageIndex);
+  };
+
+  const nextPackagePage = () => {
+    setCurrentPackagePage((prev) => (prev + 1) % totalPackagePages);
+  };
+
+  const prevPackagePage = () => {
+    setCurrentPackagePage((prev) => (prev === 0 ? totalPackagePages - 1 : prev - 1));
   };
 
   return (
@@ -108,13 +154,40 @@ function SalonHomepage() {
       {/* Use the Navbar component */}
       <Navbar user={user} onLogout={handleLogout} />
       
-      <div className="relative w-full h-screen">
-        <img
-          src={woman}
-          alt="Salon interior"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+      <div className="relative w-full h-screen overflow-hidden">
+        {/* Hero Image Carousel */}
+        {heroImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              currentHeroImage === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            <img
+              src={image}
+              alt={`Salon interior ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+        
+        {/* Image Indicators */}
+        <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center space-x-3">
+          {heroImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentHeroImage(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                currentHeroImage === index 
+                  ? 'bg-white w-6' 
+                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+              }`}
+              aria-label={`View hero image ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-20">
           <div className="text-center text-white px-4">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {user ? `Welcome Back, ${user.name}!` : 'Discover Your Beauty at Glamour Salon'}
@@ -123,7 +196,7 @@ function SalonHomepage() {
               {user ? 'Your next appointment awaits' : 'Premium beauty services since 2010'}
             </p>
             <a
-              href="./appointment/CreateAppontment"
+              href={user ? "./appointment/CreateAppontment" : "/signin"}
               className="bg-navcolor hover:bg-DarkColor text-white font-bold py-3 px-8 rounded-full transition duration-300 inline-block"
             >
               Book Now
@@ -298,38 +371,88 @@ function SalonHomepage() {
           )}
 
           {!loading.packages && !error.packages && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {packages.length > 0 ? (
-                packages.map(pkg => (
-                  <div key={pkg._id} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition">
-             
-                    <div className="p-6">
-                      <h3 className="text-2xl font-semibold text-DarkColor">{pkg.p_name}</h3>
-                      <p className="text-gray-600 mt-2">{pkg.package_type}</p>
-                      <div className="mt-4">
-                        <p className="text-gray-700"><span className="font-semibold">Category:</span> {pkg.category}</p>
-                        <p className="text-gray-700 mt-1"><span className="font-semibold">Duration:</span> {pkg.start_date && pkg.end_date ? 
-                          `${new Date(pkg.start_date).toLocaleDateString()} - ${new Date(pkg.end_date).toLocaleDateString()}` : 
-                          'Available now'}</p>
-                      </div>
-                      <div className="flex justify-between items-center mt-6">
-                        <div>
-                          <span className="text-DarkColor font-bold text-xl">${pkg.final_price ? pkg.final_price.toFixed(2) : '0.00'}</span>
-                          {pkg.discount_rate > 0 && (
-                            <span className="text-gray-500 text-sm ml-2">({pkg.discount_rate}% off)</span>
-                          )}
+            <>
+              <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500 ease-in-out">
+                  {packages.length > 0 ? (
+                    packages
+                      .slice(
+                        currentPackagePage * packagesPerPage, 
+                        (currentPackagePage * packagesPerPage) + packagesPerPage
+                      )
+                      .map(pkg => (
+                        <div key={pkg._id} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                          <div className="p-6">
+                            <h3 className="text-2xl font-semibold text-DarkColor">{pkg.p_name}</h3>
+                            <p className="text-gray-600 mt-2">{pkg.package_type}</p>
+                            <div className="mt-4">
+                              <p className="text-gray-700"><span className="font-semibold">Category:</span> {pkg.category}</p>
+                              <p className="text-gray-700 mt-1"><span className="font-semibold">Duration:</span> {pkg.start_date && pkg.end_date ? 
+                                `${new Date(pkg.start_date).toLocaleDateString()} - ${new Date(pkg.end_date).toLocaleDateString()}` : 
+                                'Available now'}</p>
+                            </div>
+                            <div className="flex justify-between items-center mt-6">
+                              <div>
+                                <span className="text-DarkColor font-bold text-xl">${pkg.final_price ? pkg.final_price.toFixed(2) : '0.00'}</span>
+                                {pkg.discount_rate > 0 && (
+                                  <span className="text-gray-500 text-sm ml-2">({pkg.discount_rate}% off)</span>
+                                )}
+                              </div>
+                              <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-6 py-2 rounded-lg transition">
+                                Book Package
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-6 py-2 rounded-lg transition">
-                          Book Package
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-500 col-span-3">No packages available at the moment.</p>
+                      ))
+                  ) : (
+                    <p className="text-center text-gray-500 col-span-3">No packages available at the moment.</p>
+                  )}
+                </div>
+                
+                {/* Carousel Navigation Arrows */}
+                {packages.length > packagesPerPage && (
+                  <>
+                    <button 
+                      onClick={prevPackagePage}
+                      className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-5 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-10 hidden md:block"
+                      aria-label="Previous packages"
+                    >
+                      <svg className="w-6 h-6 text-DarkColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={nextPackagePage}
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-5 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-10 hidden md:block"
+                      aria-label="Next packages"
+                    >
+                      <svg className="w-6 h-6 text-DarkColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              {/* Pagination Indicators */}
+              {totalPackagePages > 1 && (
+                <div className="flex justify-center items-center mt-10 space-x-3">
+                  {[...Array(totalPackagePages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handlePackagePageChange(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        currentPackagePage === index 
+                          ? 'bg-SecondaryColor w-6' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`View page ${index + 1} of packages`}
+                    />
+                  ))}
+                </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </section>
@@ -361,36 +484,87 @@ function SalonHomepage() {
           )}
 
           {!loading.reviews && !error.reviews && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {reviews.length > 0 ? (
-                reviews.map(review => (
-                  <div key={review._id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 rounded-full bg-SecondaryColor flex items-center justify-center text-white font-bold mr-4">
-                        {review.Username ? review.Username.charAt(0).toUpperCase() : 'U'}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg text-DarkColor">{review.Username}</h3>
-                        <div className="flex text-yellow-400">
-                          {[...Array(5)].map((_, i) => (
-                            <svg key={i} className={`h-5 w-5 ${i < review.star_rating ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
+            <>
+              <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-500 ease-in-out">
+                  {reviews.length > 0 ? (
+                    reviews
+                      .slice(
+                        currentReviewPage * reviewsPerPage, 
+                        (currentReviewPage * reviewsPerPage) + reviewsPerPage
+                      )
+                      .map(review => (
+                        <div key={review._id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                          <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 rounded-full bg-SecondaryColor flex items-center justify-center text-white font-bold mr-4">
+                              {review.Username ? review.Username.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-lg text-DarkColor">{review.Username}</h3>
+                              <div className="flex text-yellow-400">
+                                {[...Array(5)].map((_, i) => (
+                                  <svg key={i} className={`h-5 w-5 ${i < review.star_rating ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-gray-600">{review.message}</p>
+                          <div className="mt-4 text-sm text-gray-500">
+                            <p>Service: {review.serviceID || 'General Feedback'}</p>
+                            <p className="mt-1">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-600">{review.message}</p>
-                    <div className="mt-4 text-sm text-gray-500">
-                      <p>Service: {review.serviceID || 'General Feedback'}</p>
-                      <p className="mt-1">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-500 col-span-4">No reviews available at the moment.</p>
+                      ))
+                  ) : (
+                    <p className="text-center text-gray-500 col-span-4">No reviews available at the moment.</p>
+                  )}
+                </div>
+                
+                {/* Carousel Navigation Arrows */}
+                {reviews.length > reviewsPerPage && (
+                  <>
+                    <button 
+                      onClick={prevReviewPage}
+                      className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-5 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-10 hidden md:block"
+                      aria-label="Previous reviews"
+                    >
+                      <svg className="w-6 h-6 text-DarkColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={nextReviewPage}
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-5 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-10 hidden md:block"
+                      aria-label="Next reviews"
+                    >
+                      <svg className="w-6 h-6 text-DarkColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              {/* Pagination Indicators */}
+              {totalReviewPages > 1 && (
+                <div className="flex justify-center items-center mt-10 space-x-3">
+                  {[...Array(totalReviewPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleReviewPageChange(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        currentReviewPage === index 
+                          ? 'bg-SecondaryColor w-6' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`View page ${index + 1} of reviews`}
+                    />
+                  ))}
+                </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </section>
