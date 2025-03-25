@@ -8,6 +8,7 @@ import inventory from "./routes/inventoryRoute.js";
 import serviceRoutes from "./routes/Service_Route.js";
 import appoinment from "./routes/appoimentRouts.js";
 import Package from "./routes/PackageRoute.js";
+import userRoutes from "./routes/userRoute.js";
 import cors from "cors";
 import feedback from "./routes/feedbackRoute.js";
 import { fileURLToPath } from "url"; // Import to convert URL to file path
@@ -17,6 +18,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(express.json()); 
 app.use(cors({ 
  origin: 'http://localhost:5173',
@@ -27,6 +29,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type'], 
 }));
 
+
+
 // Calculate __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url); // Get the current file's path
 const __dirname = dirname(__filename); // Get the directory name from the file path
@@ -34,13 +38,13 @@ const __dirname = dirname(__filename); // Get the directory name from the file p
 // Serve static files from the uploads folder
 app.use("/uploads", express.static(join(__dirname, "uploads")));
 
-
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/inventory", inventory);
 app.use("/api/services", serviceRoutes);
 app.use("/api/v1/appoiment", appoinment);
 app.use("/api/v1/package", Package);
 app.use("/api/v1/feedback", feedback);
+app.use("/api/v1/user", userRoutes);
 
 const PORT = 7001;
 

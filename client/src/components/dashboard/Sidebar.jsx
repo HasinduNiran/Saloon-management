@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     {
       name: "Feedback",
       path: "/manager/Feedback-management",
-      icon: <MdFeedback  />,
+      icon: <MdFeedback />,
     },
     { name: "Profile", path: "/manager/profile", icon: <FaUserCircle /> },
   ];
