@@ -103,12 +103,10 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           {isOpen ? (
             <>
               {/* Logo */}
-              <div className="flex items-center">
-                <img
-                  src={logo}
-                  alt="Company Logo"
-                  className="w-50 rounded-full"
-                />
+              <div className="container mx-auto flex justify-between items-center">
+        <div className="text-2xl font-bold text-ExtraDarkColor">
+          Glamour Salon
+        </div>
               </div>
               {/* Close Button (visible in open mode) */}
               <button onClick={toggleSidebar} className="text-DarkColor">
