@@ -285,9 +285,12 @@ function SalonHomepage() {
                             <span className="text-DarkColor font-bold text-xl">${service.price}</span>
                             <span className="text-gray-500 text-sm ml-2">({service.duration})</span>
                           </div>
-                          <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-5 py-2 rounded-lg transition">
+                          <a 
+                            href={user ? "./appointment/CreateAppontment" : "/signin"}
+                            className="bg-SecondaryColor hover:bg-DarkColor text-white px-5 py-2 rounded-lg transition"
+                          >
                             Book
-                          </button>
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -429,9 +432,12 @@ function SalonHomepage() {
                                   <span className="text-gray-500 text-sm ml-2">({pkg.discount_rate}% off)</span>
                                 )}
                               </div>
-                              <button className="bg-SecondaryColor hover:bg-DarkColor text-white px-6 py-2 rounded-lg transition">
+                              <a 
+                                href={user ? "./appointment/CreateAppontment" : "/signin"}
+                                className="bg-SecondaryColor hover:bg-DarkColor text-white px-6 py-2 rounded-lg transition"
+                              >
                                 Book Package
-                              </button>
+                              </a>
                             </div>
                           </div>
                         </div>
