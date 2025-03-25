@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authslices';
 import woman from './woman.jpg';
+// Import additional hero images
+import heroImage1 from './woman.jpg';
+import heroImage2 from './hero2.jpg';
+import heroImage3 from './hero3.jpg';
 import API_CONFIG from '../config/apiConfig';
 import Swal from 'sweetalert2';
 import Navbar from '../components/Navbar';
@@ -18,11 +22,22 @@ function SalonHomepage() {
   const [currentServicePage, setCurrentServicePage] = useState(0);
   const [currentReviewPage, setCurrentReviewPage] = useState(0);
   const [currentPackagePage, setCurrentPackagePage] = useState(0);
+  // Add state for hero carousel
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const heroImages = [woman, heroImage1, heroImage2, heroImage3];
+  const totalHeroSlides = heroImages.length;
 
   useEffect(() => {
     fetchServices();
     fetchPackages();
     fetchReviews();
+
+    // Auto-advance hero carousel every 5 seconds
+    const carouselInterval = setInterval(() => {
+      nextHeroSlide();
+    }, 5000);
+    
+    return () => clearInterval(carouselInterval);
   }, []);
   
   // Fetch services data
@@ -133,33 +148,92 @@ function SalonHomepage() {
     setCurrentPackagePage((prev) => (prev === 0 ? totalPackagePages - 1 : prev - 1));
   };
 
+  // Add hero carousel navigation functions
+  const nextHeroSlide = () => {
+    setCurrentHeroSlide((prev) => (prev + 1) % totalHeroSlides);
+  };
+
+  const prevHeroSlide = () => {
+    setCurrentHeroSlide((prev) => (prev === 0 ? totalHeroSlides - 1 : prev - 1));
+  };
+
+  const goToHeroSlide = (index) => {
+    setCurrentHeroSlide(index);
+  };
+
   return (
     <div className="bg-PrimaryColor min-h-screen">
       {/* Use the Navbar component */}
       <Navbar user={user} onLogout={handleLogout} />
       
+      {/* Hero Image Carousel */}
       <div className="relative w-full h-screen">
-        <img
-          src={woman}
-          alt="Salon interior"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-          <div className="text-center text-white px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {user ? `Welcome Back, ${user.name}!` : 'Discover Your Beauty at Glamour Salon'}
-            </h1>
-            <p className="text-xl mb-8">
-              {user ? 'Your next appointment awaits' : 'Premium beauty services since 2010'}
-            </p>
-            <a
-              href={user ? "./appointment/CreateAppontment" : "/signin"}
-              className="bg-navcolor hover:bg-DarkColor text-white font-bold py-3 px-8 rounded-full transition duration-300 inline-block"
-            >
-              Book Now
-            </a>
+        {heroImages.map((img, index) => (
+          <div 
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              currentHeroSlide === index ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <img
+              src={img}
+              alt={`Salon hero ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+              <div className="text-center text-white px-4">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  {user ? `Welcome Back, ${user.name}!` : 'Discover Your Beauty at Glamour Salon'}
+                </h1>
+                <p className="text-xl mb-8">
+                  {user ? 'Your next appointment awaits' : 'Premium beauty services since 2010'}
+                </p>
+                <a
+                  href={user ? "./appointment/CreateAppontment" : "/signin"}
+                  className="bg-navcolor hover:bg-DarkColor text-white font-bold py-3 px-8 rounded-full transition duration-300 inline-block"
+                >
+                  Book Now
+                </a>
+              </div>
+            </div>
           </div>
+        ))}
+
+        {/* Carousel Navigation */}
+        <div className="absolute bottom-10 left-0 right-0 flex justify-center space-x-3">
+          {heroImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToHeroSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                currentHeroSlide === index 
+                  ? 'bg-SecondaryColor w-6' 
+                  : 'bg-white hover:bg-gray-300'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
+
+        {/* Arrow Navigation */}
+        <button 
+          onClick={prevHeroSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-2 rounded-full text-white hover:bg-opacity-75 transition"
+          aria-label="Previous slide"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button 
+          onClick={nextHeroSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 p-2 rounded-full text-white hover:bg-opacity-75 transition"
+          aria-label="Next slide"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* Services Section */}
