@@ -12,6 +12,7 @@ import {
   Flower,
   Brush,
   Smile,
+  Loader,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -67,15 +68,56 @@ const BackgroundIcons = () => {
 
 // Appointments Component
 const AppointmentsSection = () => {
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      service: "Haircut",
-      date: "2021-09-01",
-      time: "10:00 AM",
-      status: "Confirmed",
-    },
-  ]);
+  const { user } = useSelector((state) => state.auth);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true);
+        console.log("Fetching appointments for user:", user._id);
+        const response = await client.get(`/api/v1/appoiment/user/${user._id}`);
+        console.log("Appointments response:", response.data);
+        setAppointments(response.data || []);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("Failed to load appointments. Please try again later.");
+        setAppointments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && user._id) {
+      fetchAppointments();
+    }
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 z-20 flex flex-col items-center justify-center min-h-[200px]">
+        <Loader className="animate-spin text-[#52b788] mb-4" size={32} />
+        <p className="text-[#1b4332]">Loading your appointments...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 z-20">
+        <div className="flex items-center mb-4">
+          <Calendar className="mr-3 text-[#52b788]" />
+          <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
+        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 z-20">
@@ -84,37 +126,43 @@ const AppointmentsSection = () => {
         <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
       </div>
       <div className="space-y-4">
-        {appointments.map((appointment) => (
-          <div
-            key={appointment.id}
-            className="bg-[#d8f3dc] p-4 rounded-lg hover:bg-[#95d5b2] transition-colors"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-semibold text-[#1b4332]">
-                  {appointment.service}
-                </p>
-                <p className="text-sm text-[#52b788]">
-                  {appointment.date} at {appointment.time}
-                </p>
-              </div>
-              <span
-                className={`
-                  px-3 py-1 rounded-full text-sm 
-                  ${
-                    appointment.status === "Confirmed"
-                      ? "bg-green-100 text-green-800"
-                      : appointment.status === "Pending"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800"
-                  }
-                `}
-              >
-                {appointment.status}
-              </span>
-            </div>
+        {appointments.length === 0 ? (
+          <div className="bg-[#d8f3dc] p-4 rounded-lg text-center">
+            <p className="text-[#1b4332]">You don't have any appointments yet.</p>
           </div>
-        ))}
+        ) : (
+          appointments.map((appointment) => (
+            <div
+              key={appointment._id}
+              className="bg-[#d8f3dc] p-4 rounded-lg hover:bg-[#95d5b2] transition-colors"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-[#1b4332]">
+                    {appointment.services || appointment.service || "Service"}
+                  </p>
+                  <p className="text-sm text-[#52b788]">
+                    {appointment.appoi_date || appointment.date} at {appointment.appoi_time || appointment.time}
+                  </p>
+                </div>
+                <span
+                  className={`
+                    px-3 py-1 rounded-full text-sm 
+                    ${
+                      appointment.status === "Confirmed"
+                        ? "bg-green-100 text-green-800"
+                        : appointment.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }
+                  `}
+                >
+                  {appointment.status || "Processing"}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -122,15 +170,33 @@ const AppointmentsSection = () => {
 
 // Feedback Component
 const FeedbackSection = () => {
-  const [feedbacks, setFeedbacks] = useState([
-    {
-      id: 1,
-      service: "Haircut",
-      rating: 5,
-      comment: "Great service, friendly staff!",
-      date: "2021-09-01",
-    },
-  ]);
+  const { user } = useSelector((state) => state.auth);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        setLoading(true);
+        console.log("Fetching feedback for user:", user._id);
+        const response = await client.get(`/api/v1/feedback/user/${user._id}`);
+        console.log("Feedback response:", response.data);
+        setFeedbacks(response.data || []);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching feedbacks:", err);
+        setError("Failed to load feedback. Please try again later.");
+        setFeedbacks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && user._id) {
+      fetchFeedbacks();
+    }
+  }, [user]);
 
   const renderStars = (rating) => {
     return Array(5)
@@ -147,6 +213,29 @@ const FeedbackSection = () => {
       ));
   };
 
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 z-20 flex flex-col items-center justify-center min-h-[200px]">
+        <Loader className="animate-spin text-[#52b788] mb-4" size={32} />
+        <p className="text-[#1b4332]">Loading your feedback...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 z-20">
+        <div className="flex items-center mb-4">
+          <MessageCircle className="mr-3 text-[#52b788]" />
+          <h2 className="text-2xl font-bold text-[#1b4332]">My Feedback</h2>
+        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 z-20">
       <div className="flex items-center mb-4">
@@ -154,21 +243,29 @@ const FeedbackSection = () => {
         <h2 className="text-2xl font-bold text-[#1b4332]">My Feedback</h2>
       </div>
       <div className="space-y-4">
-        {feedbacks.map((feedback) => (
-          <div
-            key={feedback.id}
-            className="bg-[#d8f3dc] p-4 rounded-lg hover:bg-[#95d5b2] transition-colors"
-          >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-[#1b4332]">
-                {feedback.service}
-              </h3>
-              <p className="text-sm text-[#52b788]">{feedback.date}</p>
-            </div>
-            <div className="mb-2">{renderStars(feedback.rating)}</div>
-            <p className="text-[#1b4332] opacity-80">{feedback.comment}</p>
+        {feedbacks.length === 0 ? (
+          <div className="bg-[#d8f3dc] p-4 rounded-lg text-center">
+            <p className="text-[#1b4332]">You haven't submitted any feedback yet.</p>
           </div>
-        ))}
+        ) : (
+          feedbacks.map((feedback) => (
+            <div
+              key={feedback._id}
+              className="bg-[#d8f3dc] p-4 rounded-lg hover:bg-[#95d5b2] transition-colors"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-[#1b4332]">
+                  {feedback.service || feedback.serviceID || "Service"}
+                </h3>
+                <p className="text-sm text-[#52b788]">
+                  {feedback.date_of_service || feedback.date || new Date(feedback.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="mb-2">{renderStars(feedback.star_rating || feedback.rating || 0)}</div>
+              <p className="text-[#1b4332] opacity-80">{feedback.message || feedback.comment}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

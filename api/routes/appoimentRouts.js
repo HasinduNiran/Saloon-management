@@ -62,6 +62,18 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Add this route BEFORE any routes with path parameters to prevent conflicts
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const appointments = await Appointment.find({ user_id: userId });
+    return res.status(200).json(appointments);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 // Route to get a specific appointment by ID
 // router.get('/:id', async (req, res) => {
 //     try {
@@ -96,6 +108,7 @@ router.get('/:identifier', async (req, res) => {
         res.status(500).send({ message: 'Error fetching appointment: ' + error.message });
     }
 });
+
 // Route to update an appointment by ID
 router.put('/:id', validateFields, async (req, res) => {
     try {
