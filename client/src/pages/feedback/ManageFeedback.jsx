@@ -35,6 +35,49 @@ const ManageFeedback = () => {
     fetchFeedbackItems();
   }, []);
 
+  // Helper function to display service info
+  const getServiceInfo = (item) => {
+    // Check if serviceDetails exists in the item
+    if (item.serviceDetails && item.serviceDetails.category) {
+      return (
+        <>
+          <div className="font-medium">{item.serviceDetails.category}</div>
+          {item.serviceDetails.subCategory && (
+            <div className="text-sm text-gray-500">{item.serviceDetails.subCategory}</div>
+          )}
+        </>
+      );
+    }
+    
+    // Do not show the serviceID as fallback
+    return 'N/A';
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    
+    // Format: June 15, 2023, 2:30 PM
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  // Debug the data received from the API
+  useEffect(() => {
+    if (feedbackItems.length > 0) {
+      console.log('Feedback items with service details:', feedbackItems);
+    }
+  }, [feedbackItems]);
+
   // Handle search functionality
   const handleSearch = async () => {
     try {
@@ -155,8 +198,8 @@ const ManageFeedback = () => {
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr className="bg-DarkColor text-white">
-                  <th className="p-3 text-left">User</th>
-                  <th className="p-3 text-left">Service ID</th>
+                  {/* <th className="p-3 text-left">User</th> */}
+                  <th className="p-3 text-left">Service</th>
                   <th className="p-3 text-left">Created At</th>
                   <th className="p-3 text-left">Updated at</th>
                   <th className="p-3 text-left">Message</th>
@@ -167,10 +210,10 @@ const ManageFeedback = () => {
               <tbody>
                 {feedbackItems.map((item) => (
                   <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="p-3">{item._id}</td>
-                    <td className="p-3">{item.serviceID}</td>
-                    <td className="p-3">{item.createdAt}</td>
-                    <td className="p-3">{item.updatedAt}</td>
+                    {/* <td className="p-3">{item._id}</td> */}
+                    <td className="p-3">{getServiceInfo(item)}</td>
+                    <td className="p-3">{formatDate(item.createdAt)}</td>
+                    <td className="p-3">{formatDate(item.updatedAt)}</td>
                     <td className="p-3">{item.message}</td>
                     <td className="p-3">{item.star_rating}</td>
                     <td className="p-3 flex space-x-2">

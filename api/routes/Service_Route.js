@@ -84,6 +84,21 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get service by service_ID - moving this before the :id route to avoid path conflicts
+router.get('/byServiceId/:serviceId', async (req, res) => {
+    try {
+        const { serviceId } = req.params;
+        const foundService = await Service.findOne({ service_ID: serviceId });
+        if (!foundService) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+        return res.status(200).json(foundService);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
+
 // Get a service by ID
 router.get('/:id', async (req, res) => {
     try {

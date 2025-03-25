@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'; 
 import Feedback from '../models/feedbackModel.js';
+import { Service } from '../models/Service.js';
 
 const validateFields = (req, res, next) => {
     const requiredFields = [
@@ -127,13 +128,58 @@ export const updateFeedback = async  (req, res) => {
 export const getAllFeedback = async (req, res) => {
     try {
         const feedback = await Feedback.find();
-        res.status(200).json(feedback);
+        console.log(`Found ${feedback.length} feedback items`);
+        
+        // Fetch service details for each feedback
+        const feedbackWithServices = await Promise.all(
+            feedback.map(async (item) => {
+                const feedbackObj = item.toObject();
+                
+                if (item.serviceID) {
+                    console.log(`Looking up service with ID: ${item.serviceID}`);
+                    try {
+                        // First try direct lookup by service_ID
+                        let service = await Service.findOne({ service_ID: item.serviceID });
+                        
+                        // If not found, try again with 'service' prefix if it doesn't have one
+                        if (!service && !item.serviceID.startsWith('service')) {
+                            service = await Service.findOne({ service_ID: `service${item.serviceID}` });
+                        }
+                        
+                        if (service) {
+                            console.log(`Found service: ${service.category} - ${service.subCategory}`);
+                            feedbackObj.serviceDetails = {
+                                category: service.category,
+                                subCategory: service.subCategory
+                            };
+                        } else {
+                            // Try looking up by MongoDB _id as fallback
+                            service = await Service.findById(item.serviceID);
+                            if (service) {
+                                console.log(`Found service by _id: ${service.category} - ${service.subCategory}`);
+                                feedbackObj.serviceDetails = {
+                                    category: service.category,
+                                    subCategory: service.subCategory
+                                };
+                            } else {
+                                console.log(`Service not found for ID: ${item.serviceID}`);
+                            }
+                        }
+                    } catch (err) {
+                        console.error(`Error fetching service for feedback ${item._id}:`, err);
+                    }
+                }
+                
+                return feedbackObj;
+            })
+        );
+        
+        res.status(200).json(feedbackWithServices);
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
     }
 };
-
 
 // Delete feedback by ID
 
@@ -166,7 +212,26 @@ export const getOneFeedback = async (req, res) => {
             return res.status(404).send({ message: "Feedback not found" });
         }
 
-        res.status(200).send(feedback);
+        const feedbackObj = feedback.toObject();
+        
+        if (feedback.serviceID) {
+            try {
+                // Convert serviceID to string to ensure proper comparison
+                const service = await Service.findOne({ service_ID: String(feedback.serviceID) });
+                if (service) {
+                    feedbackObj.serviceDetails = {
+                        category: service.category,
+                        subCategory: service.subCategory
+                    };
+                } else {
+                    console.log(`Service not found for ID: ${feedback.serviceID}`);
+                }
+            } catch (err) {
+                console.error(`Error fetching service for feedback ${feedback._id}:`, err);
+            }
+        }
+
+        res.status(200).send(feedbackObj);
     } catch (error) {
         console.error(error.message);
         res.status(500).send({ message: error.message });
