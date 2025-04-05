@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
+import jsPDF from 'jspdf';
+// Make sure to install this package: npm install jspdf-autotable
+import autoTable from 'jspdf-autotable';
 
 const ManageInventory = () => {
   const navigate = useNavigate();
@@ -127,6 +130,110 @@ const ManageInventory = () => {
     navigate('/manager/add-inventory');
   };
 
+  // Handle PDF generation
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    
+    // Add salon branding
+    doc.setFillColor(137, 25, 143); // PrimaryColor
+    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 25, 'F');
+    
+    // Add title
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255); // White text on purple header
+    doc.setFontSize(20);
+    doc.text('Glamour Hair & Beauty Salon', doc.internal.pageSize.getWidth() / 2, 12, { align: 'center' });
+    doc.setFontSize(16);
+    doc.text('Inventory Items Report', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+    
+    // Add metadata
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0); // Black text
+    doc.setFontSize(10);
+    const today = new Date();
+    doc.text(`Generated on: ${today.toLocaleDateString()} at ${today.toLocaleTimeString()}`, 14, 35);
+    
+    // Add search query if present
+    if (searchQuery) {
+      doc.setFontSize(10);
+      doc.text(`Search query: "${searchQuery}"`, 14, 42);
+    }
+    
+    // Add total count
+    doc.setFontSize(10);
+    doc.text(`Total Items: ${filteredItems.length}`, 14, searchQuery ? 49 : 42);
+    
+    // Create the table
+    const tableColumn = ["Item Name", "Category", "Quantity", "Price ($)", "Supplier Name", "Supplier Email"];
+    const tableRows = [];
+
+    // Add data rows
+    filteredItems.forEach(item => {
+      // Format price as currency
+      const formattedPrice = parseFloat(item.Price).toFixed(2);
+      
+      const itemData = [
+        item.ItemName || '',
+        item.Category || '',
+        item.Quantity ? item.Quantity.toString() : '0',
+        formattedPrice,
+        item.SupplierName || '',
+        item.SupplierEmail || ''
+      ];
+      tableRows.push(itemData);
+    });
+
+    // Generate the PDF table using the imported autoTable
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: searchQuery ? 55 : 48,
+      styles: { 
+        fontSize: 9, 
+        cellPadding: 3,
+        overflow: 'linebreak',
+        halign: 'left'
+      },
+      headStyles: { 
+        fillColor: [137, 25, 143], // PrimaryColor
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      columnStyles: {
+        0: { cellWidth: 40 }, // Item Name
+        1: { cellWidth: 30 }, // Category
+        2: { cellWidth: 20, halign: 'center' }, // Quantity - centered
+        3: { cellWidth: 20, halign: 'right' }, // Price - right aligned
+        4: { cellWidth: 40 }, // Supplier Name
+        5: { cellWidth: 40 }  // Supplier Email
+      },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { top: 30 },
+      didDrawPage: function(data) {
+        // Add page number at the bottom
+        doc.setFontSize(10);
+        doc.text(
+          `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${doc.internal.getNumberOfPages()}`,
+          doc.internal.pageSize.getWidth() / 2, 
+          doc.internal.pageSize.getHeight() - 10, 
+          { align: 'center' }
+        );
+      }
+    });
+    
+    // Add footer
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Glamour Hair & Beauty Salon - Inventory Management System', 
+      doc.internal.pageSize.getWidth() / 2, 
+      doc.internal.pageSize.getHeight() - 5, 
+      { align: 'center' }
+    );
+
+    // Save the PDF
+    doc.save(`inventory-report-${new Date().toISOString().slice(0,10)}.pdf`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -167,6 +274,13 @@ const ManageInventory = () => {
             className="p-3 bg-DarkColor text-white rounded-lg hover:bg-ExtraDarkColor transition-all"
           >
             <FiSearch size={20} />
+          </button>
+          <button
+            onClick={generatePDF}
+            className="p-3 bg-DarkColor text-white rounded-lg hover:bg-ExtraDarkColor transition-all"
+            title="Export as PDF"
+          >
+            <FiFileText size={20} />
           </button>
         </div>
 
