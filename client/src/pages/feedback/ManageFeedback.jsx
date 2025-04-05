@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText, FiThumbsUp, FiThumbsDown } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 import jsPDF from 'jspdf';
@@ -282,6 +282,74 @@ const ManageFeedback = () => {
     navigate('/manager/add-feedback');
   };
 
+  // Handle status update (approve/decline)
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const result = await Swal.fire({
+        title: `Are you sure?`,
+        text: `Do you want to ${newStatus} this feedback?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: newStatus === 'approved' ? '#28a745' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Yes, ${newStatus} it!`,
+      });
+
+      if (result.isConfirmed) {
+        console.log(`Updating feedback ${id} status to ${newStatus}`);
+        
+        // Use PUT method instead of PATCH to avoid CORS issues
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}/status/${id}`, {
+          method: 'PUT', // Changed from PATCH to PUT
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Failed to ${newStatus} feedback`);
+        }
+
+        const updatedFeedback = await response.json();
+        console.log('Status update response:', updatedFeedback);
+
+        // Update the feedback status in state
+        setFeedbackItems(prev => 
+          prev.map(item => item._id === id ? { ...item, status: newStatus } : item)
+        );
+        setFilteredFeedback(prev => 
+          prev.map(item => item._id === id ? { ...item, status: newStatus } : item)
+        );
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: `Feedback has been ${newStatus}.`,
+          confirmButtonColor: '#89198f',
+        });
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonColor: '#89198f',
+      });
+    }
+  };
+
+  // Function to get status badge color
+  const getStatusBadgeColor = (status) => {
+    switch(status) {
+      case 'approved': return 'bg-green-100 text-green-800 border-green-200';
+      case 'declined': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-yellow-100 text-yellow-800 border-yellow-200'; // pending
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -350,7 +418,7 @@ const ManageFeedback = () => {
                   <tr className="bg-DarkColor text-white">
                     <th className="p-3 text-left">Service</th>
                     <th className="p-3 text-left">Created At</th>
-                    <th className="p-3 text-left">Updated at</th>
+                    <th className="p-3 text-left">Status</th>
                     <th className="p-3 text-left">Message</th>
                     <th className="p-3 text-left">Star Rating</th>
                     <th className="p-3 text-left">Actions</th>
@@ -361,10 +429,32 @@ const ManageFeedback = () => {
                     <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="p-3">{getServiceInfo(item)}</td>
                       <td className="p-3">{formatDate(item.createdAt)}</td>
-                      <td className="p-3">{formatDate(item.updatedAt)}</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadgeColor(item.status)}`}>
+                          {item.status || 'pending'}
+                        </span>
+                      </td>
                       <td className="p-3">{item.message}</td>
                       <td className="p-3">{item.star_rating}</td>
                       <td className="p-3 flex space-x-2">
+                        {item.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleStatusUpdate(item._id, 'approved')}
+                              className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
+                              title="Approve feedback"
+                            >
+                              <FiThumbsUp size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleStatusUpdate(item._id, 'declined')}
+                              className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
+                              title="Decline feedback"
+                            >
+                              <FiThumbsDown size={16} />
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => handleEdit(item._id)}
                           className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"

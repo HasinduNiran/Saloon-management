@@ -85,17 +85,23 @@ const CreateFeedback = () => {
 
     try {
       setIsSubmitting(true);
-
+      
+      // Create the request data with explicit status
+      const requestData = {
+        ...formData,
+        serviceID: formData.service,
+        status: 'pending' // Explicitly set status
+      };
+      
+      console.log('Sending feedback data:', requestData); // Debug log
+      
       const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDBACK}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          serviceID: formData.service // Maintain compatibility with backend
-        }),
+        body: JSON.stringify(requestData),
       });
 
       const result = await response.json();
@@ -104,7 +110,7 @@ const CreateFeedback = () => {
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Feedback created successfully!',
+        text: 'Feedback submitted successfully! It will be reviewed by our team.',
         confirmButtonColor: '#89198f',
       }).then(() => {
         navigate('/customer/profile');

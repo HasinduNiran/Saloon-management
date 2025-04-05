@@ -95,7 +95,12 @@ function SalonHomepage() {
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.message || 'Failed to fetch reviews');
-      setReviews(data);
+      
+      // Filter to only show approved feedback
+      const approvedReviews = data.filter(review => review.status === 'approved');
+      setReviews(approvedReviews || []);
+      
+      console.log('Approved reviews:', approvedReviews.length);
     } catch (err) {
       setError(prev => ({...prev, reviews: err.message}));
       Swal.fire({
@@ -555,7 +560,7 @@ function SalonHomepage() {
                         </div>
                       ))
                   ) : (
-                    <p className="text-center text-gray-500 col-span-4">No reviews available at the moment.</p>
+                    <p className="text-center text-gray-500 col-span-4">No approved reviews available at the moment.</p>
                   )}
                 </div>
                 
