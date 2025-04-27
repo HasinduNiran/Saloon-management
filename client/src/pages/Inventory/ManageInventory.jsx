@@ -373,17 +373,10 @@ const ManageInventory = () => {
                 </thead>
                 <tbody>
                   {filteredItems.map((item) => (
-                    <tr 
-                      key={item._id} 
-                      className={`border-b border-gray-200 hover:bg-gray-50 ${
-                        parseInt(item.Quantity) < 10 ? 'bg-red-100' : ''
-                      }`}
-                    >
+                    <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="p-3">{item.ItemName}</td>
                       <td className="p-3">{item.Category}</td>
-                      <td className={`p-3 ${parseInt(item.Quantity) < 10 ? 'text-red-600 font-bold' : ''}`}>
-                        {item.Quantity}
-                      </td>
+                      <td className="p-3">{item.Quantity}</td>
                       <td className="p-3">{item.Price}</td>
                       <td className="p-3">{item.SupplierName}</td>
                       <td className="p-3">{item.SupplierEmail}</td>
