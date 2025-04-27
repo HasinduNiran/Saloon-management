@@ -14,6 +14,9 @@ import {
   Smile,
   Loader,
   ArrowLeft,
+  Bell,
+  BellOff,
+  Check,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -75,16 +78,78 @@ const AppointmentsSection = () => {
   const [error, setError] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const navigate = useNavigate();
-
-  // Remove editingAppointment and editedAppointment state as we'll navigate to another page
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        // Use the correct endpoint as defined in apiConfig
         const response = await client.get(`/api/v1/appoiment/user/${user._id}`);
-        setAppointments(response.data || []);
+        const fetchedAppointments = response.data || [];
+        setAppointments(fetchedAppointments);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const upcomingNotifications = fetchedAppointments
+          .filter((app) => {
+            const appDate = new Date(app.appoi_date);
+            appDate.setHours(0, 0, 0, 0);
+            return (
+              appDate.getTime() === today.getTime() ||
+              appDate.getTime() === tomorrow.getTime()
+            );
+          })
+          .map((app) => {
+            const appDate = new Date(app.appoi_date);
+            appDate.setHours(0, 0, 0, 0);
+            const isToday = appDate.getTime() === today.getTime();
+
+            return {
+              id: app._id,
+              message: `You have an appointment ${
+                isToday ? "today" : "tomorrow"
+              } at ${app.appoi_time} for ${
+                app.services || app.service || "your service"
+              }.`,
+              date: app.appoi_date,
+              time: app.appoi_time,
+              read: false,
+              isToday,
+            };
+          });
+
+        const savedNotifications =
+          JSON.parse(localStorage.getItem(`notifications_${user._id}`)) || [];
+
+        const mergedNotifications = [...savedNotifications];
+
+        upcomingNotifications.forEach((newNotif) => {
+          const exists = savedNotifications.some(
+            (savedNotif) =>
+              savedNotif.id === newNotif.id &&
+              savedNotif.date === newNotif.date &&
+              savedNotif.time === newNotif.time
+          );
+
+          if (!exists) {
+            mergedNotifications.push(newNotif);
+          }
+        });
+
+        setNotifications(mergedNotifications);
+        setUnreadCount(mergedNotifications.filter((n) => !n.read).length);
+
+        localStorage.setItem(
+          `notifications_${user._id}`,
+          JSON.stringify(mergedNotifications)
+        );
+
         setError(null);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -100,8 +165,44 @@ const AppointmentsSection = () => {
     }
   }, [user]);
 
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const markAsRead = (id) => {
+    const updatedNotifications = notifications.map((notif) =>
+      notif.id === id ? { ...notif, read: true } : notif
+    );
+    setNotifications(updatedNotifications);
+    setUnreadCount(updatedNotifications.filter((n) => !n.read).length);
+
+    localStorage.setItem(
+      `notifications_${user._id}`,
+      JSON.stringify(updatedNotifications)
+    );
+  };
+
+  const markAllAsRead = () => {
+    const updatedNotifications = notifications.map((notif) => ({
+      ...notif,
+      read: true,
+    }));
+    setNotifications(updatedNotifications);
+    setUnreadCount(0);
+
+    localStorage.setItem(
+      `notifications_${user._id}`,
+      JSON.stringify(updatedNotifications)
+    );
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+    setUnreadCount(0);
+    localStorage.setItem(`notifications_${user._id}`, JSON.stringify([]));
+  };
+
   const handleEditClick = (appointment) => {
-    // Navigate to EditAppointment page with the appointment ID
     navigate(`/appointment/edit/${appointment._id}`);
   };
 
@@ -112,21 +213,23 @@ const AppointmentsSection = () => {
   const handleConfirmDelete = async (id) => {
     try {
       await client.delete(`/api/v1/appoiment/${id}`);
-      
-      // Remove the deleted appointment from the list
-      setAppointments(appointments.filter(app => app._id !== id));
-      
+
+      setAppointments(appointments.filter((app) => app._id !== id));
+
       toast.success("Appointment deleted successfully!", {
         position: "top-right",
         autoClose: 3000,
       });
-      
+
       setShowDeleteConfirm(null);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete appointment", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error(
+        error.response?.data?.message || "Failed to delete appointment",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
     }
   };
 
@@ -150,23 +253,107 @@ const AppointmentsSection = () => {
           <Calendar className="mr-3 text-[#52b788]" />
           <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
         </div>
-        <div className="p-4 bg-red-100 text-red-700 rounded-lg">
-          {error}
-        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>
       </div>
     );
   }
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 z-20">
-      <div className="flex items-center mb-4">
-        <Calendar className="mr-3 text-[#52b788]" />
-        <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <Calendar className="mr-3 text-[#52b788]" />
+          <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={toggleNotifications}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
+            aria-label="Notifications"
+          >
+            {unreadCount > 0 ? (
+              <>
+                <Bell size={24} className="text-[#52b788]" />
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              </>
+            ) : (
+              <BellOff size={24} className="text-gray-400" />
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200 max-h-96 overflow-y-auto">
+              <div className="p-3 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="font-semibold text-gray-700">Notifications</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-xs px-2 py-1 bg-[#d8f3dc] text-[#2d6a4f] rounded hover:bg-[#95d5b2] transition-colors"
+                    disabled={unreadCount === 0}
+                  >
+                    Mark all read
+                  </button>
+                  <button
+                    onClick={clearNotifications}
+                    className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
+                    disabled={notifications.length === 0}
+                  >
+                    Clear all
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    No notifications
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={`${notif.id}-${notif.date}-${notif.time}`}
+                      className={`p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-start gap-2 ${
+                        notif.read ? "opacity-60" : ""
+                      }`}
+                    >
+                      <div
+                        className={`rounded-full w-2 h-2 mt-2 flex-shrink-0 ${
+                          notif.isToday ? "bg-red-500" : "bg-yellow-500"
+                        }`}
+                      ></div>
+                      <div className="flex-grow">
+                        <p className="text-sm text-gray-700">{notif.message}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(notif.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                      {!notif.read && (
+                        <button
+                          onClick={() => markAsRead(notif.id)}
+                          className="p-1 text-[#52b788] hover:text-[#2d6a4f] transition-colors"
+                          title="Mark as read"
+                        >
+                          <Check size={16} />
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
       <div className="space-y-4">
         {appointments.length === 0 ? (
           <div className="bg-[#d8f3dc] p-4 rounded-lg text-center">
-            <p className="text-[#1b4332]">You don't have any appointments yet.</p>
+            <p className="text-[#1b4332]">
+              You don't have any appointments yet.
+            </p>
           </div>
         ) : (
           appointments.map((appointment) => (
@@ -177,10 +364,13 @@ const AppointmentsSection = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="font-semibold text-[#1b4332]">
-                    {appointment.services || appointment.service || "Service"}
+                    {appointment.services ||
+                      appointment.service ||
+                      "Service"}
                   </p>
                   <p className="text-sm text-[#52b788]">
-                    {appointment.appoi_date || appointment.date} at {appointment.appoi_time || appointment.time}
+                    {appointment.appoi_date || appointment.date} at{" "}
+                    {appointment.appoi_time || appointment.time}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -214,11 +404,12 @@ const AppointmentsSection = () => {
                   </button>
                 </div>
               </div>
-              
-              {/* Delete confirmation dialog */}
+
               {showDeleteConfirm === appointment._id && (
                 <div className="mt-3 p-3 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-sm text-red-600 mb-2">Are you sure you want to delete this appointment?</p>
+                  <p className="text-sm text-red-600 mb-2">
+                    Are you sure you want to delete this appointment?
+                  </p>
                   <div className="flex justify-end space-x-2">
                     <button
                       onClick={handleCancelDelete}
@@ -252,13 +443,10 @@ const FeedbackSection = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const navigate = useNavigate();
 
-  // Remove editingFeedback and editedFeedback state as we'll navigate to another page
-
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
         setLoading(true);
-        // Use the correct endpoint as defined in apiConfig
         const response = await client.get(`/api/v1/feedback/user/${user._id}`);
         setFeedbacks(response.data || []);
         setError(null);
@@ -277,7 +465,6 @@ const FeedbackSection = () => {
   }, [user]);
 
   const handleEditClick = (feedback) => {
-    // Navigate to EditFeedback page with the feedback ID
     navigate(`/feedback/edit/${feedback._id}`);
   };
 
@@ -288,21 +475,23 @@ const FeedbackSection = () => {
   const handleConfirmDelete = async (id) => {
     try {
       await client.delete(`/api/v1/feedback/${id}`);
-      
-      // Remove the deleted feedback from the list
-      setFeedbacks(feedbacks.filter(fb => fb._id !== id));
-      
+
+      setFeedbacks(feedbacks.filter((fb) => fb._id !== id));
+
       toast.success("Feedback deleted successfully!", {
         position: "top-right",
         autoClose: 3000,
       });
-      
+
       setShowDeleteConfirm(null);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete feedback", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error(
+        error.response?.data?.message || "Failed to delete feedback",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
     }
   };
 
@@ -341,9 +530,7 @@ const FeedbackSection = () => {
           <MessageCircle className="mr-3 text-[#52b788]" />
           <h2 className="text-2xl font-bold text-[#1b4332]">My Feedback</h2>
         </div>
-        <div className="p-4 bg-red-100 text-red-700 rounded-lg">
-          {error}
-        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>
       </div>
     );
   }
@@ -357,7 +544,9 @@ const FeedbackSection = () => {
       <div className="space-y-4">
         {feedbacks.length === 0 ? (
           <div className="bg-[#d8f3dc] p-4 rounded-lg text-center">
-            <p className="text-[#1b4332]">You haven't submitted any feedback yet.</p>
+            <p className="text-[#1b4332]">
+              You haven't submitted any feedback yet.
+            </p>
           </div>
         ) : (
           feedbacks.map((feedback) => (
@@ -371,7 +560,9 @@ const FeedbackSection = () => {
                 </h3>
                 <div className="flex items-center">
                   <p className="text-sm text-[#52b788] mr-2">
-                    {feedback.date_of_service || feedback.date || new Date(feedback.createdAt).toLocaleDateString()}
+                    {feedback.date_of_service ||
+                      feedback.date ||
+                      new Date(feedback.createdAt).toLocaleDateString()}
                   </p>
                   <button
                     onClick={() => handleEditClick(feedback)}
@@ -389,13 +580,18 @@ const FeedbackSection = () => {
                   </button>
                 </div>
               </div>
-              <div className="mb-2">{renderStars(feedback.star_rating || feedback.rating || 0)}</div>
-              <p className="text-[#1b4332] opacity-80">{feedback.message || feedback.comment}</p>
-              
-              {/* Delete confirmation dialog */}
+              <div className="mb-2">
+                {renderStars(feedback.star_rating || feedback.rating || 0)}
+              </div>
+              <p className="text-[#1b4332] opacity-80">
+                {feedback.message || feedback.comment}
+              </p>
+
               {showDeleteConfirm === feedback._id && (
                 <div className="mt-3 p-3 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-sm text-red-600 mb-2">Are you sure you want to delete this feedback?</p>
+                  <p className="text-sm text-red-600 mb-2">
+                    Are you sure you want to delete this feedback?
+                  </p>
                   <div className="flex justify-end space-x-2">
                     <button
                       onClick={handleCancelDelete}
@@ -423,7 +619,7 @@ const FeedbackSection = () => {
 // Main Profile Page Component
 const ProfilePage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -434,7 +630,7 @@ const ProfilePage = () => {
   });
 
   const handleGoBack = () => {
-    navigate(-1); // Navigate to the previous page
+    navigate(-1);
   };
 
   const handleEditProfile = () => {
@@ -488,7 +684,7 @@ const ProfilePage = () => {
   };
 
   const handleGiveFeedback = () => {
-    navigate("/feedback/Createfeedback"); // Navigate to the desired page
+    navigate("/feedback/Createfeedback");
   };
 
   const confirmDelete = () => {
@@ -524,8 +720,7 @@ const ProfilePage = () => {
         <ToastContainer />
         <BackgroundIcons />
 
-        {/* Back Button */}
-        <button 
+        <button
           onClick={handleGoBack}
           className="absolute top-4 left-4 z-30 bg-white p-2 rounded-full shadow-md hover:bg-[#95d5b2] transition-colors"
           aria-label="Go back"
@@ -534,10 +729,8 @@ const ProfilePage = () => {
         </button>
 
         <div className="container mx-auto grid grid-cols-3 gap-6">
-          {/* Profile Card - 1/3 Width */}
           <div className="col-span-1 z-20">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              {/* Profile Header */}
               <div className="bg-[#52b788] p-6 text-center">
                 <div className="w-24 h-24 mx-auto mb-4 bg-[#1b4332] text-white rounded-full flex items-center justify-center">
                   <User size={48} />
@@ -548,7 +741,6 @@ const ProfilePage = () => {
                 <p className="text-[#1b4332] opacity-80">{user?.role}</p>
               </div>
 
-              {/* Profile Details */}
               <div className="p-6">
                 {isEditing ? (
                   <div className="space-y-4">
@@ -606,7 +798,6 @@ const ProfilePage = () => {
                   </div>
                 )}
 
-                {/* Action Buttons */}
                 <div className="mt-6 grid grid-cols-3 gap-4">
                   <button
                     onClick={handleEditProfile}
@@ -642,7 +833,6 @@ const ProfilePage = () => {
                   </button>
                 </div>
 
-                {/* Give Feedback Button */}
                 <div className="mt-4">
                   <button
                     onClick={handleGiveFeedback}
@@ -656,7 +846,6 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Right Side - 2/3 Width */}
           <div className="col-span-2 space-y-6 z-10">
             <AppointmentsSection />
             <FeedbackSection />
