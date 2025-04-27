@@ -447,12 +447,88 @@ const FeedbackSection = () => {
     const fetchFeedbacks = async () => {
       try {
         setLoading(true);
-        const response = await client.get(`/api/v1/feedback/user/${user._id}`);
-        setFeedbacks(response.data || []);
+        console.log("Fetching feedback for user:", user._id);
+        
+        // Try with the correct endpoint - we might be using the wrong path
+        // Check if we should use /feedback or /feedbacks
+        const response = await client.get(`/api/v1/feedback`);
+        console.log("All feedback API response:", response.data);
+        
+        // If we get a successful response, filter it client-side for this user
+        const allFeedback = response.data || [];
+        
+        if (!Array.isArray(allFeedback)) {
+          console.error("Expected array of feedbacks but got:", typeof allFeedback);
+          throw new Error("Invalid response format from server");
+        }
+        
+        // Filter feedback for the current user
+        const userFeedbacks = allFeedback.filter(feedback => 
+          feedback.user_id === user._id || 
+          feedback.userId === user._id
+        );
+        
+        console.log("User feedbacks after filtering by user ID:", userFeedbacks);
+        
+        // Filter for approved feedback
+        const approvedFeedbacks = userFeedbacks.filter(
+          (feedback) =>
+            feedback.status === "approved" || feedback.isApproved === true
+        );
+        
+        console.log("Approved feedbacks:", approvedFeedbacks);
+        setFeedbacks(approvedFeedbacks);
         setError(null);
       } catch (err) {
         console.error("Error fetching feedbacks:", err);
-        setError("Failed to load feedback. Please try again later.");
+        
+        // Show specific error handling for Not Found
+        if (err.response && err.response.status === 404) {
+          console.log("API endpoint not found. Trying alternative endpoint...");
+          
+          try {
+            // Try alternative endpoint
+            const altResponse = await client.get(`/api/v1/feedbacks`);
+            console.log("Alternative feedback API response:", altResponse.data);
+            
+            const allFeedback = altResponse.data || [];
+            
+            if (Array.isArray(allFeedback)) {
+              const userFeedbacks = allFeedback.filter(feedback => 
+                feedback.user_id === user._id || 
+                feedback.userId === user._id
+              );
+              
+              const approvedFeedbacks = userFeedbacks.filter(
+                (feedback) =>
+                  feedback.status === "approved" || feedback.isApproved === true
+              );
+              
+              setFeedbacks(approvedFeedbacks);
+              setError(null);
+              setLoading(false);
+              return;
+            }
+          } catch (altErr) {
+            console.error("Alternative endpoint also failed:", altErr);
+          }
+        }
+        
+        let errorMessage = "Failed to load feedback. Please try again later.";
+        
+        if (err.response) {
+          if (err.response.status === 404) {
+            errorMessage = "Feedback service is currently unavailable.";
+          } else {
+            errorMessage = `API Error: ${err.response.data?.message || err.response.statusText || "Unknown error"}`;
+          }
+        } else if (err.request) {
+          errorMessage = "Network error. No response received from server.";
+        } else {
+          errorMessage = `Error: ${err.message}`;
+        }
+        
+        setError(errorMessage);
         setFeedbacks([]);
       } finally {
         setLoading(false);
@@ -545,7 +621,7 @@ const FeedbackSection = () => {
         {feedbacks.length === 0 ? (
           <div className="bg-[#d8f3dc] p-4 rounded-lg text-center">
             <p className="text-[#1b4332]">
-              You haven't submitted any feedback yet.
+              You don't have any approved feedback yet.
             </p>
           </div>
         ) : (
@@ -586,6 +662,12 @@ const FeedbackSection = () => {
               <p className="text-[#1b4332] opacity-80">
                 {feedback.message || feedback.comment}
               </p>
+
+              <div className="mt-2">
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  Approved
+                </span>
+              </div>
 
               {showDeleteConfirm === feedback._id && (
                 <div className="mt-3 p-3 border border-red-200 bg-red-50 rounded-lg">
