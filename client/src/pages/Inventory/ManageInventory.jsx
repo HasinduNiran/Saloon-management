@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText, FiBox } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 import jsPDF from 'jspdf';
@@ -14,6 +14,9 @@ const ManageInventory = () => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [retrieveModal, setRetrieveModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [retrieveQuantity, setRetrieveQuantity] = useState(1);
 
   // Fetch all inventory items from the backend only once on component mount
   useEffect(() => {
@@ -234,6 +237,65 @@ const ManageInventory = () => {
     doc.save(`inventory-report-${new Date().toISOString().slice(0,10)}.pdf`);
   };
 
+  const handleRetrieveClick = (item) => {
+    setSelectedItem(item);
+    setRetrieveQuantity(1);
+    setRetrieveModal(true);
+  };
+
+  const handleRetrieve = async () => {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${selectedItem._id}/retrieve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity: retrieveQuantity }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      const data = await response.json();
+
+      // Update local state
+      setInventoryItems(items =>
+        items.map(item =>
+          item._id === selectedItem._id
+            ? { ...item, Quantity: data.updatedQuantity }
+            : item
+        )
+      );
+      setFilteredItems(items =>
+        items.map(item =>
+          item._id === selectedItem._id
+            ? { ...item, Quantity: data.updatedQuantity }
+            : item
+        )
+      );
+
+      setRetrieveModal(false);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Items retrieved successfully',
+        confirmButtonColor: '#89198f',
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonColor: '#89198f',
+      });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -331,6 +393,12 @@ const ManageInventory = () => {
                         >
                           <FiTrash size={16} />
                         </button>
+                        <button
+                          onClick={() => handleRetrieveClick(item)}
+                          className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
+                        >
+                          <FiBox size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -340,6 +408,47 @@ const ManageInventory = () => {
           </div>
         )}
       </div>
+
+      {/* Add Retrieve Modal */}
+      {retrieveModal && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-2xl font-bold mb-4">Retrieve Items</h2>
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-600">Item: {selectedItem.ItemName}</p>
+                <p className="text-gray-600">Available: {selectedItem.Quantity}</p>
+                <p className="text-gray-600">Price: ${selectedItem.Price}</p>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Quantity to Retrieve:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max={selectedItem.Quantity}
+                  value={retrieveQuantity}
+                  onChange={(e) => setRetrieveQuantity(Number(e.target.value))}
+                  className="w-full p-2 border rounded focus:border-PrimaryColor"
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setRetrieveModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRetrieve}
+                  className="px-4 py-2 bg-PrimaryColor text-white rounded hover:bg-SecondaryColor"
+                >
+                  Retrieve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
