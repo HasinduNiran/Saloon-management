@@ -245,36 +245,56 @@ const ManageInventory = () => {
 
   const handleRetrieve = async () => {
     try {
+      if (!selectedItem || !selectedItem._id) {
+        throw new Error('No item selected for retrieval');
+      }
+      
+      // Check if quantity is valid
+      if (retrieveQuantity <= 0 || retrieveQuantity > selectedItem.Quantity) {
+        throw new Error('Invalid quantity selected');
+      }
+      
+      // Calculate the new quantity after retrieval
+      const newQuantity = parseInt(selectedItem.Quantity) - retrieveQuantity;
+      
+      // Instead of using a specific /retrieve endpoint, update the item directly
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${selectedItem._id}/retrieve`,
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${selectedItem._id}`,
         {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ quantity: retrieveQuantity }),
+          body: JSON.stringify({
+            ...selectedItem,
+            Quantity: newQuantity.toString() // Convert to string to match existing format
+          }),
         }
       );
 
+      // Improved error handling for non-JSON responses
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const error = await response.json();
+          throw new Error(error.message || `Error: ${response.status}`);
+        } else {
+          throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+        }
       }
-
-      const data = await response.json();
 
       // Update local state
       setInventoryItems(items =>
         items.map(item =>
           item._id === selectedItem._id
-            ? { ...item, Quantity: data.updatedQuantity }
+            ? { ...item, Quantity: newQuantity.toString() }
             : item
         )
       );
       setFilteredItems(items =>
         items.map(item =>
           item._id === selectedItem._id
-            ? { ...item, Quantity: data.updatedQuantity }
+            ? { ...item, Quantity: newQuantity.toString() }
             : item
         )
       );
@@ -283,10 +303,11 @@ const ManageInventory = () => {
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Items retrieved successfully',
+        text: `Successfully retrieved ${retrieveQuantity} ${selectedItem.ItemName}(s)`,
         confirmButtonColor: '#89198f',
       });
     } catch (error) {
+      console.error("Retrieve error:", error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
