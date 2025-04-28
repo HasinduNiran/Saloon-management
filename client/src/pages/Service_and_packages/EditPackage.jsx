@@ -227,7 +227,7 @@ const EditPackage = () => {
         text: 'Package updated successfully!',
         confirmButtonColor: '#89198f',
       }).then(() => {
-        navigate('/manager/packages'); // Redirect to packages page
+        navigate('/manager/Service-management', { state: { activeTab: 'managePackage' } });
       });
     } catch (error) {
       Swal.fire({

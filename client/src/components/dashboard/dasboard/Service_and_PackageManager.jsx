@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import Createpackage from "../../../pages/Service_and_packages/Createpackage";
 import CreateService from "../../../pages/Service_and_packages/CreateService";
 import ManageService from "../../../pages/Service_and_packages/ManageService";
 import ManagePackage from "../../../pages/Service_and_packages/ManagePackage";
 
 export default function Service_and_PackageManager() {
-  const [activeTab, setActiveTab] = useState("manageService"); // State to manage active tab
+  const [activeTab, setActiveTab] = useState("manageService"); // Default to manage service tab
+  const location = useLocation();
+
+  // Check for tab parameter in location state when component mounts or location changes
+  useEffect(() => {
+    if (location.state && location.state.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location]);
 
   return (
     <motion.div

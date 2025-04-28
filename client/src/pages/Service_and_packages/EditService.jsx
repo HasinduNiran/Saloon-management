@@ -197,7 +197,7 @@ const EditService = () => {
       if (!response.ok) throw new Error(result.message || 'Failed to update service');
 
       // Navigate first, then show success message
-      navigate('/manager/Service-management');
+      navigate('/manager/Service-management', { state: { activeTab: 'manageService' } });
       
       Swal.fire({
         icon: 'success',
