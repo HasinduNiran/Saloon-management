@@ -39,7 +39,7 @@ export default function InventoryManagement() {
         >
           Add Item
         </div>
-        <div
+        {/* <div
           className={`cursor-pointer px-4 py-2 -mb-1 ${
             activeTab === "retrieved"
               ? "border-b-4 border-DarkColor text-DarkColor"
@@ -48,7 +48,7 @@ export default function InventoryManagement() {
           onClick={() => setActiveTab("retrieved")}
         >
           Retrieved Items
-        </div>
+        </div> */}
       </div>
 
       {/* Render Tab Content with Animation */}

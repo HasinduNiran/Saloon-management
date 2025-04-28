@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText, FiBox, FiBell, FiCheck, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 import jsPDF from 'jspdf';
@@ -14,6 +14,15 @@ const ManageInventory = () => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [retrieveModal, setRetrieveModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [retrieveQuantity, setRetrieveQuantity] = useState(1);
+  
+  // Notification states
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef(null);
 
   // Fetch all inventory items from the backend only once on component mount
   useEffect(() => {
@@ -26,6 +35,9 @@ const ManageInventory = () => {
         const data = await response.json();
         setInventoryItems(data);
         setFilteredItems(data); // Initialize filtered items with all items
+        
+        // Generate low stock notifications
+        generateLowStockNotifications(data);
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -39,7 +51,71 @@ const ManageInventory = () => {
     };
 
     fetchInventoryItems();
+    
+    // Handle clicks outside notification dropdown
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []); // Only run on component mount
+
+  // Generate notifications for low stock items
+  const generateLowStockNotifications = (items) => {
+    const lowStockItems = items.filter(item => parseInt(item.Quantity) <= 10);
+    
+    if (lowStockItems.length > 0) {
+      const newNotifications = lowStockItems.map(item => ({
+        id: item._id,
+        itemName: item.ItemName,
+        quantity: item.Quantity,
+        read: false,
+        timestamp: new Date().toISOString()
+      }));
+      
+      setNotifications(newNotifications);
+      setUnreadCount(newNotifications.length);
+    }
+  };
+  
+  // Mark a notification as read
+  const markAsRead = (notificationId) => {
+    setNotifications(prevNotifications => 
+      prevNotifications.map(notification => 
+        notification.id === notificationId 
+          ? { ...notification, read: true } 
+          : notification
+      )
+    );
+    
+    // Update unread count
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+  
+  // Mark all notifications as read
+  const markAllAsRead = () => {
+    setNotifications(prevNotifications => 
+      prevNotifications.map(notification => ({ ...notification, read: true }))
+    );
+    setUnreadCount(0);
+  };
+  
+  // Clear all notifications
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    setUnreadCount(0);
+    setShowNotifications(false);
+  };
+
+  // Toggle notification panel
+  const toggleNotifications = () => {
+    setShowNotifications(prev => !prev);
+  };
 
   // Client-side search functionality
   const handleSearch = () => {
@@ -234,6 +310,86 @@ const ManageInventory = () => {
     doc.save(`inventory-report-${new Date().toISOString().slice(0,10)}.pdf`);
   };
 
+  const handleRetrieveClick = (item) => {
+    setSelectedItem(item);
+    setRetrieveQuantity(1);
+    setRetrieveModal(true);
+  };
+
+  const handleRetrieve = async () => {
+    try {
+      if (!selectedItem || !selectedItem._id) {
+        throw new Error('No item selected for retrieval');
+      }
+      
+      // Check if quantity is valid
+      if (retrieveQuantity <= 0 || retrieveQuantity > selectedItem.Quantity) {
+        throw new Error('Invalid quantity selected');
+      }
+      
+      // Calculate the new quantity after retrieval
+      const newQuantity = parseInt(selectedItem.Quantity) - retrieveQuantity;
+      
+      // Instead of using a specific /retrieve endpoint, update the item directly
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INVENTORY}/${selectedItem._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...selectedItem,
+            Quantity: newQuantity.toString() // Convert to string to match existing format
+          }),
+        }
+      );
+
+      // Improved error handling for non-JSON responses
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const error = await response.json();
+          throw new Error(error.message || `Error: ${response.status}`);
+        } else {
+          throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+        }
+      }
+
+      // Update local state
+      setInventoryItems(items =>
+        items.map(item =>
+          item._id === selectedItem._id
+            ? { ...item, Quantity: newQuantity.toString() }
+            : item
+        )
+      );
+      setFilteredItems(items =>
+        items.map(item =>
+          item._id === selectedItem._id
+            ? { ...item, Quantity: newQuantity.toString() }
+            : item
+        )
+      );
+
+      setRetrieveModal(false);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: `Successfully retrieved ${retrieveQuantity} ${selectedItem.ItemName}(s)`,
+        confirmButtonColor: '#89198f',
+      });
+    } catch (error) {
+      console.error("Retrieve error:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonColor: '#89198f',
+      });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -250,7 +406,92 @@ const ManageInventory = () => {
           >
             <FiArrowLeft size={24} />
           </button>
-          <h1 className="text-3xl font-extrabold text-ExtraDarkColor">Manage Inventory</h1>
+          
+          <div className="flex items-center gap-4">
+            {/* Notification Bell */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                onClick={toggleNotifications}
+                className="p-2 bg-PrimaryColor text-DarkColor rounded-full hover:bg-SecondaryColor transition-all relative"
+                title="Notifications"
+              >
+                <FiBell size={24} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              
+              {/* Notification Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={markAllAsRead}
+                          className="text-sm text-PrimaryColor hover:text-SecondaryColor flex items-center"
+                          title="Mark all as read"
+                        >
+                          <FiCheck size={14} className="mr-1" /> All
+                        </button>
+                        <button 
+                          onClick={clearAllNotifications}
+                          className="text-sm text-red-500 hover:text-red-600 flex items-center"
+                          title="Clear all notifications"
+                        >
+                          <FiTrash2 size={14} className="mr-1" /> Clear
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">
+                      No notifications
+                    </div>
+                  ) : (
+                    <div>
+                      {notifications.map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className={`p-4 border-b border-gray-100 hover:bg-gray-50 ${notification.read ? 'opacity-70' : ''}`}
+                        >
+                          <div className="flex justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-gray-800">
+                                {notification.read ? notification.itemName : <strong>{notification.itemName}</strong>}
+                              </p>
+                              <p className="text-xs text-red-600 mt-1">
+                                Low stock! Only {notification.quantity} items remaining.
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(notification.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                            {!notification.read && (
+                              <button 
+                                onClick={() => markAsRead(notification.id)}
+                                className="text-PrimaryColor hover:text-SecondaryColor"
+                                title="Mark as read"
+                              >
+                                <FiCheck size={16} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <h1 className="text-3xl font-extrabold text-ExtraDarkColor">Manage Inventory</h1>
+          </div>
+          
           <button
             onClick={handleAdd}
             className="p-2 bg-PrimaryColor text-DarkColor rounded-full hover:bg-SecondaryColor transition-all"
@@ -310,36 +551,94 @@ const ManageInventory = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredItems.map((item) => (
-                    <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="p-3">{item.ItemName}</td>
-                      <td className="p-3">{item.Category}</td>
-                      <td className="p-3">{item.Quantity}</td>
-                      <td className="p-3">{item.Price}</td>
-                      <td className="p-3">{item.SupplierName}</td>
-                      <td className="p-3">{item.SupplierEmail}</td>
-                      <td className="p-3 flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(item._id)}
-                          className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
-                        >
-                          <FiEdit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item._id)}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
-                        >
-                          <FiTrash size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredItems.map((item) => {
+                    const isLowStock = parseInt(item.Quantity) <= 10;
+                    
+                    return (
+                      <tr 
+                        key={item._id} 
+                        className={`border-b border-gray-200 hover:bg-gray-50 ${isLowStock ? 'bg-red-100' : ''}`}
+                        title={isLowStock ? "Low stock! Consider reordering." : ""}
+                      >
+                        <td className="p-3">{item.ItemName}</td>
+                        <td className="p-3">{item.Category}</td>
+                        <td className={`p-3 ${isLowStock ? 'font-bold text-red-600' : ''}`}>
+                          {item.Quantity}
+                          {isLowStock && <span className="ml-2 text-xs text-red-600">Low!</span>}
+                        </td>
+                        <td className="p-3">{item.Price}</td>
+                        <td className="p-3">{item.SupplierName}</td>
+                        <td className="p-3">{item.SupplierEmail}</td>
+                        <td className="p-3 flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(item._id)}
+                            className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
+                          >
+                            <FiEdit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
+                          >
+                            <FiTrash size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleRetrieveClick(item)}
+                            className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
+                          >
+                            <FiBox size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
           </div>
         )}
       </div>
+
+      {/* Add Retrieve Modal */}
+      {retrieveModal && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-2xl font-bold mb-4">Retrieve Items</h2>
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-600">Item: {selectedItem.ItemName}</p>
+                <p className="text-gray-600">Available: {selectedItem.Quantity}</p>
+                <p className="text-gray-600">Price: ${selectedItem.Price}</p>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Quantity to Retrieve:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max={selectedItem.Quantity}
+                  value={retrieveQuantity}
+                  onChange={(e) => setRetrieveQuantity(Number(e.target.value))}
+                  className="w-full p-2 border rounded focus:border-PrimaryColor"
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setRetrieveModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRetrieve}
+                  className="px-4 py-2 bg-PrimaryColor text-white rounded hover:bg-SecondaryColor"
+                >
+                  Retrieve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
