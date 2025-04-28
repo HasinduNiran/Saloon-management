@@ -4,9 +4,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
 import Swal from 'sweetalert2';
+import emailjs from 'emailjs-com';
 import API_CONFIG from '../../config/apiConfig';
 import Navbar from '../../components/Navbar';
 import { logout } from '../../features/auth/authslices';
+
+// EmailJS configuration
+const EMAILJS_SERVICE_ID = 'service_rb1v2zm';
+const EMAILJS_TEMPLATE_ID = 'template_nikgk9y';
+const EMAILJS_PUBLIC_KEY = 'CcAX39sf2r48Ht1dc';
+
+// Initialize EmailJS
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 const STYLISTS = ['Alice', 'Bob', 'Charlie', 'Diana'];
 
@@ -185,11 +194,22 @@ const CreateAppointment = () => {
     try {
       setIsSubmitting(true);
 
-      // Prepare the data to send
+      // Format date and time for better readability in email
+      const formattedDate = new Date(formData.appoi_date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const formattedTime = formData.appoi_time;
+      const servicesText = formData.services.join(', ');
+
+      // Prepare the data to send to backend
       const appointmentData = {
         ...formData,
         user_id: user._id, // Use the user's ID from the Redux store
-        services: formData.services.join(', '), // Convert array to string
+        services: servicesText, // Convert array to string
       };
 
       // Use API_CONFIG to construct the URL
@@ -206,6 +226,33 @@ const CreateAppointment = () => {
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || 'Failed to create appointment');
+
+      // Send confirmation email using EmailJS
+      // Create template parameters according to your EmailJS template
+      const templateParams = {
+        to_name: formData.client_name,
+        to_email: formData.client_email,
+        appointment_date: formattedDate,
+        appointment_time: formattedTime,
+        services: servicesText,
+        stylist_name: formData.stylist,
+        from_name: "Saloon Management",
+        reply_to: "noreply@saloon.com",
+        message: `Your appointment has been successfully scheduled for ${formattedDate} at ${formattedTime} with stylist ${formData.stylist}.`
+      };
+
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          templateParams
+        );
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        console.error('Email error:', emailError);
+        // Don't throw the error, just log it - we don't want to prevent appointment creation
+        // if email sending fails
+      }
 
       // Show success message
       Swal.fire({
