@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText, FiBox } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiArrowLeft, FiSearch, FiPlus, FiFileText, FiBox, FiBell, FiCheck, FiTrash2 } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import API_CONFIG from '../../config/apiConfig';
 import jsPDF from 'jspdf';
@@ -17,6 +17,12 @@ const ManageInventory = () => {
   const [retrieveModal, setRetrieveModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [retrieveQuantity, setRetrieveQuantity] = useState(1);
+  
+  // Notification states
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef(null);
 
   // Fetch all inventory items from the backend only once on component mount
   useEffect(() => {
@@ -29,6 +35,9 @@ const ManageInventory = () => {
         const data = await response.json();
         setInventoryItems(data);
         setFilteredItems(data); // Initialize filtered items with all items
+        
+        // Generate low stock notifications
+        generateLowStockNotifications(data);
       } catch (error) {
         Swal.fire({
           icon: 'error',
@@ -42,7 +51,71 @@ const ManageInventory = () => {
     };
 
     fetchInventoryItems();
+    
+    // Handle clicks outside notification dropdown
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []); // Only run on component mount
+
+  // Generate notifications for low stock items
+  const generateLowStockNotifications = (items) => {
+    const lowStockItems = items.filter(item => parseInt(item.Quantity) <= 10);
+    
+    if (lowStockItems.length > 0) {
+      const newNotifications = lowStockItems.map(item => ({
+        id: item._id,
+        itemName: item.ItemName,
+        quantity: item.Quantity,
+        read: false,
+        timestamp: new Date().toISOString()
+      }));
+      
+      setNotifications(newNotifications);
+      setUnreadCount(newNotifications.length);
+    }
+  };
+  
+  // Mark a notification as read
+  const markAsRead = (notificationId) => {
+    setNotifications(prevNotifications => 
+      prevNotifications.map(notification => 
+        notification.id === notificationId 
+          ? { ...notification, read: true } 
+          : notification
+      )
+    );
+    
+    // Update unread count
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+  
+  // Mark all notifications as read
+  const markAllAsRead = () => {
+    setNotifications(prevNotifications => 
+      prevNotifications.map(notification => ({ ...notification, read: true }))
+    );
+    setUnreadCount(0);
+  };
+  
+  // Clear all notifications
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    setUnreadCount(0);
+    setShowNotifications(false);
+  };
+
+  // Toggle notification panel
+  const toggleNotifications = () => {
+    setShowNotifications(prev => !prev);
+  };
 
   // Client-side search functionality
   const handleSearch = () => {
@@ -333,7 +406,92 @@ const ManageInventory = () => {
           >
             <FiArrowLeft size={24} />
           </button>
-          <h1 className="text-3xl font-extrabold text-ExtraDarkColor">Manage Inventory</h1>
+          
+          <div className="flex items-center gap-4">
+            {/* Notification Bell */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                onClick={toggleNotifications}
+                className="p-2 bg-PrimaryColor text-DarkColor rounded-full hover:bg-SecondaryColor transition-all relative"
+                title="Notifications"
+              >
+                <FiBell size={24} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              
+              {/* Notification Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={markAllAsRead}
+                          className="text-sm text-PrimaryColor hover:text-SecondaryColor flex items-center"
+                          title="Mark all as read"
+                        >
+                          <FiCheck size={14} className="mr-1" /> All
+                        </button>
+                        <button 
+                          onClick={clearAllNotifications}
+                          className="text-sm text-red-500 hover:text-red-600 flex items-center"
+                          title="Clear all notifications"
+                        >
+                          <FiTrash2 size={14} className="mr-1" /> Clear
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">
+                      No notifications
+                    </div>
+                  ) : (
+                    <div>
+                      {notifications.map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className={`p-4 border-b border-gray-100 hover:bg-gray-50 ${notification.read ? 'opacity-70' : ''}`}
+                        >
+                          <div className="flex justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-gray-800">
+                                {notification.read ? notification.itemName : <strong>{notification.itemName}</strong>}
+                              </p>
+                              <p className="text-xs text-red-600 mt-1">
+                                Low stock! Only {notification.quantity} items remaining.
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(notification.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                            {!notification.read && (
+                              <button 
+                                onClick={() => markAsRead(notification.id)}
+                                className="text-PrimaryColor hover:text-SecondaryColor"
+                                title="Mark as read"
+                              >
+                                <FiCheck size={16} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <h1 className="text-3xl font-extrabold text-ExtraDarkColor">Manage Inventory</h1>
+          </div>
+          
           <button
             onClick={handleAdd}
             className="p-2 bg-PrimaryColor text-DarkColor rounded-full hover:bg-SecondaryColor transition-all"
