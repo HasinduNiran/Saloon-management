@@ -10,9 +10,9 @@ import Navbar from '../../components/Navbar';
 import { logout } from '../../features/auth/authslices';
 
 // EmailJS configuration
-const EMAILJS_SERVICE_ID = 'service_rb1v2zm';
-const EMAILJS_TEMPLATE_ID = 'template_nikgk9y';
-const EMAILJS_PUBLIC_KEY = 'CcAX39sf2r48Ht1dc';
+const EMAILJS_SERVICE_ID = 'service_iu1yy2s';
+const EMAILJS_TEMPLATE_ID = 'template_ct24pls';
+const EMAILJS_PUBLIC_KEY = 'Fbi2D_ksFPj8NcpjK';
 
 // Initialize EmailJS
 emailjs.init(EMAILJS_PUBLIC_KEY);
