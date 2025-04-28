@@ -393,36 +393,47 @@ const ManageInventory = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredItems.map((item) => (
-                    <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="p-3">{item.ItemName}</td>
-                      <td className="p-3">{item.Category}</td>
-                      <td className="p-3">{item.Quantity}</td>
-                      <td className="p-3">{item.Price}</td>
-                      <td className="p-3">{item.SupplierName}</td>
-                      <td className="p-3">{item.SupplierEmail}</td>
-                      <td className="p-3 flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(item._id)}
-                          className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
-                        >
-                          <FiEdit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item._id)}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
-                        >
-                          <FiTrash size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleRetrieveClick(item)}
-                          className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
-                        >
-                          <FiBox size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredItems.map((item) => {
+                    const isLowStock = parseInt(item.Quantity) <= 10;
+                    
+                    return (
+                      <tr 
+                        key={item._id} 
+                        className={`border-b border-gray-200 hover:bg-gray-50 ${isLowStock ? 'bg-red-100' : ''}`}
+                        title={isLowStock ? "Low stock! Consider reordering." : ""}
+                      >
+                        <td className="p-3">{item.ItemName}</td>
+                        <td className="p-3">{item.Category}</td>
+                        <td className={`p-3 ${isLowStock ? 'font-bold text-red-600' : ''}`}>
+                          {item.Quantity}
+                          {isLowStock && <span className="ml-2 text-xs text-red-600">Low!</span>}
+                        </td>
+                        <td className="p-3">{item.Price}</td>
+                        <td className="p-3">{item.SupplierName}</td>
+                        <td className="p-3">{item.SupplierEmail}</td>
+                        <td className="p-3 flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(item._id)}
+                            className="p-2 bg-SecondaryColor text-white rounded-full hover:bg-DarkColor transition-all"
+                          >
+                            <FiEdit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
+                          >
+                            <FiTrash size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleRetrieveClick(item)}
+                            className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all"
+                          >
+                            <FiBox size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
