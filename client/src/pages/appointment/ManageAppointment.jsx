@@ -41,14 +41,12 @@ const ManageAppointment = () => {
   // Client-side search functionality
   const handleSearch = () => {
     if (!searchQuery.trim()) {
-      // If search is empty, show all appointments
       setFilteredAppointments(appointments);
       return;
     }
-    
-    // Filter appointments based on search query (case-insensitive)
+
     const lowercaseQuery = searchQuery.toLowerCase();
-    const results = appointments.filter(appointment => 
+    const results = appointments.filter(appointment =>
       (appointment.appoi_ID && String(appointment.appoi_ID).includes(lowercaseQuery)) ||
       (appointment.client_name && String(appointment.client_name).toLowerCase().includes(lowercaseQuery)) ||
       (appointment.client_email && String(appointment.client_email).toLowerCase().includes(lowercaseQuery)) ||
@@ -57,7 +55,7 @@ const ManageAppointment = () => {
       (appointment.services && String(appointment.services).toLowerCase().includes(lowercaseQuery)) ||
       (appointment.packages && String(appointment.packages).toLowerCase().includes(lowercaseQuery))
     );
-    
+
     setFilteredAppointments(results);
   };
 
@@ -65,8 +63,7 @@ const ManageAppointment = () => {
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    
-    // If search field is cleared, show all appointments
+
     if (value === '') {
       setFilteredAppointments(appointments);
     }
@@ -86,45 +83,39 @@ const ManageAppointment = () => {
       unit: 'mm',
       format: 'a4'
     });
-    
-    // Add salon branding
-    doc.setFillColor(137, 25, 143); // PrimaryColor
+
+    doc.setFillColor(137, 25, 143);
     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 25, 'F');
-    
-    // Add title
+
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255); // White text on purple header
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(20);
     doc.text('Glamour Hair & Beauty Salon', doc.internal.pageSize.getWidth() / 2, 12, { align: 'center' });
     doc.setFontSize(16);
     doc.text('Appointments Report', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-    
-    // Add metadata
+
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0, 0, 0); // Black text
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
     const today = new Date();
     doc.text(`Generated on: ${today.toLocaleDateString()} at ${today.toLocaleTimeString()}`, 14, 35);
-    
-    // Add search query if present
+
     if (searchQuery) {
       doc.setFontSize(10);
       doc.text(`Search query: "${searchQuery}"`, 14, 42);
     }
-    
-    // Create the table
-    const tableColumn = ["ID", "Client Name", "Email", "Phone", "Stylist", "Date", "Time", "Services", "Package"];
+
+    const tableColumn = ["ID", "Client Name", "Email", "Phone", "Stylist", "Date", "Time", "Services", "Package", "Status"];
     const tableRows = [];
 
-    // Add data rows
     filteredAppointments.forEach(appointment => {
       const appointmentDate = new Date(appointment.appoi_date);
       const formattedDate = appointmentDate.toLocaleDateString('en-US', {
-        year: 'numeric', 
-        month: 'short', 
+        year: 'numeric',
+        month: 'short',
         day: 'numeric'
       });
-      
+
       const appointmentData = [
         appointment.appoi_ID || '',
         appointment.client_name || '',
@@ -134,63 +125,61 @@ const ManageAppointment = () => {
         formattedDate,
         appointment.appoi_time || '',
         appointment.services || '',
-        appointment.packages || ''
+        appointment.packages || '',
+        appointment.status || 'Processing'
       ];
       tableRows.push(appointmentData);
     });
 
-    // Generate the PDF table using the imported autoTable
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
       startY: searchQuery ? 48 : 40,
-      styles: { 
-        fontSize: 9, 
+      styles: {
+        fontSize: 9,
         cellPadding: 3,
         overflow: 'linebreak',
         halign: 'left'
       },
-      headStyles: { 
-        fillColor: [137, 25, 143], // PrimaryColor
+      headStyles: {
+        fillColor: [137, 25, 143],
         textColor: [255, 255, 255],
         fontStyle: 'bold'
       },
       columnStyles: {
-        0: { cellWidth: 20 }, // ID
-        1: { cellWidth: 30 }, // Client Name
-        2: { cellWidth: 40 }, // Email
-        3: { cellWidth: 25 }, // Phone
-        4: { cellWidth: 25 }, // Stylist
-        5: { cellWidth: 25 }, // Date
-        6: { cellWidth: 20 }, // Time
-        7: { cellWidth: 30 }, // Services
-        8: { cellWidth: 30 }  // Package
+        0: { cellWidth: 20 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 40 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 25 },
+        5: { cellWidth: 25 },
+        6: { cellWidth: 20 },
+        7: { cellWidth: 30 },
+        8: { cellWidth: 30 },
+        9: { cellWidth: 25 }
       },
       alternateRowStyles: { fillColor: [245, 245, 245] },
       margin: { top: 30 },
-      didDrawPage: function(data) {
-        // Add page number at the bottom
+      didDrawPage: function (data) {
         doc.setFontSize(10);
         doc.text(
           `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${doc.internal.getNumberOfPages()}`,
-          doc.internal.pageSize.getWidth() / 2, 
-          doc.internal.pageSize.getHeight() - 10, 
+          doc.internal.pageSize.getWidth() / 2,
+          doc.internal.pageSize.getHeight() - 10,
           { align: 'center' }
         );
       }
     });
-    
-    // Add footer
+
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text('Glamour Hair & Beauty Salon - Appointments Management System', 
-      doc.internal.pageSize.getWidth() / 2, 
-      doc.internal.pageSize.getHeight() - 5, 
+    doc.text('Glamour Hair & Beauty Salon - Appointments Management System',
+      doc.internal.pageSize.getWidth() / 2,
+      doc.internal.pageSize.getHeight() - 5,
       { align: 'center' }
     );
 
-    // Save the PDF
-    doc.save(`appointments-report-${new Date().toISOString().slice(0,10)}.pdf`);
+    doc.save(`appointments-report-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
   // Handle delete appointment
@@ -213,7 +202,6 @@ const ManageAppointment = () => {
 
         if (!response.ok) throw new Error('Failed to delete appointment');
 
-        // Remove the deleted appointment from the state
         setAppointments((prev) => prev.filter((appointment) => appointment._id !== appoi_ID));
         setFilteredAppointments((prev) => prev.filter((appointment) => appointment._id !== appoi_ID));
 
@@ -237,6 +225,67 @@ const ManageAppointment = () => {
   // Handle edit appointment
   const handleEdit = (appoi_ID) => {
     navigate(`/manager/edit-appointment/${appoi_ID}`);
+  };
+
+  // Handle status change
+  const handleStatusChange = async (appoi_ID, newStatus) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Change Appointment Status',
+        text: `Are you sure you want to mark this appointment as ${newStatus}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#89198f',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, update it!',
+      });
+
+      if (result.isConfirmed) {
+        const currentAppointment = appointments.find(app => app._id === appoi_ID);
+
+        if (!currentAppointment) {
+          throw new Error('Appointment not found');
+        }
+
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${appoi_ID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...currentAppointment,
+            status: newStatus
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to update appointment status');
+
+        setAppointments((prev) =>
+          prev.map((appointment) =>
+            appointment._id === appoi_ID ? { ...appointment, status: newStatus } : appointment
+          )
+        );
+        setFilteredAppointments((prev) =>
+          prev.map((appointment) =>
+            appointment._id === appoi_ID ? { ...appointment, status: newStatus } : appointment
+          )
+        );
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: `The appointment status has been updated to ${newStatus}.`,
+          confirmButtonColor: '#89198f',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+        confirmButtonColor: '#89198f',
+      });
+    }
   };
 
   return (
@@ -308,6 +357,7 @@ const ManageAppointment = () => {
                     <th className="p-3 text-left">Time</th>
                     <th className="p-3 text-left">Services</th>
                     <th className="p-3 text-left">Package</th>
+                    <th className="p-3 text-left">Status</th>
                     <th className="p-3 text-left">Actions</th>
                   </tr>
                 </thead>
@@ -323,6 +373,19 @@ const ManageAppointment = () => {
                       <td className="p-3">{appointment.appoi_time}</td>
                       <td className="p-3">{appointment.services}</td>
                       <td className="p-3">{appointment.packages}</td>
+                      <td className="p-3">
+                        <select
+                          value={appointment.status || 'Processing'}
+                          onChange={(e) => handleStatusChange(appointment._id, e.target.value)}
+                          className="p-2 border rounded-lg"
+                        >
+                          <option value="Processing">Processing</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
                       <td className="p-3 flex space-x-2">
                         <button
                           onClick={() => handleEdit(appointment._id)}

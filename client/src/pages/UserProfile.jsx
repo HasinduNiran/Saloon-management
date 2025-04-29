@@ -81,6 +81,11 @@ const AppointmentsSection = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refreshAppointments = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -163,7 +168,7 @@ const AppointmentsSection = () => {
     if (user && user._id) {
       fetchAppointments();
     }
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
@@ -237,6 +242,10 @@ const AppointmentsSection = () => {
     setShowDeleteConfirm(null);
   };
 
+  const handleRefresh = () => {
+    refreshAppointments();
+  };
+
   if (loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 z-20 flex flex-col items-center justify-center min-h-[200px]">
@@ -265,86 +274,113 @@ const AppointmentsSection = () => {
           <Calendar className="mr-3 text-[#52b788]" />
           <h2 className="text-2xl font-bold text-[#1b4332]">My Appointments</h2>
         </div>
-
-        <div className="relative">
+        <div className="flex items-center">
           <button
-            onClick={toggleNotifications}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-            aria-label="Notifications"
+            onClick={handleRefresh}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors mr-2"
+            title="Refresh appointments"
           >
-            {unreadCount > 0 ? (
-              <>
-                <Bell size={24} className="text-[#52b788]" />
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              </>
-            ) : (
-              <BellOff size={24} className="text-gray-400" />
-            )}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-[#52b788]"
+            >
+              <path d="M21 2v6h-6"></path>
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+              <path d="M3 22v-6h6"></path>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+            </svg>
           </button>
 
-          {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200 max-h-96 overflow-y-auto">
-              <div className="p-3 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-700">Notifications</h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={markAllAsRead}
-                    className="text-xs px-2 py-1 bg-[#d8f3dc] text-[#2d6a4f] rounded hover:bg-[#95d5b2] transition-colors"
-                    disabled={unreadCount === 0}
-                  >
-                    Mark all read
-                  </button>
-                  <button
-                    onClick={clearNotifications}
-                    className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
-                    disabled={notifications.length === 0}
-                  >
-                    Clear all
-                  </button>
+          <div className="relative">
+            <button
+              onClick={toggleNotifications}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
+              aria-label="Notifications"
+            >
+              {unreadCount > 0 ? (
+                <>
+                  <Bell size={24} className="text-[#52b788]" />
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                </>
+              ) : (
+                <BellOff size={24} className="text-gray-400" />
+              )}
+            </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200 max-h-96 overflow-y-auto">
+                <div className="p-3 border-b border-gray-200 flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-700">Notifications</h3>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-xs px-2 py-1 bg-[#d8f3dc] text-[#2d6a4f] rounded hover:bg-[#95d5b2] transition-colors"
+                      disabled={unreadCount === 0}
+                    >
+                      Mark all read
+                    </button>
+                    <button
+                      onClick={clearNotifications}
+                      className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
+                      disabled={notifications.length === 0}
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">
+                      No notifications
+                    </div>
+                  ) : (
+                    notifications.map((notif) => (
+                      <div
+                        key={`${notif.id}-${notif.date}-${notif.time}`}
+                        className={`p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-start gap-2 ${
+                          notif.read ? "opacity-60" : ""
+                        }`}
+                      >
+                        <div
+                          className={`rounded-full w-2 h-2 mt-2 flex-shrink-0 ${
+                            notif.isToday ? "bg-red-500" : "bg-yellow-500"
+                          }`}
+                        ></div>
+                        <div className="flex-grow">
+                          <p className="text-sm text-gray-700">
+                            {notif.message}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(notif.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {!notif.read && (
+                          <button
+                            onClick={() => markAsRead(notif.id)}
+                            className="p-1 text-[#52b788] hover:text-[#2d6a4f] transition-colors"
+                            title="Mark as read"
+                          >
+                            <Check size={16} />
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-
-              <div>
-                {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-gray-500">
-                    No notifications
-                  </div>
-                ) : (
-                  notifications.map((notif) => (
-                    <div
-                      key={`${notif.id}-${notif.date}-${notif.time}`}
-                      className={`p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-start gap-2 ${
-                        notif.read ? "opacity-60" : ""
-                      }`}
-                    >
-                      <div
-                        className={`rounded-full w-2 h-2 mt-2 flex-shrink-0 ${
-                          notif.isToday ? "bg-red-500" : "bg-yellow-500"
-                        }`}
-                      ></div>
-                      <div className="flex-grow">
-                        <p className="text-sm text-gray-700">{notif.message}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(notif.date).toLocaleDateString()}
-                        </p>
-                      </div>
-                      {!notif.read && (
-                        <button
-                          onClick={() => markAsRead(notif.id)}
-                          className="p-1 text-[#52b788] hover:text-[#2d6a4f] transition-colors"
-                          title="Mark as read"
-                        >
-                          <Check size={16} />
-                        </button>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -382,6 +418,10 @@ const AppointmentsSection = () => {
                           ? "bg-green-100 text-green-800"
                           : appointment.status === "Pending"
                           ? "bg-yellow-100 text-yellow-800"
+                          : appointment.status === "Completed"
+                          ? "bg-blue-100 text-blue-800"
+                          : appointment.status === "Cancelled"
+                          ? "bg-red-100 text-red-800"
                           : "bg-gray-100 text-gray-800"
                       }
                     `}

@@ -210,6 +210,7 @@ const CreateAppointment = () => {
         ...formData,
         user_id: user._id, // Use the user's ID from the Redux store
         services: servicesText, // Convert array to string
+        status: "Processing" // Set default status explicitly
       };
 
       // Use API_CONFIG to construct the URL
