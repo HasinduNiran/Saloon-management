@@ -108,10 +108,10 @@ const CreateAppointment = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Validation for client name - prevent numbers
+    // Validation for client name - prevent numbers and special characters except spaces and some punctuation
     if (name === 'client_name') {
-      // Only allow letters, spaces and some special characters
-      const nameValue = value.replace(/[0-9]/g, '');
+      // Only allow letters, spaces, apostrophes, hyphens and periods
+      const nameValue = value.replace(/[^A-Za-z\s.'-]/g, '');
       setFormData((prev) => ({ ...prev, [name]: nameValue }));
       return;
     }
@@ -315,7 +315,7 @@ const CreateAppointment = () => {
                   placeholder="e.g., John Doe"
                   required
                   pattern="^[A-Za-z\s.'-]+$"
-                  title="Name cannot contain numbers"
+                  title="Please enter only letters, spaces, and characters like apostrophes or hyphens"
                 />
               </div>
 
